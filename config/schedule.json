@@ -59,7 +59,7 @@
     },
     "CANVAS": {
       "function": "Product",
-      "enabled": false,
+      "enabled": true,
       "phase": 2,
       "priority": 60,
       "trigger_mode": ["event"],
@@ -108,7 +108,7 @@
     },
     "MARKETING": {
       "function": "Brand & Demand Gen",
-      "enabled": false,
+      "enabled": true,
       "phase": 2,
       "priority": 50,
       "trigger_mode": ["event"],
@@ -182,7 +182,7 @@
     },
     "NEXUS": {
       "function": "Talent & Hiring",
-      "enabled": false,
+      "enabled": true,
       "phase": 3,
       "priority": 40,
       "trigger_mode": ["manual", "event"],
@@ -205,7 +205,7 @@
     },
     "COUNSEL": {
       "function": "Legal",
-      "enabled": false,
+      "enabled": true,
       "phase": 3,
       "priority": 40,
       "trigger_mode": ["manual", "event"],
@@ -228,7 +228,7 @@
     },
     "VECTOR": {
       "function": "Analytics & Growth",
-      "enabled": false,
+      "enabled": true,
       "phase": 2,
       "priority": 55,
       "trigger_mode": ["event"],
