@@ -1,0 +1,91 @@
+{
+  "agents": {
+    "MERIDIAN": {
+      "function": "Orchestrator",
+      "taskId": "founders-os-meridian-daily",
+      "cadence": "daily",
+      "cron": "0 8 * * *",
+      "schedule_description": "Every day at 8:00 AM"
+    },
+    "ATLAS": {
+      "function": "Market Research",
+      "taskId": "founders-os-atlas-weekly",
+      "cadence": "weekly",
+      "cron": "0 7 * * 1",
+      "schedule_description": "Every Monday at 7:00 AM"
+    },
+    "CANVAS": {
+      "function": "Product",
+      "taskId": "founders-os-canvas-weekly",
+      "cadence": "weekly",
+      "cron": "0 7 * * 2",
+      "schedule_description": "Every Tuesday at 7:00 AM"
+    },
+    "FORGE": {
+      "function": "Engineering",
+      "tasks": [
+        {
+          "taskId": "founders-os-forge-daily",
+          "cadence": "daily",
+          "cron": "0 9 * * 1-5",
+          "schedule_description": "Weekdays at 9:00 AM (standup)"
+        },
+        {
+          "taskId": "founders-os-forge-weekly",
+          "cadence": "weekly",
+          "cron": "0 7 * * 3",
+          "schedule_description": "Every Wednesday at 7:00 AM (full review)"
+        }
+      ]
+    },
+    "MARKETING": {
+      "function": "Brand & Demand Gen",
+      "taskId": "founders-os-marketing-weekly",
+      "cadence": "weekly",
+      "cron": "0 7 * * 2",
+      "schedule_description": "Every Tuesday at 7:00 AM"
+    },
+    "CURRENT": {
+      "function": "Sales",
+      "taskId": "founders-os-current-daily",
+      "cadence": "daily",
+      "cron": "5 8 * * 1-5",
+      "schedule_description": "Weekdays at 8:05 AM"
+    },
+    "LEDGER": {
+      "function": "Finance & Fundraising",
+      "taskId": "founders-os-ledger-weekly",
+      "cadence": "weekly",
+      "cron": "0 7 * * 4",
+      "schedule_description": "Every Thursday at 7:00 AM"
+    },
+    "NEXUS": {
+      "function": "Talent & Hiring",
+      "taskId": "founders-os-nexus-ondemand",
+      "cadence": "on-demand",
+      "cron": null,
+      "schedule_description": "Manual trigger only — activated by deal close handoff or founder prompt"
+    },
+    "COUNSEL": {
+      "function": "Legal",
+      "taskId": "founders-os-counsel-ondemand",
+      "cadence": "on-demand",
+      "cron": null,
+      "schedule_description": "Manual trigger only — activated by contract, fundraising, or compliance need"
+    },
+    "VECTOR": {
+      "function": "Analytics & Growth",
+      "taskId": "founders-os-vector-weekly",
+      "cadence": "weekly",
+      "cron": "0 7 * * 4",
+      "schedule_description": "Every Thursday at 7:00 AM"
+    },
+    "HERALD": {
+      "function": "Investor Relations & PR",
+      "taskId": "founders-os-herald-weekly",
+      "cadence": "weekly",
+      "cron": "0 7 * * 5",
+      "schedule_description": "Every Friday at 7:00 AM"
+    }
+  }
+}

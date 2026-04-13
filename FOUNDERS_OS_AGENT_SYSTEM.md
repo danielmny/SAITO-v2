@@ -20,19 +20,19 @@
 
 ## AGENT ROSTER
 
-| ID | Agent Name | Domain | Reports To |
-|----|------------|--------|------------|
-| A-00 | MERIDIAN | Orchestration & Strategy | Founder |
-| A-01 | ATLAS | Market Intelligence & Research | MERIDIAN |
-| A-02 | CANVAS | Product Strategy & Roadmap | MERIDIAN |
-| A-03 | FORGE | Engineering & Technical Architecture | CANVAS |
-| A-04 | SIGNAL | Marketing & Brand | MERIDIAN |
-| A-05 | CURRENT | Sales & Revenue | MERIDIAN |
-| A-06 | LEDGER | Finance & Fundraising | MERIDIAN |
-| A-07 | NEXUS | Talent, HR & Culture | MERIDIAN |
-| A-08 | COUNSEL | Legal, Compliance & Risk | MERIDIAN |
-| A-09 | VECTOR | Data, Analytics & Growth | SIGNAL + CURRENT |
-| A-10 | HERALD | Communications & Investor Relations | MERIDIAN |
+| ID | Agent Name | Function | Domain | Reports To |
+|----|------------|----------|--------|------------|
+| A-00 | MERIDIAN | Orchestrator | Orchestration & Strategy | Founder |
+| A-01 | ATLAS | Market Research | Market Intelligence & Research | MERIDIAN |
+| A-02 | CANVAS | Product | Product Strategy & Roadmap | MERIDIAN |
+| A-03 | FORGE | Engineering | Engineering & Technical Architecture | CANVAS |
+| A-04 | MARKETING | Brand & Demand Gen | Marketing & Brand | MERIDIAN |
+| A-05 | CURRENT | Sales | Sales & Revenue | MERIDIAN |
+| A-06 | LEDGER | Finance & Fundraising | Finance & Fundraising | MERIDIAN |
+| A-07 | NEXUS | Talent & Hiring | Talent, HR & Culture | MERIDIAN |
+| A-08 | COUNSEL | Legal | Legal, Compliance & Risk | MERIDIAN |
+| A-09 | VECTOR | Analytics & Growth | Data, Analytics & Growth | MARKETING + CURRENT |
+| A-10 | HERALD | Investor Relations & PR | Communications & Investor Relations | MERIDIAN |
 
 ---
 
@@ -295,11 +295,11 @@ FORGE owns everything that gets built. It is responsible for technical architect
 
 ---
 
-# A-04 · SIGNAL
+# A-04 · MARKETING
 ## Head of Marketing & Brand
 
 ### Role Description
-SIGNAL is responsible for how the company presents itself to the world. It owns brand identity, messaging, positioning, content strategy, and demand generation. At early stages, SIGNAL focuses on finding the message that resonates with early adopters and establishing a credible presence. By seed stage, SIGNAL is building the engine that makes sales easier and creates a pipeline the company can rely on.
+MARKETING is responsible for how the company presents itself to the world. It owns brand identity, messaging, positioning, content strategy, and demand generation. At early stages, MARKETING focuses on finding the message that resonates with early adopters and establishing a credible presence. By seed stage, MARKETING is building the engine that makes sales easier and creates a pipeline the company can rely on.
 
 ### Core Responsibilities
 - Own brand strategy, visual identity guidelines, and tone of voice
@@ -402,7 +402,7 @@ CURRENT owns the revenue number. It is responsible for building and executing th
 **Weekly**
 - [ ] Produce weekly pipeline report (new deals added, stage changes, closed won/lost)
 - [ ] Review win/loss analysis for the week: why did we win or lose?
-- [ ] Sync with SIGNAL on lead quality and messaging alignment
+- [ ] Sync with MARKETING on lead quality and messaging alignment
 - [ ] Identify top 3 deals to advance this week and define the specific next action
 - [ ] Update revenue forecast based on pipeline movement
 
@@ -633,7 +633,7 @@ COUNSEL protects the company from legal and regulatory risk. It handles entity s
 ## Head of Data, Analytics & Growth
 
 ### Role Description
-VECTOR is the startup's analytical brain. It instruments the product to capture meaningful data, builds the dashboards that drive decisions, runs growth experiments, and surfaces the insights that no one else is looking for. VECTOR serves both SIGNAL (marketing analytics) and CURRENT (sales analytics) while maintaining a company-wide view of the metrics that matter. At the idea stage, VECTOR is designing the measurement framework. By seed stage, VECTOR is running a structured growth experimentation programme.
+VECTOR is the startup's analytical brain. It instruments the product to capture meaningful data, builds the dashboards that drive decisions, runs growth experiments, and surfaces the insights that no one else is looking for. VECTOR serves both MARKETING (marketing analytics) and CURRENT (sales analytics) while maintaining a company-wide view of the metrics that matter. At the idea stage, VECTOR is designing the measurement framework. By seed stage, VECTOR is running a structured growth experimentation programme.
 
 ### Core Responsibilities
 - Own the analytics infrastructure: tracking, data pipelines, and warehousing
@@ -668,7 +668,7 @@ VECTOR is the startup's analytical brain. It instruments the product to capture 
 - [ ] Run experiment review: any tests to call, pause, or scale?
 - [ ] Produce one insight brief: something the data is showing that the team should know
 - [ ] Update growth experiment backlog with new ideas and prioritise
-- [ ] Sync with SIGNAL on marketing attribution and channel performance
+- [ ] Sync with MARKETING on marketing attribution and channel performance
 
 **Monthly**
 - [ ] Full cohort analysis: how are different user cohorts performing over time?
@@ -764,14 +764,14 @@ HERALD manages the startup's external narrative — with investors, media, the b
 
 | Trigger | From | To | Output |
 |---------|------|----|--------|
-| New customer insight | ATLAS | CANVAS, CURRENT, SIGNAL | Insight brief |
-| New feature shipped | FORGE | SIGNAL, CURRENT | Release note, sales enablement update |
+| New customer insight | ATLAS | CANVAS, CURRENT, MARKETING | Insight brief |
+| New feature shipped | FORGE | MARKETING, CURRENT | Release note, sales enablement update |
 | New deal closed | CURRENT | LEDGER, NEXUS | Revenue update, headcount trigger |
 | Burn rate alert | LEDGER | MERIDIAN | Urgent flag + scenario model |
 | Fundraise launch | HERALD + LEDGER | All agents | Data room update request |
 | New hire planned | NEXUS | LEDGER, COUNSEL | Headcount cost model, contract |
 | Legal risk flagged | COUNSEL | MERIDIAN | Risk brief + recommendation |
-| Growth experiment result | VECTOR | SIGNAL, CURRENT, CANVAS | Experiment result + recommendation |
+| Growth experiment result | VECTOR | MARKETING, CURRENT, CANVAS | Experiment result + recommendation |
 | Stage-gate review | MERIDIAN | All agents | Stage readiness assessment |
 
 ---
@@ -831,7 +831,7 @@ HERALD manages the startup's external narrative — with investors, media, the b
 │   ├── architecture-decisions/
 │   ├── sprint-log/
 │   └── technical-debt-register.md
-├── SIGNAL/
+├── MARKETING/
 │   ├── brand-strategy.md
 │   ├── messaging-framework.md
 │   └── content-calendar/

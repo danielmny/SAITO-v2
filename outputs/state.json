@@ -1,0 +1,28 @@
+{
+  "company": {
+    "name": "SIGNAL",
+    "stage": "PRE-SEED",
+    "last_updated": ""
+  },
+  "agents": {
+    "MERIDIAN": { "last_run": "", "status": "not_run", "last_output": "" },
+    "ATLAS":    { "last_run": "", "status": "not_run", "last_output": "" },
+    "CANVAS":   { "last_run": "", "status": "not_run", "last_output": "" },
+    "FORGE":    { "last_run": "", "status": "not_run", "last_output": "" },
+    "MARKETING":{ "last_run": "", "status": "not_run", "last_output": "" },
+    "CURRENT":  { "last_run": "", "status": "not_run", "last_output": "" },
+    "LEDGER":   { "last_run": "", "status": "not_run", "last_output": "" },
+    "NEXUS":    { "last_run": "", "status": "not_run", "last_output": "" },
+    "COUNSEL":  { "last_run": "", "status": "not_run", "last_output": "" },
+    "VECTOR":   { "last_run": "", "status": "not_run", "last_output": "" },
+    "HERALD":   { "last_run": "", "status": "not_run", "last_output": "" }
+  },
+  "escalations": {
+    "open": [],
+    "resolved": []
+  },
+  "handoffs": {
+    "pending_count": 0
+  },
+  "last_runs": []
+}

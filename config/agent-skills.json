@@ -1,0 +1,29 @@
+{
+  "HERALD": {
+    "skills": ["anthropic-skills:pptx", "anthropic-skills:pdf", "anthropic-skills:docx"],
+    "when": {
+      "anthropic-skills:pptx": "Pitch deck production or slide-based investor presentations",
+      "anthropic-skills:pdf": "Data room documents, monthly investor reports",
+      "anthropic-skills:docx": "Investor update emails, founder blog posts, formal letters"
+    }
+  },
+  "LEDGER": {
+    "skills": ["anthropic-skills:xlsx", "anthropic-skills:pdf"],
+    "when": {
+      "anthropic-skills:xlsx": "Financial model, runway tracker, investor pipeline spreadsheet",
+      "anthropic-skills:pdf": "Monthly financial reports for investors, data room financials"
+    }
+  },
+  "CANVAS": {
+    "skills": ["anthropic-skills:docx"],
+    "when": {
+      "anthropic-skills:docx": "Formal PRDs or product specs intended for engineering or stakeholders"
+    }
+  },
+  "FORGE": {
+    "skills": ["anthropic-skills:docx"],
+    "when": {
+      "anthropic-skills:docx": "Architecture decision records (ADRs), technical specs for external sharing"
+    }
+  }
+}
