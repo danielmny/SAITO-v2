@@ -9,7 +9,7 @@ This session established the strategic and technical foundation for turning Foun
 
 ### What was clarified
 
-- **Founders OS and SIGNAL are separate concerns.** Founders OS is a standalone, reusable agent system. SIGNAL (danielmny/signal-mvp) is one company running on top of it. The two repos must not be conflated or cross-linked.
+- **Founders OS and SIGNAL are separate concerns.** Founders OS is a reusable agent system. SIGNAL (danielmny/signal-mvp) is one company running on top of it. The two repos must not be conflated or cross-linked.
 - **The current system is doc-only.** CLAUDE.md + FOUNDERS_OS_AGENT_SYSTEM.md are prompt/context files, not a runtime. Agents do not currently run autonomously.
 - **The goal is real automation:** agents running tasks independently, handing off structured outputs to each other, with MERIDIAN orchestrating, scheduling, tracking progress, flagging issues, and escalating to the founder only when a human decision is genuinely required.
 
@@ -40,10 +40,6 @@ A complete automation architecture:
 
 > **Repo structure:** Should agent outputs be committed to the same repo as the Founders OS system files, or a separate outputs repo? Separating keeps the system clean and allows the outputs repo to be public (for the dashboard) without exposing system prompts.
 
-### Next action agreed (not yet executed)
-
-Create a standalone clone of this repo called **"Startup AI Team - standalone"** — a clean, SIGNAL-agnostic version of Founders OS ready to be the base for the automation build. *(Paused pending founder instruction on GitHub vs. local creation.)*
-
 ---
 
 ## Repo structure (as received)
@@ -58,7 +54,7 @@ Create a standalone clone of this repo called **"Startup AI Team - standalone"**
 ├── .markdownlint.json
 ├── CLAUDE.md             ← Claude Code entry point
 ├── FOUNDERS_OS_AGENT_SYSTEM.md   ← full agent definitions
-├── SIGNAL_PROJECT_SUMMARY.md     ← SIGNAL-specific (to be removed in standalone)
+├── SIGNAL_PROJECT_SUMMARY.md     ← SIGNAL-specific
 ├── founders_peer_group_agreement.md
 └── README.md
 ```

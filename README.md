@@ -76,7 +76,6 @@ Specialist agents remain stateless per run. `MERIDIAN` is the only component tha
 │   ├── handoffs/                     ← Inter-agent work queue
 │   ├── escalations/                  ← Pending / resolved escalations
 │   └── {AGENT_NAME}/                 ← Agent output history
-└── startup-ai-team-standalone/       ← Legacy standalone reference snapshot
 ```
 
 ## Core Principles
