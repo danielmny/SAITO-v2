@@ -1,83 +1,55 @@
 # MERIDIAN — Next Steps & Build Roadmap
-*Founders OS v1.0 · April 2026*
-
----
+*Founders OS v2.1 · Codex Runtime · April 2026*
 
 ## Immediate next steps
 
-### Step 0 — Repo setup (blocked on founder decision)
-- [ ] Decide: same repo or separate outputs repo for agent outputs
-- [ ] Create **"Startup AI Team - standalone"** repo (clean Founders OS, no SIGNAL content)
-- [ ] Remove `SIGNAL_PROJECT_SUMMARY.md` and SIGNAL references from `CLAUDE.md` and `README.md`
-- [ ] Create the full agent folder structure (`/ATLAS`, `/CANVAS`, `/FORGE`, etc.)
-- [ ] Add `MERIDIAN/state.json` with initial empty state schema
+### Step 1 — Runtime docs and contracts
+- [x] Rewrite entrypoint docs for Codex runtime
+- [x] Define dispatch contract and event-driven scheduling model
+- [x] Define canonical state, artifact metadata, and communication contracts
 
-### Step 1 — Orchestration script (`orchestrate.py`)
-- [ ] Load agent system prompt from `FOUNDERS_OS_AGENT_SYSTEM.md` by agent ID
-- [ ] Load relevant context files (state, recent outputs, handoff queue)
-- [ ] Call Claude API (`claude-sonnet-4-6`) with assembled prompt
-- [ ] Write output to correct agent folder with timestamp
-- [ ] Update `MERIDIAN/state.json` with run result
-- [ ] Scan output for `[ESCALATE TO FOUNDER]` and trigger escalation handler
+### Step 2 — Config migration
+- [x] Replace cadence-only scheduling with event + heartbeat policy in `config/schedule.json`
+- [x] Add `communications.json`, `google-workspace.json`, `models.json`, and `token-policy.json`
+- [x] Expand `outputs/state.json` for context hashes, cooldowns, run budgets, communications, and external artifacts
 
-### Step 2 — MERIDIAN scheduling config (`MERIDIAN/schedule.json`)
-- [ ] Define per-agent cadence (daily / weekly / monthly / on-handoff)
-- [ ] Define dependency order (ATLAS → CANVAS → FORGE chain, etc.)
-- [ ] Define which context files each agent receives as input
+### Step 3 — Dispatcher scaffolding
+- [x] Add `runner/orchestrate.py` CLI scaffold for heartbeat planning and one-off run request assembly
+- [x] Add communication abstraction with email-first channel support
+- [x] Add Google Workspace adapter scaffolding for Drive / Docs / Gmail
 
-### Step 3 — GitHub Actions workflows
-- [ ] `meridian-daily.yml` — runs MERIDIAN at 08:00 CET, reads state, dispatches due tasks
-- [ ] `agents-weekly.yml` — full agent sweep every Sunday night
-- [ ] `escalation-handler.yml` — monitors for `[ESCALATE TO FOUNDER]` in any committed output
+### Step 4 — Scheduling and operations
+- [x] Add GitHub Actions workflow scaffolds for 15-minute dispatch and daily digest checks
+- [ ] Wire runtime execution to the chosen Codex invocation path
+- [ ] Add reply ingestion from the configured founder email inbox
 
-### Step 4 — Escalation handler
-- [ ] Parse agent outputs for escalation flag
-- [ ] Open GitHub Issue with: agent name, task, full context, output, action required
-- [ ] Mark task as `BLOCKED` in `state.json` until issue is closed
+### Step 5 — Lean-token enforcement
+- [x] Define per-agent budgets and model tiers
+- [ ] Add prompt-context summarization cache
+- [ ] Add token accounting from real model responses
 
-### Step 5 — Static dashboard (optional, iFastNet)
-- [ ] Single HTML file fetching `MERIDIAN/state.json` from public repo
-- [ ] Renders: agent statuses, last run timestamps, open escalations, recent outputs
-- [ ] No backend — pure client-side fetch + render
+## Recommendations
 
----
+### Keep the active core small
+Stabilize `MERIDIAN`, `ATLAS`, `CURRENT`, `FORGE`, `HERALD`, and `LEDGER` before enabling the second-wave agents. This prevents low-value loops from consuming budget before the trigger model is proven.
 
-## Suggestions (MERIDIAN perspective)
+### Treat email as transport, not source of truth
+Founder emails should create or update repo state, not become the canonical record. This keeps auditability intact and preserves the ability to swap in Slack later.
 
-### Make MERIDIAN's weekly briefing the north star output
-The single most valuable automated output is MERIDIAN's weekly founder briefing — one page covering wins, risks, decisions needed, and next week's priorities. Everything else (individual agent tasks) feeds into this. Design the system around producing this briefing reliably, and the rest follows.
+### Prefer mirrored artifacts over Google-first writes
+Generate markdown locally first, then mirror selected outputs to Docs or Drive. This avoids state drift and makes reruns and diffing cheaper.
 
-### Start with two agents before wiring all eleven
-ATLAS (research, competitive intel) and HERALD (investor update draft) are the two agents with the clearest, most self-contained weekly tasks and the highest value-to-effort ratio. Wire those first, prove the pipeline, then extend to the others.
-
-### Use Claude's extended thinking for MERIDIAN only
-MERIDIAN's orchestration decisions (priority setting, conflict resolution, stage-gate assessment) benefit from deeper reasoning. All other agents can use standard mode. This keeps API costs low while giving the orchestrator the quality it needs.
-
-### Version the agent system file
-As agents are refined through actual runs, `FOUNDERS_OS_AGENT_SYSTEM.md` will need updates. Introduce versioning (`v1.0`, `v1.1`) and a changelog section at the top so MERIDIAN can reference the version it was trained on and flag when agent definitions have changed.
-
-### Build the escalation handler before the scheduler
-An autonomous system that runs tasks without an escalation path is dangerous — it will hit blockers and spin. Build the escalation mechanism first, test it, then activate the scheduler.
-
-### Consider a `FOUNDER_RESPONSES/` folder as the input channel
-Rather than monitoring GitHub Issues (which requires API polling), a simpler pattern: the founder drops a markdown file into `FOUNDER_RESPONSES/YYYY-MM-DD-response.md` and the next MERIDIAN run picks it up. Git push = signal to continue. Simpler, more auditable.
-
----
+### Measure skipped work as a success metric
+An efficient 24/7 system should show many heartbeat cycles that intentionally do nothing. Track skip reasons and no-op rate as operating metrics, not failures.
 
 ## Build order summary
 
+```text
+1. Runtime contracts and docs
+2. Schedule / state / comms / workspace config
+3. Dispatcher and adapter scaffolding
+4. GitHub Actions heartbeat workflows
+5. Real Codex execution and reply ingestion
+6. Token accounting and summarization cache
+7. Publish branch and open PR
 ```
-1. Standalone repo (clean)
-2. orchestrate.py (core runtime)
-3. MERIDIAN/schedule.json (cadence config)
-4. escalation handler (safety first)
-5. GitHub Actions workflows (scheduler)
-6. Wire ATLAS + HERALD as pilot agents
-7. Validate full loop: task → output → handoff → MERIDIAN → escalation
-8. Extend to all 11 agents
-9. Static dashboard (optional)
-```
-
----
-
-*Updated: April 2026 · Next review: after standalone repo is created*

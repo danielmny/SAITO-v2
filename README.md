@@ -1,82 +1,99 @@
-# Founders OS — Cowork Edition
+# Founders OS — Codex Runtime
 
-A multi-agent AI system that simulates a complete startup team — from idea stage through seed close. Runs natively in **Claude Cowork** with each agent firing on its own schedule as an independent session.
+Founders OS is a multi-agent operating system for startup work. It now targets a Codex-native runtime with GitHub Actions as the unattended scheduler, an event-driven dispatcher for 24/7 operation, Google Workspace as the collaboration layer for founder-facing artifacts, and email as the first founder communication channel.
 
-## The Agent Team
+## Operating Model
 
-| ID | Agent | Function | Schedule |
-|----|-------|----------|----------|
-| A-00 | MERIDIAN | Orchestrator | Daily 8:00 AM |
-| A-01 | ATLAS | Market Research | Monday 7:00 AM |
-| A-02 | CANVAS | Product | Tuesday 7:00 AM |
-| A-03 | FORGE | Engineering | Daily 9:00 AM + Wednesday 7:00 AM |
-| A-04 | MARKETING | Brand & Demand Gen | Tuesday 7:00 AM |
-| A-05 | CURRENT | Sales | Daily 8:05 AM (weekdays) |
-| A-06 | LEDGER | Finance & Fundraising | Thursday 7:00 AM |
-| A-07 | NEXUS | Talent & Hiring | On-demand |
-| A-08 | COUNSEL | Legal | On-demand |
-| A-09 | VECTOR | Analytics & Growth | Thursday 7:00 AM |
-| A-10 | HERALD | Investor Relations & PR | Friday 7:00 AM |
+- Codex-compatible runner executes agents as stateless jobs
+- GitHub Actions remains the scheduler of record
+- A 15-minute dispatcher heartbeat scans for new events, changed context, and overdue work
+- Handoffs and state stay in-repo for auditability
+- Google Drive, Docs, and Gmail mirror founder-facing work products
+- Founder replies arrive by email and are normalized back into repo state
 
-## Stage Coverage
+## Agent Activation
 
-- **IDEA** — Problem validation, concept shaping, initial team structure
-- **PRE-SEED** — MVP scoping, early customers, pitch narrative
-- **SEED** — Fundraising execution, team build, GTM, financial controls
+The initial always-active core is intentionally small:
 
-## Active Company: SIGNAL
+| ID | Agent | Function | Default mode |
+|----|-------|----------|--------------|
+| A-00 | MERIDIAN | Orchestrator | `heartbeat + event` |
+| A-01 | ATLAS | Market Research | `event` |
+| A-03 | FORGE | Engineering | `event` |
+| A-05 | CURRENT | Sales | `event` |
+| A-06 | LEDGER | Finance & Fundraising | `event` |
+| A-10 | HERALD | Investor Relations & PR | `event` |
 
-The current instance of Founders OS is operating for **SIGNAL** — a job market intelligence platform that matches job seekers to companies based on psychographic and cultural alignment, not keyword matching.
+Second-wave agents stay disabled until the trigger model and token budget controls are stable:
 
-- **Stage:** PRE-SEED (MVP built, moving toward seed)
-- **Stack:** FastAPI · PostgreSQL · React + Vite · Claude API · Playwright
-- **Repo:** `danielmny/signal-mvp`
+- `CANVAS`
+- `MARKETING`
+- `VECTOR`
+- `NEXUS`
+- `COUNSEL`
 
-See [`config/company-brief.md`](./config/company-brief.md) for the full company context, and [`SIGNAL_PROJECT_SUMMARY.md`](./SIGNAL_PROJECT_SUMMARY.md) for the technical reference.
+## Runtime Contract
+
+Every dispatched run uses the same core request shape:
+
+- `agent_id`
+- `trigger_type`
+- `reason`
+- `run_timestamp`
+- `changed_context`
+- `instance_path`
+
+Specialist agents remain stateless per run. `MERIDIAN` is the only component that normalizes shared state into [outputs/state.json](/Users/d3/Codex/startup-ai-team-cowork-GPT/outputs/state.json).
 
 ## File Structure
 
-```
-├── CLAUDE.md                        ← Cowork entry point — read this first
-├── FOUNDERS_OS_AGENT_SYSTEM.md      ← Full agent definitions, task inventories, stage gates
-├── agents/                          ← Per-agent scheduled task prompts
+```text
+├── AGENTS.md                         ← Codex entry point for agent runs
+├── CLAUDE.md                         ← Legacy compatibility note pointing to AGENTS.md
+├── FOUNDERS_OS_AGENT_SYSTEM.md       ← Agent definitions, cadences, responsibilities
+├── agents/                           ← Per-agent runtime prompts
 ├── config/
-│   ├── company-brief.md             ← Company context (single source of truth)
-│   ├── agent-skills.json            ← Skill assignments per agent
-│   └── schedule.json                ← Cadence reference
+│   ├── company-brief.md              ← Company context
+│   ├── schedule.json                 ← Event + heartbeat dispatch policy
+│   ├── communications.json           ← Founder channel settings
+│   ├── google-workspace.json         ← Drive / Docs / Gmail integration config
+│   ├── token-policy.json             ← Per-agent budget controls
+│   ├── models.json                   ← Model profile routing
+│   └── agent-skills.json             ← External artifact guidance by agent
+├── docs/
+│   ├── runtime-contract.md           ← Dispatch, state, artifact, and communication contracts
+│   ├── google-workspace.md           ← Workspace integration model
+│   └── publish-checklist.md          ← Validation and publish sequence
+├── runner/
+│   ├── orchestrate.py                ← Dispatcher planner / CLI scaffold
+│   ├── communications.py             ← Channel abstraction with Email/Slack stubs
+│   └── google_workspace.py           ← Drive / Docs / Gmail adapter scaffolding
+├── .github/workflows/
+│   ├── dispatch.yml                  ← 15-minute dispatcher heartbeat
+│   └── daily-digest.yml              ← Founder digest trigger
 ├── outputs/
-│   ├── state.json                   ← Live system state (MERIDIAN-owned)
-│   ├── handoffs/                    ← Inter-agent handoff queue
-│   ├── escalations/                 ← Pending and resolved escalations
-│   └── {AGENT_NAME}/                ← Agent output files (one folder per agent)
-├── FOUNDER_RESPONSES/               ← Drop responses here to unblock escalations
-└── SIGNAL_PROJECT_SUMMARY.md        ← SIGNAL technical reference
+│   ├── state.json                    ← Canonical runtime state
+│   ├── handoffs/                     ← Inter-agent work queue
+│   ├── escalations/                  ← Pending / resolved escalations
+│   └── {AGENT_NAME}/                 ← Agent output history
+└── startup-ai-team-standalone/       ← Legacy standalone reference snapshot
 ```
 
-## How It Works
+## Core Principles
 
-1. Each agent runs as an independent Claude Code session on its own cron schedule
-2. MERIDIAN runs daily to read all agent outputs, resolve escalations, and produce the founder briefing
-3. Agents communicate via handoff files in `outputs/handoffs/`
-4. When an agent needs a human decision, it writes `[ESCALATE TO FOUNDER]` — MERIDIAN detects it and creates a pending escalation
-5. Drop your response in `FOUNDER_RESPONSES/RE: ESC-{ID}.md` to unblock the relevant agent
+1. Repo state is canonical. Google Workspace is a collaboration and delivery layer, not the source of truth.
+2. 24/7 means responsive dispatch, not constant re-running. No-work cycles should skip cleanly.
+3. Founder communication is email-first in v1, but every outbound and inbound flow goes through a pluggable communication interface.
+4. Token efficiency is a product requirement. Only changed inputs, pending handoffs, unresolved escalations, and the most recent relevant outputs should be injected into prompts.
+5. `MERIDIAN` owns system normalization, triage, and founder digests. Specialist agents should stay narrow and cheap.
 
-## Managing Agents
+## Validation Before Publish
 
-All scheduled tasks are visible in the **Scheduled** sidebar in Claude Code. To run any agent manually, click **Run now** on the corresponding task:
+Before publishing to GitHub:
 
-- `MERIDIAN (Orchestrator)` — daily briefing
-- `ATLAS (Market Research)` — competitive intel
-- `CANVAS (Product)` — roadmap + backlog
-- `FORGE (Engineering)` — standup or weekly review
-- `MARKETING (Brand & Demand Gen)` — content + messaging
-- `CURRENT (Sales)` — pipeline update
-- `LEDGER (Finance & Fundraising)` — runway + investor pipeline
-- `VECTOR (Analytics & Growth)` — KPIs + experiments
-- `HERALD (Investor Relations & PR)` — investor update + pitch deck
-- `NEXUS (Talent & Hiring)` — on-demand
-- `COUNSEL (Legal)` — on-demand
+1. Search for stale operational dependencies on legacy runtime terms and workflows.
+2. Verify `schedule.json`, `state.json`, and [docs/runtime-contract.md](/Users/d3/Codex/startup-ai-team-cowork-GPT/docs/runtime-contract.md) describe the same dispatch and metadata rules.
+3. Verify email-first communication and Google Workspace mirroring do not conflict on source-of-truth rules.
+4. Verify the dispatcher skips unchanged context and respects cooldowns and daily run caps.
 
----
-
-*Founders OS v2.0 · Cowork Edition · April 2026*
+*Founders OS v2.1 · Codex Runtime · April 2026*

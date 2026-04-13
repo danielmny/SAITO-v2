@@ -1,7 +1,7 @@
 # FOUNDERS OS — Multi-Agent Startup Team System
 ### Idea Stage → End of Seed Stage
 
-> **Usage:** Feed this file to Claude Code, a Claude Project, or any LLM-based orchestration layer as a system reference document. Each agent section is self-contained and can be used as an individual agent INSTRUCTIONS.md or system prompt.
+> **Usage:** Feed this file to Codex or another LLM-based orchestration layer as a system reference document. Each agent section is self-contained and can be used as an individual `INSTRUCTIONS.md` or system prompt.
 
 ---
 
