@@ -1,0 +1,32 @@
+{
+  "enabled": true,
+  "workspace_mode": "mirror_to_google",
+  "google_drive": {
+    "shared_drive_id": "",
+    "folders": {
+      "founder_briefings": "",
+      "investor_updates": "",
+      "finance_artifacts": "",
+      "escalations": ""
+    }
+  },
+  "google_docs": {
+    "enabled": true,
+    "templates": {
+      "meridian_briefing": "",
+      "herald_update": "",
+      "escalation_packet": ""
+    }
+  },
+  "gmail": {
+    "enabled": true,
+    "mailbox": "",
+    "reply_ingestion_label": "founders-os"
+  },
+  "artifact_policy": {
+    "meridian_briefings": "mirror",
+    "herald_updates": "mirror",
+    "ledger_artifacts": "optional",
+    "escalation_packets": "mirror"
+  }
+}
