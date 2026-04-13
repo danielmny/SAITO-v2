@@ -1,28 +1,232 @@
 {
+  "system_version": "2.1",
   "company": {
     "name": "SIGNAL",
     "stage": "PRE-SEED",
-    "last_updated": ""
+    "last_updated": "",
+    "founder_digest_due_at": ""
   },
   "agents": {
-    "MERIDIAN": { "last_run": "", "status": "not_run", "last_output": "" },
-    "ATLAS":    { "last_run": "", "status": "not_run", "last_output": "" },
-    "CANVAS":   { "last_run": "", "status": "not_run", "last_output": "" },
-    "FORGE":    { "last_run": "", "status": "not_run", "last_output": "" },
-    "MARKETING":{ "last_run": "", "status": "not_run", "last_output": "" },
-    "CURRENT":  { "last_run": "", "status": "not_run", "last_output": "" },
-    "LEDGER":   { "last_run": "", "status": "not_run", "last_output": "" },
-    "NEXUS":    { "last_run": "", "status": "not_run", "last_output": "" },
-    "COUNSEL":  { "last_run": "", "status": "not_run", "last_output": "" },
-    "VECTOR":   { "last_run": "", "status": "not_run", "last_output": "" },
-    "HERALD":   { "last_run": "", "status": "not_run", "last_output": "" }
+    "MERIDIAN": {
+      "last_run": "",
+      "last_success": "",
+      "status": "not_run",
+      "last_output": "",
+      "last_trigger": "",
+      "context_hash": "",
+      "cooldown_until": "",
+      "run_budget": {
+        "daily_token_budget": 25000,
+        "tokens_used_today": 0,
+        "runs_today": 0
+      },
+      "skip_reason": "",
+      "blocked_on_escalation": false,
+      "communications": [],
+      "external_artifacts": [],
+      "last_google_sync": ""
+    },
+    "ATLAS": {
+      "last_run": "",
+      "last_success": "",
+      "status": "not_run",
+      "last_output": "",
+      "last_trigger": "",
+      "context_hash": "",
+      "cooldown_until": "",
+      "run_budget": {
+        "daily_token_budget": 12000,
+        "tokens_used_today": 0,
+        "runs_today": 0
+      },
+      "skip_reason": "",
+      "blocked_on_escalation": false,
+      "communications": [],
+      "external_artifacts": [],
+      "last_google_sync": ""
+    },
+    "CANVAS": {
+      "last_run": "",
+      "last_success": "",
+      "status": "disabled",
+      "last_output": "",
+      "last_trigger": "",
+      "context_hash": "",
+      "cooldown_until": "",
+      "run_budget": {
+        "daily_token_budget": 10000,
+        "tokens_used_today": 0,
+        "runs_today": 0
+      },
+      "skip_reason": "",
+      "blocked_on_escalation": false,
+      "communications": [],
+      "external_artifacts": [],
+      "last_google_sync": ""
+    },
+    "FORGE": {
+      "last_run": "",
+      "last_success": "",
+      "status": "not_run",
+      "last_output": "",
+      "last_trigger": "",
+      "context_hash": "",
+      "cooldown_until": "",
+      "run_budget": {
+        "daily_token_budget": 16000,
+        "tokens_used_today": 0,
+        "runs_today": 0
+      },
+      "skip_reason": "",
+      "blocked_on_escalation": false,
+      "communications": [],
+      "external_artifacts": [],
+      "last_google_sync": ""
+    },
+    "MARKETING": {
+      "last_run": "",
+      "last_success": "",
+      "status": "disabled",
+      "last_output": "",
+      "last_trigger": "",
+      "context_hash": "",
+      "cooldown_until": "",
+      "run_budget": {
+        "daily_token_budget": 10000,
+        "tokens_used_today": 0,
+        "runs_today": 0
+      },
+      "skip_reason": "",
+      "blocked_on_escalation": false,
+      "communications": [],
+      "external_artifacts": [],
+      "last_google_sync": ""
+    },
+    "CURRENT": {
+      "last_run": "",
+      "last_success": "",
+      "status": "not_run",
+      "last_output": "",
+      "last_trigger": "",
+      "context_hash": "",
+      "cooldown_until": "",
+      "run_budget": {
+        "daily_token_budget": 15000,
+        "tokens_used_today": 0,
+        "runs_today": 0
+      },
+      "skip_reason": "",
+      "blocked_on_escalation": false,
+      "communications": [],
+      "external_artifacts": [],
+      "last_google_sync": ""
+    },
+    "LEDGER": {
+      "last_run": "",
+      "last_success": "",
+      "status": "not_run",
+      "last_output": "",
+      "last_trigger": "",
+      "context_hash": "",
+      "cooldown_until": "",
+      "run_budget": {
+        "daily_token_budget": 8000,
+        "tokens_used_today": 0,
+        "runs_today": 0
+      },
+      "skip_reason": "",
+      "blocked_on_escalation": false,
+      "communications": [],
+      "external_artifacts": [],
+      "last_google_sync": ""
+    },
+    "NEXUS": {
+      "last_run": "",
+      "last_success": "",
+      "status": "disabled",
+      "last_output": "",
+      "last_trigger": "",
+      "context_hash": "",
+      "cooldown_until": "",
+      "run_budget": {
+        "daily_token_budget": 4000,
+        "tokens_used_today": 0,
+        "runs_today": 0
+      },
+      "skip_reason": "",
+      "blocked_on_escalation": false,
+      "communications": [],
+      "external_artifacts": [],
+      "last_google_sync": ""
+    },
+    "COUNSEL": {
+      "last_run": "",
+      "last_success": "",
+      "status": "disabled",
+      "last_output": "",
+      "last_trigger": "",
+      "context_hash": "",
+      "cooldown_until": "",
+      "run_budget": {
+        "daily_token_budget": 4000,
+        "tokens_used_today": 0,
+        "runs_today": 0
+      },
+      "skip_reason": "",
+      "blocked_on_escalation": false,
+      "communications": [],
+      "external_artifacts": [],
+      "last_google_sync": ""
+    },
+    "VECTOR": {
+      "last_run": "",
+      "last_success": "",
+      "status": "disabled",
+      "last_output": "",
+      "last_trigger": "",
+      "context_hash": "",
+      "cooldown_until": "",
+      "run_budget": {
+        "daily_token_budget": 8000,
+        "tokens_used_today": 0,
+        "runs_today": 0
+      },
+      "skip_reason": "",
+      "blocked_on_escalation": false,
+      "communications": [],
+      "external_artifacts": [],
+      "last_google_sync": ""
+    },
+    "HERALD": {
+      "last_run": "",
+      "last_success": "",
+      "status": "not_run",
+      "last_output": "",
+      "last_trigger": "",
+      "context_hash": "",
+      "cooldown_until": "",
+      "run_budget": {
+        "daily_token_budget": 8000,
+        "tokens_used_today": 0,
+        "runs_today": 0
+      },
+      "skip_reason": "",
+      "blocked_on_escalation": false,
+      "communications": [],
+      "external_artifacts": [],
+      "last_google_sync": ""
+    }
   },
-  "escalations": {
-    "open": [],
-    "resolved": []
-  },
-  "handoffs": {
-    "pending_count": 0
+  "open_escalations": [],
+  "pending_events": [],
+  "run_queue": [],
+  "communications": [],
+  "external_artifacts": [],
+  "metrics": {
+    "tokens_used_today": 0,
+    "estimated_cost_usd_today": 0.0,
+    "no_op_heartbeats_today": 0,
+    "skipped_runs_today": 0
   },
   "last_runs": []
 }

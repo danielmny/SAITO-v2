@@ -1,0 +1,28 @@
+{
+  "default_profile": "standard",
+  "profiles": {
+    "orchestrator": {
+      "provider": "codex",
+      "model": "gpt-5.4",
+      "reasoning_effort": "medium"
+    },
+    "standard": {
+      "provider": "codex",
+      "model": "gpt-5.4-mini",
+      "reasoning_effort": "medium"
+    },
+    "cheap": {
+      "provider": "codex",
+      "model": "gpt-5.4-mini",
+      "reasoning_effort": "low"
+    }
+  },
+  "agent_profiles": {
+    "MERIDIAN": "orchestrator",
+    "ATLAS": "standard",
+    "FORGE": "standard",
+    "CURRENT": "standard",
+    "LEDGER": "cheap",
+    "HERALD": "cheap"
+  }
+}

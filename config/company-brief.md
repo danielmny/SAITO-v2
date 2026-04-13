@@ -19,7 +19,7 @@
 
 **Repo:** `danielmny/signal-mvp` (private, created March 31 2026)
 
-**Stack:** FastAPI (Python) · PostgreSQL · React + Vite · Claude API (claude-sonnet-4-6) · Playwright scrapers · Railway/Fly.io (planned)
+**Stack:** FastAPI (Python) · PostgreSQL · React + Vite · LLM API · Playwright scrapers · Railway/Fly.io (planned)
 
 ---
 
@@ -67,7 +67,7 @@ Gaps: no psychographic profile storage · no company culture vectors · no auth 
 
 | Step | Task | Status |
 |------|------|--------|
-| 1 | Claude-powered CV Analysis | Planned |
+| 1 | LLM-powered CV Analysis | Planned |
 | 2 | Psychographic Profile Layer (DB + API) | Planned |
 | 3 | Greenhouse + Lever Scrapers | Planned |
 | 4 | Company Intelligence Synthesis | Planned |

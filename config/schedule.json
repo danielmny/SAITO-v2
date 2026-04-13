@@ -1,91 +1,279 @@
 {
+  "system_version": "2.1",
+  "timezone": "Europe/Madrid",
+  "dispatcher": {
+    "scheduler_of_record": "github_actions",
+    "heartbeat_minutes": 15,
+    "digest_hour_local": 18,
+    "digest_minute_local": 0,
+    "overdue_sweep_hours": 6
+  },
   "agents": {
     "MERIDIAN": {
       "function": "Orchestrator",
-      "taskId": "founders-os-meridian-daily",
-      "cadence": "daily",
-      "cron": "0 8 * * *",
-      "schedule_description": "Every day at 8:00 AM"
+      "enabled": true,
+      "phase": 1,
+      "priority": 100,
+      "trigger_mode": ["heartbeat", "event"],
+      "heartbeat_minutes": 15,
+      "cooldown_minutes": 15,
+      "max_runs_per_day": 48,
+      "run_if_changed": true,
+      "depends_on": [],
+      "context_inputs": [
+        "config/company-brief.md",
+        "outputs/state.json",
+        "outputs/handoffs/",
+        "outputs/escalations/",
+        "outputs/MERIDIAN/"
+      ],
+      "quiet_hours_policy": {
+        "mode": "digest_only",
+        "start_hour_local": 1,
+        "end_hour_local": 6
+      }
     },
     "ATLAS": {
       "function": "Market Research",
-      "taskId": "founders-os-atlas-weekly",
-      "cadence": "weekly",
-      "cron": "0 7 * * 1",
-      "schedule_description": "Every Monday at 7:00 AM"
+      "enabled": true,
+      "phase": 1,
+      "priority": 70,
+      "trigger_mode": ["event"],
+      "heartbeat_minutes": 60,
+      "cooldown_minutes": 180,
+      "max_runs_per_day": 6,
+      "run_if_changed": true,
+      "depends_on": ["MERIDIAN"],
+      "context_inputs": [
+        "config/company-brief.md",
+        "outputs/state.json",
+        "outputs/handoffs/",
+        "outputs/CURRENT/",
+        "outputs/ATLAS/"
+      ],
+      "quiet_hours_policy": {
+        "mode": "suppress_noncritical",
+        "start_hour_local": 0,
+        "end_hour_local": 7
+      }
     },
     "CANVAS": {
       "function": "Product",
-      "taskId": "founders-os-canvas-weekly",
-      "cadence": "weekly",
-      "cron": "0 7 * * 2",
-      "schedule_description": "Every Tuesday at 7:00 AM"
+      "enabled": false,
+      "phase": 2,
+      "priority": 60,
+      "trigger_mode": ["event"],
+      "heartbeat_minutes": 120,
+      "cooldown_minutes": 180,
+      "max_runs_per_day": 4,
+      "run_if_changed": true,
+      "depends_on": ["ATLAS", "CURRENT", "FORGE"],
+      "context_inputs": [
+        "config/company-brief.md",
+        "outputs/state.json",
+        "outputs/handoffs/",
+        "outputs/CANVAS/",
+        "outputs/FORGE/",
+        "outputs/CURRENT/"
+      ],
+      "quiet_hours_policy": {
+        "mode": "suppress_noncritical",
+        "start_hour_local": 0,
+        "end_hour_local": 7
+      }
     },
     "FORGE": {
       "function": "Engineering",
-      "tasks": [
-        {
-          "taskId": "founders-os-forge-daily",
-          "cadence": "daily",
-          "cron": "0 9 * * 1-5",
-          "schedule_description": "Weekdays at 9:00 AM (standup)"
-        },
-        {
-          "taskId": "founders-os-forge-weekly",
-          "cadence": "weekly",
-          "cron": "0 7 * * 3",
-          "schedule_description": "Every Wednesday at 7:00 AM (full review)"
-        }
-      ]
+      "enabled": true,
+      "phase": 1,
+      "priority": 80,
+      "trigger_mode": ["event"],
+      "heartbeat_minutes": 30,
+      "cooldown_minutes": 60,
+      "max_runs_per_day": 12,
+      "run_if_changed": true,
+      "depends_on": ["MERIDIAN", "CANVAS"],
+      "context_inputs": [
+        "config/company-brief.md",
+        "outputs/state.json",
+        "outputs/handoffs/",
+        "outputs/FORGE/",
+        "outputs/CANVAS/"
+      ],
+      "quiet_hours_policy": {
+        "mode": "allow_critical_only",
+        "start_hour_local": 1,
+        "end_hour_local": 6
+      }
     },
     "MARKETING": {
       "function": "Brand & Demand Gen",
-      "taskId": "founders-os-marketing-weekly",
-      "cadence": "weekly",
-      "cron": "0 7 * * 2",
-      "schedule_description": "Every Tuesday at 7:00 AM"
+      "enabled": false,
+      "phase": 2,
+      "priority": 50,
+      "trigger_mode": ["event"],
+      "heartbeat_minutes": 120,
+      "cooldown_minutes": 240,
+      "max_runs_per_day": 4,
+      "run_if_changed": true,
+      "depends_on": ["ATLAS", "CURRENT", "HERALD"],
+      "context_inputs": [
+        "config/company-brief.md",
+        "outputs/state.json",
+        "outputs/handoffs/",
+        "outputs/MARKETING/",
+        "outputs/ATLAS/",
+        "outputs/HERALD/"
+      ],
+      "quiet_hours_policy": {
+        "mode": "suppress_noncritical",
+        "start_hour_local": 0,
+        "end_hour_local": 7
+      }
     },
     "CURRENT": {
       "function": "Sales",
-      "taskId": "founders-os-current-daily",
-      "cadence": "daily",
-      "cron": "5 8 * * 1-5",
-      "schedule_description": "Weekdays at 8:05 AM"
+      "enabled": true,
+      "phase": 1,
+      "priority": 85,
+      "trigger_mode": ["event"],
+      "heartbeat_minutes": 30,
+      "cooldown_minutes": 60,
+      "max_runs_per_day": 16,
+      "run_if_changed": true,
+      "depends_on": ["MERIDIAN"],
+      "context_inputs": [
+        "config/company-brief.md",
+        "outputs/state.json",
+        "outputs/handoffs/",
+        "outputs/CURRENT/",
+        "outputs/ATLAS/",
+        "outputs/HERALD/"
+      ],
+      "quiet_hours_policy": {
+        "mode": "allow_critical_only",
+        "start_hour_local": 1,
+        "end_hour_local": 6
+      }
     },
     "LEDGER": {
       "function": "Finance & Fundraising",
-      "taskId": "founders-os-ledger-weekly",
-      "cadence": "weekly",
-      "cron": "0 7 * * 4",
-      "schedule_description": "Every Thursday at 7:00 AM"
+      "enabled": true,
+      "phase": 1,
+      "priority": 65,
+      "trigger_mode": ["event"],
+      "heartbeat_minutes": 120,
+      "cooldown_minutes": 240,
+      "max_runs_per_day": 4,
+      "run_if_changed": true,
+      "depends_on": ["MERIDIAN", "HERALD"],
+      "context_inputs": [
+        "config/company-brief.md",
+        "outputs/state.json",
+        "outputs/handoffs/",
+        "outputs/LEDGER/",
+        "outputs/HERALD/"
+      ],
+      "quiet_hours_policy": {
+        "mode": "suppress_noncritical",
+        "start_hour_local": 0,
+        "end_hour_local": 7
+      }
     },
     "NEXUS": {
       "function": "Talent & Hiring",
-      "taskId": "founders-os-nexus-ondemand",
-      "cadence": "on-demand",
-      "cron": null,
-      "schedule_description": "Manual trigger only — activated by deal close handoff or founder prompt"
+      "enabled": false,
+      "phase": 3,
+      "priority": 40,
+      "trigger_mode": ["manual", "event"],
+      "heartbeat_minutes": 0,
+      "cooldown_minutes": 240,
+      "max_runs_per_day": 2,
+      "run_if_changed": true,
+      "depends_on": ["MERIDIAN"],
+      "context_inputs": [
+        "config/company-brief.md",
+        "outputs/state.json",
+        "outputs/handoffs/",
+        "outputs/NEXUS/"
+      ],
+      "quiet_hours_policy": {
+        "mode": "manual_only",
+        "start_hour_local": 0,
+        "end_hour_local": 23
+      }
     },
     "COUNSEL": {
       "function": "Legal",
-      "taskId": "founders-os-counsel-ondemand",
-      "cadence": "on-demand",
-      "cron": null,
-      "schedule_description": "Manual trigger only — activated by contract, fundraising, or compliance need"
+      "enabled": false,
+      "phase": 3,
+      "priority": 40,
+      "trigger_mode": ["manual", "event"],
+      "heartbeat_minutes": 0,
+      "cooldown_minutes": 240,
+      "max_runs_per_day": 2,
+      "run_if_changed": true,
+      "depends_on": ["MERIDIAN"],
+      "context_inputs": [
+        "config/company-brief.md",
+        "outputs/state.json",
+        "outputs/handoffs/",
+        "outputs/COUNSEL/"
+      ],
+      "quiet_hours_policy": {
+        "mode": "manual_only",
+        "start_hour_local": 0,
+        "end_hour_local": 23
+      }
     },
     "VECTOR": {
       "function": "Analytics & Growth",
-      "taskId": "founders-os-vector-weekly",
-      "cadence": "weekly",
-      "cron": "0 7 * * 4",
-      "schedule_description": "Every Thursday at 7:00 AM"
+      "enabled": false,
+      "phase": 2,
+      "priority": 55,
+      "trigger_mode": ["event"],
+      "heartbeat_minutes": 120,
+      "cooldown_minutes": 180,
+      "max_runs_per_day": 4,
+      "run_if_changed": true,
+      "depends_on": ["MARKETING", "CURRENT"],
+      "context_inputs": [
+        "config/company-brief.md",
+        "outputs/state.json",
+        "outputs/handoffs/",
+        "outputs/VECTOR/",
+        "outputs/CURRENT/",
+        "outputs/MARKETING/"
+      ],
+      "quiet_hours_policy": {
+        "mode": "suppress_noncritical",
+        "start_hour_local": 0,
+        "end_hour_local": 7
+      }
     },
     "HERALD": {
       "function": "Investor Relations & PR",
-      "taskId": "founders-os-herald-weekly",
-      "cadence": "weekly",
-      "cron": "0 7 * * 5",
-      "schedule_description": "Every Friday at 7:00 AM"
+      "enabled": true,
+      "phase": 1,
+      "priority": 75,
+      "trigger_mode": ["event"],
+      "heartbeat_minutes": 60,
+      "cooldown_minutes": 180,
+      "max_runs_per_day": 6,
+      "run_if_changed": true,
+      "depends_on": ["MERIDIAN", "LEDGER"],
+      "context_inputs": [
+        "config/company-brief.md",
+        "outputs/state.json",
+        "outputs/handoffs/",
+        "outputs/HERALD/",
+        "outputs/LEDGER/"
+      ],
+      "quiet_hours_policy": {
+        "mode": "suppress_noncritical",
+        "start_hour_local": 0,
+        "end_hour_local": 7
+      }
     }
   }
 }
