@@ -121,14 +121,14 @@ Write `[ESCALATE TO FOUNDER]` anywhere in your output to flag a decision that re
 
 Current default:
 
-- founder channel: email via Gmail / Google Workspace
+- founder channel: file-based communication via `outputs/communications/outbox/` and `inputs/founder-replies/`
 - future channel: Slack adapter using the same communication contract
 
 ### Google Workspace policy
 
 - Repo files remain canonical for state, handoffs, and logs.
-- Google Docs and Drive are used for founder-facing documents and shared working artifacts.
-- Gmail is used for founder digests, escalation requests, and reply ingestion.
+- Google Docs, Drive, and Gmail remain disabled by default until real adapters exist.
+- When enabled later, Google services must remain optional mirrors or transports rather than correctness dependencies.
 
 ### Skill use
 

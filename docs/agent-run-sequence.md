@@ -50,17 +50,17 @@ This means sequencing is dependency-first, then phase-aware, then priority-drive
 ## 5. Practical runtime order
 
 - `MERIDIAN-ORCHESTRATOR` runs first for founder intake, project routing, and status synthesis.
-- Phase 1 specialists execute the highest-priority project work:
+- Launch-core specialists execute the highest-priority project work:
   - `CURRENT-SALES`
   - `FORGE-ENGINEERING`
   - `HERALD-COMMS`
   - `ATLAS-RESEARCH`
-  - `LEDGER-FINANCE`
-- Phase 2 specialists deepen planning and instrumentation:
+- Disabled second-wave specialists deepen planning and instrumentation when later enabled:
   - `CANVAS-PRODUCT`
+  - `LEDGER-FINANCE`
   - `VECTOR-ANALYTICS`
   - `MARKETING-BRAND`
-- Phase 3 specialists activate on demand:
+- On-demand specialists activate later as needed:
   - `NEXUS-TALENT`
   - `COUNSEL-LEGAL`
 

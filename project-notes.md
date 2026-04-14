@@ -15,11 +15,11 @@ All other agents are stateless per run. `MERIDIAN-ORCHESTRATOR` alone owns share
 ### 4. Event-driven 24/7 scheduling
 "24/7" is implemented as event-driven responsiveness plus a 15-minute heartbeat dispatcher. No-work cycles should skip quickly and cheaply instead of generating repeated narrative output.
 
-### 5. Google Workspace as collaboration layer
-Drive, Docs, and Gmail are used for artifact delivery, editable briefs, and founder communications. Repo files remain the source of truth for state and workflow.
+### 5. Google Workspace remains optional
+Drive, Docs, and Gmail are future adapters for artifact delivery and founder communications. Repo files remain the source of truth for state and workflow, and file-based founder comms are the current default.
 
 ### 6. Communication abstraction
-Founder communication goes through a channel interface. `EmailChannel` is the v1 implementation. `SlackChannel` is a later adapter, not a separate logic path.
+Founder communication goes through a channel interface. `FileChannel` is the v1 implementation. `EmailChannel` and `SlackChannel` are later adapters, not separate logic paths.
 
 ## Design principles
 
@@ -34,6 +34,6 @@ Founder communication goes through a channel interface. `EmailChannel` is the v1
 | Question | Owner | Status |
 |----------|-------|--------|
 | Which Codex invocation path will production runs use? | Founder / FORGE-ENGINEERING | Open |
-| Which Gmail mailbox or service account will send founder mail? | Founder | Open |
-| Which Google Drive folders should map to each artifact class? | Founder / HERALD-COMMS | Open |
+| Which production delivery adapter should follow the file channel first: Gmail or Slack? | Founder | Open |
+| Which Google Drive folders should map to each artifact class once adapters are real? | Founder / HERALD-COMMS | Deferred |
 | When should second-wave agents move from disabled to active? | MERIDIAN-ORCHESTRATOR | Deferred |

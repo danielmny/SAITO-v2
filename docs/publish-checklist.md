@@ -10,9 +10,10 @@
    - source-of-truth rules
    - founder intake model
    - project/task metadata model
-3. Verify email-first communication and Google Workspace mirroring do not conflict.
+3. Verify file-first communication and disabled-by-default Google Workspace do not conflict.
 4. Verify the dispatcher skip logic respects unchanged context, cooldowns, and max-runs-per-day.
-5. Verify the runtime contracts are portable into a future standalone web app without redesign.
+5. Verify `runtime/requests/`, `runtime/queue/`, and `runtime/results/` are used consistently by the planner and serial runner.
+6. Verify the runtime contracts are portable into a future standalone web app without redesign.
 
 ## Commit groups
 
@@ -28,7 +29,7 @@
 
 ## Pre-push sanity check
 
-- run dispatcher planner locally
+- run `make plan`, `make drain`, or `make validate`
 - run Python compilation for `runner/`
 - inspect `git diff --stat`
 - verify no unrelated local changes are being included

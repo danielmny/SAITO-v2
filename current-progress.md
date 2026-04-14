@@ -5,7 +5,7 @@
 - Active repo: `danielmny/startup-ai-team-one`
 - Local workspace: `/Users/d3/Codex/startup-ai-team-one`
 - Active branch at time of export: `main`
-- Latest commit from this chat: `cac7dfe` — `Refactor runtime for project-scoped app readiness`
+- Latest commit from this chat: `546c280` — `Harden the repo-native Founders OS runtime`
 
 ## What Was Done In This Chat
 
@@ -47,7 +47,7 @@
   - state model
   - handoffs
   - agent prompts
-  - runner scaffolding
+  - repo-native runtime harness
 - Defined the future web app boundary as:
   - founder control center
   - autonomous execution engine
@@ -79,14 +79,17 @@
   - queued status model
 - Preserved old `MERIDIAN-*` handoffs as compatibility artifacts and marked them stale
 
-### Runner scaffolding
+### Repo-native runtime harness
 
-- Implemented a real scaffold for:
+- Implemented a working repo-native harness for:
   - `runner/orchestrate.py`
-- Extended:
-  - `runner/communications.py`
-  - `runner/google_workspace.py`
-- Kept cloud integrations as adapters rather than core runtime assumptions
+- Added:
+  - serial queue draining
+  - file-backed founder communications
+  - reply ingestion command
+  - reconciliation command
+  - runtime request/result directories
+- Kept cloud integrations as optional adapters rather than core runtime assumptions
 
 ### Validation
 
@@ -112,16 +115,16 @@
 - `MERIDIAN-ORCHESTRATOR` is the founder-facing intake layer
 - All work should be project-scoped or explicitly classified as `startup_ops`
 - The repo is now structured so a future standalone web app can use the same backend concepts without redesign
-- Cloud services such as GitHub Actions, Gmail, and Google Workspace remain supported as adapters
+- GitHub Actions remains the scheduler adapter; Google Workspace stays disabled until real adapters exist
 
 ## Current Known State
 
 - Canonical queue is the `MERIDIAN-ORCHESTRATOR-*` handoff set
 - Legacy `MERIDIAN-*` handoffs remain in the repo as stale compatibility artifacts
-- The runtime is still document-driven today, but the backend model is now much closer to app-ready
+- The runtime is now repo-native and executable in serial form, with shared-state normalization still reserved for MERIDIAN
 
 ## Latest Commit
 
 ```text
-cac7dfe Refactor runtime for project-scoped app readiness
+546c280 Harden the repo-native Founders OS runtime
 ```

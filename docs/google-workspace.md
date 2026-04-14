@@ -2,7 +2,9 @@
 
 ## Scope
 
-Google Workspace v1 includes:
+Google Workspace is currently disabled by default in `config/google-workspace.json`.
+
+When real adapters exist, the optional integration surface is expected to include:
 
 - Google Drive for artifact storage
 - Google Docs for editable founder-facing documents
@@ -13,11 +15,18 @@ Google Sheets, Calendar, and Slides are intentionally out of scope for this pass
 ## Source-of-truth policy
 
 - repo markdown and JSON remain canonical
-- Google artifacts are mirrors with external IDs written back into repo metadata
+- Google artifacts are mirrors with external IDs written back into repo metadata only after a real adapter succeeds
 - no workflow should require Google Workspace to reconstruct core state
 - a future standalone web app may replace or augment these adapters without changing canonical repo contracts
+- founder communication defaults to file-based inbox/outbox paths until Gmail is implemented
 
-## Initial artifact mapping
+## Current runtime behavior
+
+- outbound founder messages are written to `outputs/communications/outbox/`
+- founder replies are read from `inputs/founder-replies/`
+- missing Google config must fail clearly and must not generate fake IDs or fake delivery records
+
+## Future artifact mapping
 
 | Artifact | Canonical form | Google mirror |
 |----------|----------------|---------------|
@@ -26,7 +35,7 @@ Google Sheets, Calendar, and Slides are intentionally out of scope for this pass
 | LEDGER finance packet | Markdown / exported file | Google Drive file |
 | Escalation packet | Markdown in `outputs/escalations/` | Google Doc + Gmail thread |
 
-## Adapter responsibilities
+## Adapter responsibilities once enabled
 
 - `DriveAdapter`: create folders, upload files, return Drive IDs
 - `DocsAdapter`: create or update editable documents, return Doc IDs
@@ -37,5 +46,5 @@ These adapters should remain thin delivery layers over the same project/task/run
 ## Failure handling
 
 - a failed Google sync must not corrupt canonical repo state
-- sync failures should be logged in state and retried later
+- sync failures should be logged and retried later without blocking repo-native correctness
 - agent outputs should still exist locally even if all Google calls fail

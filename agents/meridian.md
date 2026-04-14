@@ -45,7 +45,7 @@ Do not delegate work until the project scope is clear enough to route.
 
 ### STEP 3 — Process Founder Responses
 
-Check founder replies from the configured communication channel first. If local file-drop fallback is enabled, also scan the local response inbox for any `.md` files. For each response mapped to an escalation:
+Check founder replies from the configured communication channel first. In the current default runtime, this means scanning the local file inbox in `inputs/founder-replies/`. For each response mapped to an escalation:
 1. Extract the escalation ID from the message or filename
 2. Find the matching entry in `outputs/escalations/pending/`
 3. Move the escalation to `outputs/escalations/resolved/` (update the file's `status: resolved`, add `resolved_at` timestamp, include founder response context)
@@ -72,7 +72,8 @@ For each agent, read the most recent output file in its `outputs/{AGENT_NAME}/` 
 Agent cadences for overdue detection:
 - CURRENT-SALES: daily (weekdays) — overdue if last_run > 2 days ago
 - FORGE-ENGINEERING: daily standup + weekly review — overdue if last_run > 2 days ago
-- ATLAS-RESEARCH, CANVAS-PRODUCT, MARKETING-BRAND, LEDGER-FINANCE, VECTOR-ANALYTICS, HERALD-COMMS: weekly — overdue if last_run > 8 days ago
+- ATLAS-RESEARCH and HERALD-COMMS: weekly — overdue if last_run > 8 days ago
+- CANVAS-PRODUCT, MARKETING-BRAND, LEDGER-FINANCE, VECTOR-ANALYTICS: disabled at launch — no overdue threshold until enabled
 - NEXUS-TALENT, COUNSEL-LEGAL: on-demand — no overdue threshold
 
 ### STEP 6 — Route Work And Synthesize Results
