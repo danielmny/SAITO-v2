@@ -1,4 +1,4 @@
-# MERIDIAN — Next Steps & Build Roadmap
+# MERIDIAN-ORCHESTRATOR — Next Steps & Build Roadmap
 *Founders OS v2.1 · Codex Runtime · April 2026*
 
 ## Immediate next steps
@@ -31,7 +31,7 @@
 ## Recommendations
 
 ### Keep the active core small
-Stabilize `MERIDIAN`, `ATLAS`, `CURRENT`, `FORGE`, `HERALD`, and `LEDGER` before enabling the second-wave agents. This prevents low-value loops from consuming budget before the trigger model is proven.
+Stabilize `MERIDIAN-ORCHESTRATOR`, `ATLAS-RESEARCH`, `CURRENT-SALES`, `FORGE-ENGINEERING`, `HERALD-COMMS`, and `LEDGER-FINANCE` before enabling the second-wave agents. This prevents low-value loops from consuming budget before the trigger model is proven.
 
 ### Treat email as transport, not source of truth
 Founder emails should create or update repo state, not become the canonical record. This keeps auditability intact and preserves the ability to swap in Slack later.

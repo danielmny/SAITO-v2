@@ -9,7 +9,7 @@
     "overdue_sweep_hours": 6
   },
   "agents": {
-    "MERIDIAN": {
+    "MERIDIAN-ORCHESTRATOR": {
       "function": "Orchestrator",
       "enabled": true,
       "phase": 1,
@@ -25,7 +25,7 @@
         "outputs/state.json",
         "outputs/handoffs/",
         "outputs/escalations/",
-        "outputs/MERIDIAN/"
+        "outputs/MERIDIAN-ORCHESTRATOR/"
       ],
       "quiet_hours_policy": {
         "mode": "digest_only",
@@ -33,7 +33,7 @@
         "end_hour_local": 6
       }
     },
-    "ATLAS": {
+    "ATLAS-RESEARCH": {
       "function": "Market Research",
       "enabled": true,
       "phase": 1,
@@ -43,13 +43,13 @@
       "cooldown_minutes": 180,
       "max_runs_per_day": 6,
       "run_if_changed": true,
-      "depends_on": ["MERIDIAN"],
+      "depends_on": ["MERIDIAN-ORCHESTRATOR"],
       "context_inputs": [
         "config/company-brief.md",
         "outputs/state.json",
         "outputs/handoffs/",
-        "outputs/CURRENT/",
-        "outputs/ATLAS/"
+        "outputs/CURRENT-SALES/",
+        "outputs/ATLAS-RESEARCH/"
       ],
       "quiet_hours_policy": {
         "mode": "suppress_noncritical",
@@ -57,7 +57,7 @@
         "end_hour_local": 7
       }
     },
-    "CANVAS": {
+    "CANVAS-PRODUCT": {
       "function": "Product",
       "enabled": true,
       "phase": 2,
@@ -67,14 +67,14 @@
       "cooldown_minutes": 180,
       "max_runs_per_day": 4,
       "run_if_changed": true,
-      "depends_on": ["ATLAS", "CURRENT", "FORGE"],
+      "depends_on": ["ATLAS-RESEARCH", "CURRENT-SALES", "FORGE-ENGINEERING"],
       "context_inputs": [
         "config/company-brief.md",
         "outputs/state.json",
         "outputs/handoffs/",
-        "outputs/CANVAS/",
-        "outputs/FORGE/",
-        "outputs/CURRENT/"
+        "outputs/CANVAS-PRODUCT/",
+        "outputs/FORGE-ENGINEERING/",
+        "outputs/CURRENT-SALES/"
       ],
       "quiet_hours_policy": {
         "mode": "suppress_noncritical",
@@ -82,7 +82,7 @@
         "end_hour_local": 7
       }
     },
-    "FORGE": {
+    "FORGE-ENGINEERING": {
       "function": "Engineering",
       "enabled": true,
       "phase": 1,
@@ -92,13 +92,13 @@
       "cooldown_minutes": 60,
       "max_runs_per_day": 12,
       "run_if_changed": true,
-      "depends_on": ["MERIDIAN", "CANVAS"],
+      "depends_on": ["MERIDIAN-ORCHESTRATOR", "CANVAS-PRODUCT"],
       "context_inputs": [
         "config/company-brief.md",
         "outputs/state.json",
         "outputs/handoffs/",
-        "outputs/FORGE/",
-        "outputs/CANVAS/"
+        "outputs/FORGE-ENGINEERING/",
+        "outputs/CANVAS-PRODUCT/"
       ],
       "quiet_hours_policy": {
         "mode": "allow_critical_only",
@@ -106,7 +106,7 @@
         "end_hour_local": 6
       }
     },
-    "MARKETING": {
+    "MARKETING-BRAND": {
       "function": "Brand & Demand Gen",
       "enabled": true,
       "phase": 2,
@@ -116,14 +116,14 @@
       "cooldown_minutes": 240,
       "max_runs_per_day": 4,
       "run_if_changed": true,
-      "depends_on": ["ATLAS", "CURRENT", "HERALD"],
+      "depends_on": ["ATLAS-RESEARCH", "CURRENT-SALES", "HERALD-COMMS"],
       "context_inputs": [
         "config/company-brief.md",
         "outputs/state.json",
         "outputs/handoffs/",
-        "outputs/MARKETING/",
-        "outputs/ATLAS/",
-        "outputs/HERALD/"
+        "outputs/MARKETING-BRAND/",
+        "outputs/ATLAS-RESEARCH/",
+        "outputs/HERALD-COMMS/"
       ],
       "quiet_hours_policy": {
         "mode": "suppress_noncritical",
@@ -131,7 +131,7 @@
         "end_hour_local": 7
       }
     },
-    "CURRENT": {
+    "CURRENT-SALES": {
       "function": "Sales",
       "enabled": true,
       "phase": 1,
@@ -141,14 +141,14 @@
       "cooldown_minutes": 60,
       "max_runs_per_day": 16,
       "run_if_changed": true,
-      "depends_on": ["MERIDIAN"],
+      "depends_on": ["MERIDIAN-ORCHESTRATOR"],
       "context_inputs": [
         "config/company-brief.md",
         "outputs/state.json",
         "outputs/handoffs/",
-        "outputs/CURRENT/",
-        "outputs/ATLAS/",
-        "outputs/HERALD/"
+        "outputs/CURRENT-SALES/",
+        "outputs/ATLAS-RESEARCH/",
+        "outputs/HERALD-COMMS/"
       ],
       "quiet_hours_policy": {
         "mode": "allow_critical_only",
@@ -156,7 +156,7 @@
         "end_hour_local": 6
       }
     },
-    "LEDGER": {
+    "LEDGER-FINANCE": {
       "function": "Finance & Fundraising",
       "enabled": true,
       "phase": 1,
@@ -166,13 +166,13 @@
       "cooldown_minutes": 240,
       "max_runs_per_day": 4,
       "run_if_changed": true,
-      "depends_on": ["MERIDIAN", "HERALD"],
+      "depends_on": ["MERIDIAN-ORCHESTRATOR", "HERALD-COMMS"],
       "context_inputs": [
         "config/company-brief.md",
         "outputs/state.json",
         "outputs/handoffs/",
-        "outputs/LEDGER/",
-        "outputs/HERALD/"
+        "outputs/LEDGER-FINANCE/",
+        "outputs/HERALD-COMMS/"
       ],
       "quiet_hours_policy": {
         "mode": "suppress_noncritical",
@@ -180,7 +180,7 @@
         "end_hour_local": 7
       }
     },
-    "NEXUS": {
+    "NEXUS-TALENT": {
       "function": "Talent & Hiring",
       "enabled": true,
       "phase": 3,
@@ -190,12 +190,12 @@
       "cooldown_minutes": 240,
       "max_runs_per_day": 2,
       "run_if_changed": true,
-      "depends_on": ["MERIDIAN"],
+      "depends_on": ["MERIDIAN-ORCHESTRATOR"],
       "context_inputs": [
         "config/company-brief.md",
         "outputs/state.json",
         "outputs/handoffs/",
-        "outputs/NEXUS/"
+        "outputs/NEXUS-TALENT/"
       ],
       "quiet_hours_policy": {
         "mode": "manual_only",
@@ -203,7 +203,7 @@
         "end_hour_local": 23
       }
     },
-    "COUNSEL": {
+    "COUNSEL-LEGAL": {
       "function": "Legal",
       "enabled": true,
       "phase": 3,
@@ -213,12 +213,12 @@
       "cooldown_minutes": 240,
       "max_runs_per_day": 2,
       "run_if_changed": true,
-      "depends_on": ["MERIDIAN"],
+      "depends_on": ["MERIDIAN-ORCHESTRATOR"],
       "context_inputs": [
         "config/company-brief.md",
         "outputs/state.json",
         "outputs/handoffs/",
-        "outputs/COUNSEL/"
+        "outputs/COUNSEL-LEGAL/"
       ],
       "quiet_hours_policy": {
         "mode": "manual_only",
@@ -226,7 +226,7 @@
         "end_hour_local": 23
       }
     },
-    "VECTOR": {
+    "VECTOR-ANALYTICS": {
       "function": "Analytics & Growth",
       "enabled": true,
       "phase": 2,
@@ -236,14 +236,14 @@
       "cooldown_minutes": 180,
       "max_runs_per_day": 4,
       "run_if_changed": true,
-      "depends_on": ["MARKETING", "CURRENT"],
+      "depends_on": ["MARKETING-BRAND", "CURRENT-SALES"],
       "context_inputs": [
         "config/company-brief.md",
         "outputs/state.json",
         "outputs/handoffs/",
-        "outputs/VECTOR/",
-        "outputs/CURRENT/",
-        "outputs/MARKETING/"
+        "outputs/VECTOR-ANALYTICS/",
+        "outputs/CURRENT-SALES/",
+        "outputs/MARKETING-BRAND/"
       ],
       "quiet_hours_policy": {
         "mode": "suppress_noncritical",
@@ -251,7 +251,7 @@
         "end_hour_local": 7
       }
     },
-    "HERALD": {
+    "HERALD-COMMS": {
       "function": "Investor Relations & PR",
       "enabled": true,
       "phase": 1,
@@ -261,13 +261,13 @@
       "cooldown_minutes": 180,
       "max_runs_per_day": 6,
       "run_if_changed": true,
-      "depends_on": ["MERIDIAN", "LEDGER"],
+      "depends_on": ["MERIDIAN-ORCHESTRATOR", "LEDGER-FINANCE"],
       "context_inputs": [
         "config/company-brief.md",
         "outputs/state.json",
         "outputs/handoffs/",
-        "outputs/HERALD/",
-        "outputs/LEDGER/"
+        "outputs/HERALD-COMMS/",
+        "outputs/LEDGER-FINANCE/"
       ],
       "quiet_hours_policy": {
         "mode": "suppress_noncritical",

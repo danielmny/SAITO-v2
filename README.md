@@ -17,20 +17,20 @@ The initial always-active core is intentionally small:
 
 | ID | Agent | Function | Default mode |
 |----|-------|----------|--------------|
-| A-00 | MERIDIAN | Orchestrator | `heartbeat + event` |
-| A-01 | ATLAS | Market Research | `event` |
-| A-03 | FORGE | Engineering | `event` |
-| A-05 | CURRENT | Sales | `event` |
-| A-06 | LEDGER | Finance & Fundraising | `event` |
-| A-10 | HERALD | Investor Relations & PR | `event` |
+| A-00 | MERIDIAN-ORCHESTRATOR | Orchestrator | `heartbeat + event` |
+| A-01 | ATLAS-RESEARCH | Market Research | `event` |
+| A-03 | FORGE-ENGINEERING | Engineering | `event` |
+| A-05 | CURRENT-SALES | Sales | `event` |
+| A-06 | LEDGER-FINANCE | Finance & Fundraising | `event` |
+| A-10 | HERALD-COMMS | Investor Relations & PR | `event` |
 
 Second-wave agents stay disabled until the trigger model and token budget controls are stable:
 
-- `CANVAS`
-- `MARKETING`
-- `VECTOR`
-- `NEXUS`
-- `COUNSEL`
+- `CANVAS-PRODUCT`
+- `MARKETING-BRAND`
+- `VECTOR-ANALYTICS`
+- `NEXUS-TALENT`
+- `COUNSEL-LEGAL`
 
 ## Runtime Contract
 
@@ -43,7 +43,7 @@ Every dispatched run uses the same core request shape:
 - `changed_context`
 - `instance_path`
 
-Specialist agents remain stateless per run. `MERIDIAN` is the only component that normalizes shared state into [outputs/state.json](/Users/d3/Codex/startup-ai-team-cowork-GPT/outputs/state.json).
+Specialist agents remain stateless per run. `MERIDIAN-ORCHESTRATOR` is the only component that normalizes shared state into `outputs/state.json`.
 
 ## File Structure
 
@@ -84,14 +84,14 @@ Specialist agents remain stateless per run. `MERIDIAN` is the only component tha
 2. 24/7 means responsive dispatch, not constant re-running. No-work cycles should skip cleanly.
 3. Founder communication is email-first in v1, but every outbound and inbound flow goes through a pluggable communication interface.
 4. Token efficiency is a product requirement. Only changed inputs, pending handoffs, unresolved escalations, and the most recent relevant outputs should be injected into prompts.
-5. `MERIDIAN` owns system normalization, triage, and founder digests. Specialist agents should stay narrow and cheap.
+5. `MERIDIAN-ORCHESTRATOR` owns system normalization, triage, and founder digests. Specialist agents should stay narrow and cheap.
 
 ## Validation Before Publish
 
 Before publishing to GitHub:
 
 1. Search for stale operational dependencies on legacy runtime terms and workflows.
-2. Verify `schedule.json`, `state.json`, and [docs/runtime-contract.md](/Users/d3/Codex/startup-ai-team-cowork-GPT/docs/runtime-contract.md) describe the same dispatch and metadata rules.
+2. Verify `schedule.json`, `state.json`, and `docs/runtime-contract.md` describe the same dispatch and metadata rules.
 3. Verify email-first communication and Google Workspace mirroring do not conflict on source-of-truth rules.
 4. Verify the dispatcher skips unchanged context and respects cooldowns and daily run caps.
 

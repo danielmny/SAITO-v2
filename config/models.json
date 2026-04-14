@@ -18,11 +18,11 @@
     }
   },
   "agent_profiles": {
-    "MERIDIAN": "orchestrator",
-    "ATLAS": "standard",
-    "FORGE": "standard",
-    "CURRENT": "standard",
-    "LEDGER": "cheap",
-    "HERALD": "cheap"
+    "MERIDIAN-ORCHESTRATOR": "orchestrator",
+    "ATLAS-RESEARCH": "standard",
+    "FORGE-ENGINEERING": "standard",
+    "CURRENT-SALES": "standard",
+    "LEDGER-FINANCE": "cheap",
+    "HERALD-COMMS": "cheap"
   }
 }

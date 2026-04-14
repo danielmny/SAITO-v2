@@ -1,5 +1,5 @@
 {
-  "HERALD": {
+  "HERALD-COMMS": {
     "skills": ["anthropic-skills:pptx", "anthropic-skills:pdf", "anthropic-skills:docx"],
     "when": {
       "anthropic-skills:pptx": "Pitch deck production or slide-based investor presentations that may later be mirrored to Google Drive or Slides.",
@@ -7,20 +7,20 @@
       "anthropic-skills:docx": "Investor update drafts, founder communications, or formal letters that can be mirrored into Google Docs."
     }
   },
-  "LEDGER": {
+  "LEDGER-FINANCE": {
     "skills": ["anthropic-skills:xlsx", "anthropic-skills:pdf"],
     "when": {
       "anthropic-skills:xlsx": "Financial models, runway trackers, and investor pipeline spreadsheets that may be mirrored into Google Drive.",
       "anthropic-skills:pdf": "Monthly financial reports and board-ready summaries for external sharing."
     }
   },
-  "CANVAS": {
+  "CANVAS-PRODUCT": {
     "skills": ["anthropic-skills:docx"],
     "when": {
       "anthropic-skills:docx": "Formal PRDs or product specs intended for engineering or stakeholders, with Google Docs mirroring when collaboration is required."
     }
   },
-  "FORGE": {
+  "FORGE-ENGINEERING": {
     "skills": ["anthropic-skills:docx"],
     "when": {
       "anthropic-skills:docx": "Architecture decision records and technical specs that may need editable Google Docs copies for review."

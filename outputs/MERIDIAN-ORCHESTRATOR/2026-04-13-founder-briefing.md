@@ -1,11 +1,11 @@
 ---
 artifact_type: founder_briefing
 audience: founder
-source_run_id: MERIDIAN-2026-04-13-founder-briefing
+source_run_id: MERIDIAN-ORCHESTRATOR-2026-04-13-founder-briefing
 communication_thread_id: founder-digest-2026-04-13
 ---
 
-[Acting as: MERIDIAN]
+[Acting as: MERIDIAN-ORCHESTRATOR]
 
 # Founder Briefing — 2026-04-13
 
@@ -45,17 +45,17 @@ SIGNAL remains in `PRE-SEED` with a built but incomplete MVP. The system state i
 
 ## Decisions and Calls
 
-- MERIDIAN should treat this week as an activation week, not an optimization week.
-- Enabled agents should begin producing first-pass operating outputs immediately: `ATLAS`, `FORGE`, `CURRENT`, `LEDGER`, and `HERALD`.
+- MERIDIAN-ORCHESTRATOR should treat this week as an activation week, not an optimization week.
+- Enabled agents should begin producing first-pass operating outputs immediately: `ATLAS-RESEARCH`, `FORGE-ENGINEERING`, `CURRENT-SALES`, `LEDGER-FINANCE`, and `HERALD-COMMS`.
 - Provisional North Star Metric recommendation: `qualified psychographic matches delivered per week`.
   This is the cleanest cross-functional metric because it ties together product completion, data quality, customer demand, and eventual monetization.
 
 ## Downstream Actions Triggered
 
-- `FORGE`: produce an implementation gap-closure plan for roadmap Steps 1-4.
-- `CURRENT`: build a 10-target early customer / LOI pipeline and outreach plan.
-- `ATLAS`: validate ICP and key market assumptions for the first customer segment.
-- `HERALD` and `LEDGER`: begin seed materials planning from narrative through investor pipeline readiness.
+- `FORGE-ENGINEERING`: produce an implementation gap-closure plan for roadmap Steps 1-4.
+- `CURRENT-SALES`: build a 10-target early customer / LOI pipeline and outreach plan.
+- `ATLAS-RESEARCH`: validate ICP and key market assumptions for the first customer segment.
+- `HERALD-COMMS` and `LEDGER-FINANCE`: begin seed materials planning from narrative through investor pipeline readiness.
 
 ## Founder Asks
 
@@ -70,6 +70,6 @@ SIGNAL remains in `PRE-SEED` with a built but incomplete MVP. The system state i
 3. Put first customer conversations and LOI targets into motion.
 4. Start pitch narrative, investor list scaffolding, and data room checklist.
 
-## MERIDIAN Note
+## MERIDIAN-ORCHESTRATOR Note
 
-This briefing is based on `AGENTS.md`, `FOUNDERS_OS_AGENT_SYSTEM.md`, `config/company-brief.md`, and the live contents of `outputs/state.json` as of 2026-04-13. Because the runtime is at a cold start, today’s brief is primarily an alignment and activation brief rather than a performance summary.
+This briefing is based on `AGENTS.md`, `FOUNDERS_OS_AGENT_SYSTEM.md`, `config/company-brief.md`, and the live contents of `outputs/state.json` as of 2026-04-13. Because the runtime is at a cold start, today's brief is primarily an alignment and activation brief rather than a performance summary.

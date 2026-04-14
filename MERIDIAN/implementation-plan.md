@@ -10,24 +10,6 @@ Turn this repo into a Codex-native autonomous operating layer for Founders OS wi
 - email-first founder communication
 - GitHub Actions as unattended scheduler
 
-## What is implemented in this repo now
-
-### Runtime contracts and configs
-- Codex-first entrypoint docs
-- event + heartbeat scheduling schema
-- expanded canonical state schema
-- communication and Google Workspace config stubs
-- token-policy and model-profile config stubs
-
-### Runtime scaffolding
-- `runner/orchestrate.py` for dispatch planning and run request assembly
-- `runner/communications.py` for email-first communication contracts
-- `runner/google_workspace.py` for Drive / Docs / Gmail adapter scaffolding
-
-### Operations scaffolding
-- workflow scaffolds for heartbeat dispatch and daily digest checks
-- publish checklist and runtime contract docs
-
 ## Remaining implementation work
 
 ### 1. Real Codex execution

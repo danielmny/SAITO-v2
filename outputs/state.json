@@ -7,11 +7,11 @@
     "founder_digest_due_at": "2026-04-14T18:00:00+0200"
   },
   "agents": {
-    "MERIDIAN": {
+    "MERIDIAN-ORCHESTRATOR": {
       "last_run": "2026-04-13T20:43:44+0200",
       "last_success": "2026-04-13T20:43:44+0200",
       "status": "success",
-      "last_output": "outputs/MERIDIAN/2026-04-13-founder-briefing.md",
+      "last_output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
       "last_trigger": "manual_founder_request",
       "context_hash": "founder-briefing-2026-04-13-cold-start",
       "cooldown_until": "",
@@ -25,16 +25,16 @@
       "communications": [
         {
           "type": "founder_briefing",
-          "path": "outputs/MERIDIAN/2026-04-13-founder-briefing.md",
+          "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
           "created_at": "2026-04-13T20:43:44+0200"
         }
       ],
       "external_artifacts": [
-        "outputs/MERIDIAN/2026-04-13-founder-briefing.md"
+        "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md"
       ],
       "last_google_sync": ""
     },
-    "ATLAS": {
+    "ATLAS-RESEARCH": {
       "last_run": "",
       "last_success": "",
       "status": "not_run",
@@ -53,7 +53,7 @@
       "external_artifacts": [],
       "last_google_sync": ""
     },
-    "CANVAS": {
+    "CANVAS-PRODUCT": {
       "last_run": "",
       "last_success": "",
       "status": "not_run",
@@ -72,7 +72,7 @@
       "external_artifacts": [],
       "last_google_sync": ""
     },
-    "FORGE": {
+    "FORGE-ENGINEERING": {
       "last_run": "",
       "last_success": "",
       "status": "not_run",
@@ -91,7 +91,7 @@
       "external_artifacts": [],
       "last_google_sync": ""
     },
-    "MARKETING": {
+    "MARKETING-BRAND": {
       "last_run": "",
       "last_success": "",
       "status": "not_run",
@@ -110,7 +110,7 @@
       "external_artifacts": [],
       "last_google_sync": ""
     },
-    "CURRENT": {
+    "CURRENT-SALES": {
       "last_run": "",
       "last_success": "",
       "status": "not_run",
@@ -129,7 +129,7 @@
       "external_artifacts": [],
       "last_google_sync": ""
     },
-    "LEDGER": {
+    "LEDGER-FINANCE": {
       "last_run": "",
       "last_success": "",
       "status": "not_run",
@@ -148,7 +148,7 @@
       "external_artifacts": [],
       "last_google_sync": ""
     },
-    "NEXUS": {
+    "NEXUS-TALENT": {
       "last_run": "",
       "last_success": "",
       "status": "not_run",
@@ -167,7 +167,7 @@
       "external_artifacts": [],
       "last_google_sync": ""
     },
-    "COUNSEL": {
+    "COUNSEL-LEGAL": {
       "last_run": "",
       "last_success": "",
       "status": "not_run",
@@ -186,7 +186,7 @@
       "external_artifacts": [],
       "last_google_sync": ""
     },
-    "VECTOR": {
+    "VECTOR-ANALYTICS": {
       "last_run": "",
       "last_success": "",
       "status": "not_run",
@@ -205,7 +205,7 @@
       "external_artifacts": [],
       "last_google_sync": ""
     },
-    "HERALD": {
+    "HERALD-COMMS": {
       "last_run": "",
       "last_success": "",
       "status": "not_run",
@@ -229,61 +229,61 @@
   "pending_events": [
     {
       "type": "handoff_created",
-      "to": "FORGE",
-      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-001"
+      "to": "FORGE-ENGINEERING",
+      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-001"
     },
     {
       "type": "handoff_created",
-      "to": "CURRENT",
-      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-002"
+      "to": "CURRENT-SALES",
+      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-002"
     },
     {
       "type": "handoff_created",
-      "to": "ATLAS",
-      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-003"
+      "to": "ATLAS-RESEARCH",
+      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-003"
     },
     {
       "type": "handoff_created",
-      "to": "HERALD",
-      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-004"
+      "to": "HERALD-COMMS",
+      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-004"
     },
     {
       "type": "handoff_created",
-      "to": "CANVAS",
-      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-005"
+      "to": "CANVAS-PRODUCT",
+      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-005"
     },
     {
       "type": "handoff_created",
-      "to": "MARKETING",
-      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-006"
+      "to": "MARKETING-BRAND",
+      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-006"
     },
     {
       "type": "handoff_created",
-      "to": "NEXUS",
-      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-007"
+      "to": "NEXUS-TALENT",
+      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-007"
     },
     {
       "type": "handoff_created",
-      "to": "COUNSEL",
-      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-008"
+      "to": "COUNSEL-LEGAL",
+      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-008"
     },
     {
       "type": "handoff_created",
-      "to": "VECTOR",
-      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-009"
+      "to": "VECTOR-ANALYTICS",
+      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-009"
     }
   ],
   "run_queue": [],
   "communications": [
     {
       "type": "founder_briefing",
-      "from": "MERIDIAN",
-      "path": "outputs/MERIDIAN/2026-04-13-founder-briefing.md",
+      "from": "MERIDIAN-ORCHESTRATOR",
+      "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
       "created_at": "2026-04-13T20:43:44+0200"
     }
   ],
   "external_artifacts": [
-    "outputs/MERIDIAN/2026-04-13-founder-briefing.md"
+    "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md"
   ],
   "metrics": {
     "tokens_used_today": 0,
@@ -293,11 +293,11 @@
   },
   "last_runs": [
     {
-      "agent": "MERIDIAN",
+      "agent": "MERIDIAN-ORCHESTRATOR",
       "run_at": "2026-04-13T20:43:44+0200",
       "trigger": "manual_founder_request",
       "status": "success",
-      "output": "outputs/MERIDIAN/2026-04-13-founder-briefing.md"
+      "output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md"
     }
   ]
 }

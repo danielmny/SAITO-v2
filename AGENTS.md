@@ -21,17 +21,17 @@ Identify which agent owns the current task and declare: `[Acting as: AGENT_NAME]
 
 | ID | Agent | Function | Domain |
 |----|-------|----------|--------|
-| A-00 | MERIDIAN | Orchestrator | Orchestration, strategy, OKRs, founder interface |
-| A-01 | ATLAS | Market Research | Market research, competitive intelligence, customer discovery |
-| A-02 | CANVAS | Product | Product strategy, roadmap, backlog, user stories |
-| A-03 | FORGE | Engineering | Engineering, architecture, sprint planning, technical debt |
-| A-04 | MARKETING | Brand & Demand Gen | Marketing, brand, messaging, content, demand generation |
-| A-05 | CURRENT | Sales | Sales, pipeline, revenue, CRM, playbook |
-| A-06 | LEDGER | Finance & Fundraising | Finance, fundraising, runway, investor pipeline |
-| A-07 | NEXUS | Talent & Hiring | Talent, hiring, HR, culture, onboarding |
-| A-08 | COUNSEL | Legal | Legal, contracts, IP, compliance, risk |
-| A-09 | VECTOR | Analytics & Growth | Data, analytics, growth experiments, KPI dashboard |
-| A-10 | HERALD | Investor Relations & PR | Comms, investor relations, pitch deck, PR |
+| A-00 | MERIDIAN-ORCHESTRATOR | Orchestrator | Orchestration, strategy, OKRs, founder interface |
+| A-01 | ATLAS-RESEARCH | Market Research | Market research, competitive intelligence, customer discovery |
+| A-02 | CANVAS-PRODUCT | Product | Product strategy, roadmap, backlog, user stories |
+| A-03 | FORGE-ENGINEERING | Engineering | Engineering, architecture, sprint planning, technical debt |
+| A-04 | MARKETING-BRAND | Brand & Demand Gen | Marketing, brand, messaging, content, demand generation |
+| A-05 | CURRENT-SALES | Sales | Sales, pipeline, revenue, CRM, playbook |
+| A-06 | LEDGER-FINANCE | Finance & Fundraising | Finance, fundraising, runway, investor pipeline |
+| A-07 | NEXUS-TALENT | Talent & Hiring | Talent, hiring, HR, culture, onboarding |
+| A-08 | COUNSEL-LEGAL | Legal | Legal, contracts, IP, compliance, risk |
+| A-09 | VECTOR-ANALYTICS | Analytics & Growth | Data, analytics, growth experiments, KPI dashboard |
+| A-10 | HERALD-COMMS | Investor Relations & PR | Comms, investor relations, pitch deck, PR |
 
 ---
 
@@ -57,7 +57,7 @@ This project runs as a Codex-native multi-agent system. GitHub Actions is the un
 - Only act on changed inputs, pending handoffs, unresolved escalations, and the most recent relevant outputs.
 - If effective context is unchanged, record a skip instead of re-running full work.
 - Respect `cooldown_minutes`, `max_runs_per_day`, and dependency blocks from `config/schedule.json`.
-- `MERIDIAN` is the only agent that normalizes shared state. Specialist agents remain stateless per run.
+- `MERIDIAN-ORCHESTRATOR` is the only agent that normalizes shared state. Specialist agents remain stateless per run.
 
 ### Writing outputs
 
@@ -69,7 +69,7 @@ This project runs as a Codex-native multi-agent system. GitHub Actions is the un
   - `google_drive_id`
   - `google_doc_id`
   - `communication_thread_id`
-- After writing your output, update only the fields your runtime contract permits. Shared-state normalization remains MERIDIAN-owned.
+- After writing your output, update only the fields your runtime contract permits. Shared-state normalization remains MERIDIAN-ORCHESTRATOR-owned.
 
 ### Handoff protocol
 
@@ -98,7 +98,7 @@ When you process a handoff addressed to you, update its `status` to `processed`.
 
 ### Escalations and founder communication
 
-Write `[ESCALATE TO FOUNDER]` anywhere in your output to flag a decision that requires human input. MERIDIAN will detect it, create a pending escalation file, block dependent runs when necessary, and route the founder interaction through the configured communication channel.
+Write `[ESCALATE TO FOUNDER]` anywhere in your output to flag a decision that requires human input. MERIDIAN-ORCHESTRATOR will detect it, create a pending escalation file, block dependent runs when necessary, and route the founder interaction through the configured communication channel.
 
 Current default:
 

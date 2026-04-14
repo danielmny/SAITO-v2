@@ -5,37 +5,37 @@
   "skip_if_context_unchanged": true,
   "summarize_history_after_outputs": 5,
   "agents": {
-    "MERIDIAN": {
+    "MERIDIAN-ORCHESTRATOR": {
       "daily_token_budget": 25000,
       "max_input_tokens": 6000,
       "max_output_tokens": 1200,
       "reasoning_tier": "high"
     },
-    "ATLAS": {
+    "ATLAS-RESEARCH": {
       "daily_token_budget": 12000,
       "max_input_tokens": 3500,
       "max_output_tokens": 900,
       "reasoning_tier": "standard"
     },
-    "FORGE": {
+    "FORGE-ENGINEERING": {
       "daily_token_budget": 16000,
       "max_input_tokens": 3500,
       "max_output_tokens": 900,
       "reasoning_tier": "standard"
     },
-    "CURRENT": {
+    "CURRENT-SALES": {
       "daily_token_budget": 15000,
       "max_input_tokens": 3200,
       "max_output_tokens": 800,
       "reasoning_tier": "standard"
     },
-    "LEDGER": {
+    "LEDGER-FINANCE": {
       "daily_token_budget": 8000,
       "max_input_tokens": 3000,
       "max_output_tokens": 800,
       "reasoning_tier": "standard"
     },
-    "HERALD": {
+    "HERALD-COMMS": {
       "daily_token_budget": 8000,
       "max_input_tokens": 3200,
       "max_output_tokens": 900,
