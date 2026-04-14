@@ -92,7 +92,7 @@
       "cooldown_minutes": 60,
       "max_runs_per_day": 12,
       "run_if_changed": true,
-      "depends_on": ["MERIDIAN-ORCHESTRATOR", "CANVAS-PRODUCT"],
+      "depends_on": ["MERIDIAN-ORCHESTRATOR"],
       "context_inputs": [
         "config/company-brief.md",
         "outputs/state.json",

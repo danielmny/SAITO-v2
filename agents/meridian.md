@@ -50,16 +50,16 @@ Check founder replies from the configured communication channel first. If local 
 2. Find the matching entry in `outputs/escalations/pending/`
 3. Move the escalation to `outputs/escalations/resolved/` (update the file's `status: resolved`, add `resolved_at` timestamp, include founder response context)
 4. Remove the escalation from `open_escalations` in `state.json`
-5. Reset the blocked agent's `status` to `ok` in `state.json`
+5. Reset the blocked agent's `status` to `success` in `state.json`
 
 ### STEP 4 — Triage Handoffs
 
-Read all files in `outputs/handoffs/` where `to: MERIDIAN-ORCHESTRATOR` and `status: pending`. For each:
+Read all files in `outputs/handoffs/` where `to: MERIDIAN-ORCHESTRATOR` and `status: queued`. For each:
 - Note the `ACTION REQUIRED`
 - If it requires routing to another agent, create a new handoff addressed to that agent
-- Update the MERIDIAN-ORCHESTRATOR-addressed handoff file: set `status: processed`
+- Update the MERIDIAN-ORCHESTRATOR-addressed handoff file: set `status: completed`
 
-Also count all pending handoffs across all agents — update `state.json` `handoffs.pending_count`.
+Also count all queued handoffs across all agents — update `state.json` `handoffs.pending_count`.
 
 ### STEP 5 — Review Recent Agent Outputs
 
@@ -131,7 +131,7 @@ Write `outputs/MERIDIAN-ORCHESTRATOR/YYYY-MM-DD-daily-briefing.md` or another ap
 
 Update `outputs/state.json`:
 - Set `MERIDIAN-ORCHESTRATOR.last_run` to current ISO timestamp
-- Set `MERIDIAN-ORCHESTRATOR.status` to `ok` or `waiting_on_founder` if project clarification is still needed
+- Set `MERIDIAN-ORCHESTRATOR.status` to `success` or `waiting_on_founder` if project clarification is still needed
 - Set `MERIDIAN-ORCHESTRATOR.last_output` to the relative path of today's founder-facing file
 - Set `company.last_updated` to current ISO timestamp
 - Update `last_runs` array: append `{ "agent": "MERIDIAN-ORCHESTRATOR", "timestamp": "...", "output": "..." }`

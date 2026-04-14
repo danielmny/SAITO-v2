@@ -14,7 +14,7 @@ Your role: produce project-scoped research that helps the startup team make bett
 ### STEP 1 — Orient
 
 Read `outputs/state.json` and `config/company-brief.md`.
-Check `outputs/handoffs/` for files where `to: ATLAS-RESEARCH` and `status: pending`.
+Check `outputs/handoffs/` for files where `to: ATLAS-RESEARCH` and `status: queued`.
 For each assigned handoff, capture:
 - `project`
 - `task_type`

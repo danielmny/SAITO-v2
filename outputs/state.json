@@ -309,8 +309,8 @@
       "source_handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-001",
       "created_at": "2026-04-13T20:43:44+0200",
       "updated_at": "2026-04-13T20:43:44+0200",
-      "blocked_by": ["TASK-SIGNAL-005"],
-      "depends_on": ["CANVAS-PRODUCT"],
+      "blocked_by": [],
+      "depends_on": [],
       "result_output": ""
     },
     {
@@ -421,7 +421,7 @@
         "project": "SIGNAL",
         "status": "in_progress",
         "open_tasks": 3,
-        "blocked_tasks": 1,
+        "blocked_tasks": 0,
         "last_activity_at": "2026-04-13T21:04:14+0200"
       }
     ],

@@ -49,7 +49,7 @@ This project runs as a Codex-native multi-agent system. GitHub Actions is the un
 ### At the start of every agent run
 
 1. Read `outputs/state.json` — check current agent status, pending events, open escalations, cooldown windows, and recent outputs.
-2. Check `outputs/handoffs/` — process pending handoffs addressed to your agent before routine work.
+2. Check `outputs/handoffs/` — process queued handoffs addressed to your agent before routine work.
 3. Read `config/company-brief.md` — refresh company context.
 4. Read the current dispatch request fields:
    - `agent_id`
@@ -96,7 +96,7 @@ to: TARGET_AGENT
 project: PROJECT_NAME
 task_type: TASK_TYPE
 origin: founder_request|handoff|scheduler|integration
-status: pending
+status: queued
 created_at: YYYY-MM-DDTHH:MM:SS
 reason: [what changed]
 source_output: outputs/{YOUR_AGENT}/YYYY-MM-DD-{task-name}.md
@@ -113,7 +113,7 @@ source_output: outputs/{YOUR_AGENT}/YYYY-MM-DD-{task-name}.md
 ## ACTION REQUIRED: [what the receiving agent must do]
 ```
 
-When you process a handoff addressed to you, update its `status` to `processed`.
+When you process a handoff addressed to you, update its `status` to `completed`.
 
 ### Escalations and founder communication
 

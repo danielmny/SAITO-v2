@@ -27,7 +27,7 @@ The initial always-active core is intentionally small:
 | A-06 | LEDGER-FINANCE | Finance & Fundraising | `event` |
 | A-10 | HERALD-COMMS | Investor Relations & PR | `event` |
 
-Second-wave agents stay disabled until the trigger model and token budget controls are stable:
+Second-wave agents are enabled in the schedule, but they remain phase-gated and should stay mostly inactive until triggered by handoffs, dependencies, or manual founder work:
 
 - `CANVAS-PRODUCT`
 - `MARKETING-BRAND`

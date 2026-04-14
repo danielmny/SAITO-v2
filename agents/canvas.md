@@ -18,7 +18,7 @@ For formal product specifications or PRDs intended for sharing with engineers or
 ### STEP 1 — Orient
 
 Read `outputs/state.json` and `config/company-brief.md`.
-Check pending handoffs addressed to `CANVAS-PRODUCT`.
+Check queued handoffs addressed to `CANVAS-PRODUCT`.
 Capture `project`, `task_type`, and `origin` from each handoff.
 
 ### STEP 2 — Build The Product View
