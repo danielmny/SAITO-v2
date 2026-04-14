@@ -10,6 +10,9 @@ class Message:
     message_type: str
     subject: str
     body_markdown: str
+    project: str = "startup_ops"
+    task_type: str = "communication"
+    origin: str = "runtime"
     attachments: list[str] = field(default_factory=list)
     thread_key: str = ""
     requires_reply: bool = False
@@ -43,6 +46,9 @@ class EmailChannel(CommunicationChannel):
             "channel": "email",
             "provider": self.config.get("provider", "gmail"),
             "subject": message.subject,
+            "project": message.project,
+            "task_type": message.task_type,
+            "origin": message.origin,
             "thread_key": message.thread_key,
             "requires_reply": message.requires_reply,
             "reply_deadline": message.reply_deadline,

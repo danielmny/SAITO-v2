@@ -2,14 +2,19 @@
 handoff_id: HANDOFF-2026-04-13-MERIDIAN-007
 from: MERIDIAN
 to: NEXUS
-status: pending
+project: SIGNAL
+task_type: talent_brief
+origin: founder_request
+status: stale
 created_at: 2026-04-13T21:04:14+0200
 reason: Workflow expansion requires an initial talent view even before active hiring begins.
 source_output: outputs/MERIDIAN/2026-04-13-founder-briefing.md
+compatibility: legacy
 ---
 
 ## FROM: MERIDIAN
 ## TO: NEXUS
+## PROJECT: SIGNAL
 ## RE: Talent Readiness Snapshot
 ## CONTEXT: SIGNAL is pre-seed and not yet scaling headcount, but upcoming product and GTM work may expose critical capability gaps.
 ## OUTPUT: Produce a brief identifying the likely next 1-2 roles, the capabilities missing today, and whether hiring should wait until after customer proof.

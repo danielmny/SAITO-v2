@@ -2,14 +2,19 @@
 handoff_id: HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-001
 from: MERIDIAN-ORCHESTRATOR
 to: FORGE-ENGINEERING
-status: pending
+project: SIGNAL
+task_type: implementation_plan
+origin: founder_request
+status: queued
 created_at: 2026-04-13T20:43:44+0200
 reason: Founder briefing identified product completion as the top operating priority for SIGNAL this week.
 source_output: outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md
+compatibility: canonical
 ---
 
 ## FROM: MERIDIAN-ORCHESTRATOR
 ## TO: FORGE-ENGINEERING
+## PROJECT: SIGNAL
 ## RE: Implementation Gap-Closure Plan
 ## CONTEXT: SIGNAL is in PRE-SEED with an MVP foundation built but key roadmap items 1-4 still incomplete.
 ## OUTPUT: Produce a concise engineering plan covering the missing pieces for LLM-powered CV analysis, psychographic profile storage, additional scraper work, and company intelligence synthesis. Include sequencing, dependencies, and highest-risk blockers.

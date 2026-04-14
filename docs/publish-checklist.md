@@ -8,8 +8,11 @@
    - heartbeat interval
    - core active agents
    - source-of-truth rules
+   - founder intake model
+   - project/task metadata model
 3. Verify email-first communication and Google Workspace mirroring do not conflict.
 4. Verify the dispatcher skip logic respects unchanged context, cooldowns, and max-runs-per-day.
+5. Verify the runtime contracts are portable into a future standalone web app without redesign.
 
 ## Commit groups
 
@@ -29,3 +32,4 @@
 - run Python compilation for `runner/`
 - inspect `git diff --stat`
 - verify no unrelated local changes are being included
+- inspect at least one canonical handoff and one state snapshot for project/task metadata completeness

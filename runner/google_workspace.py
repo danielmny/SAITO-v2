@@ -9,6 +9,9 @@ class ArtifactRecord:
     artifact_type: str
     title: str
     local_path: str
+    project: str = "startup_ops"
+    task_type: str = "artifact"
+    origin: str = "runtime"
     google_drive_id: str = ""
     google_doc_id: str = ""
 

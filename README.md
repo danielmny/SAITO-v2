@@ -1,6 +1,6 @@
 # Founders OS — Codex Runtime
 
-Founders OS is a multi-agent operating system for startup work. It now targets a Codex-native runtime with GitHub Actions as the unattended scheduler, an event-driven dispatcher for 24/7 operation, Google Workspace as the collaboration layer for founder-facing artifacts, and email as the first founder communication channel.
+Founders OS is a multi-agent operating system for startup work. In `Startup AI Team - One`, it behaves like a 24/7 team of startup operators working across clearly defined projects, with `MERIDIAN-ORCHESTRATOR` acting as the founder-facing project intake and coordination layer.
 
 ## Operating Model
 
@@ -10,6 +10,9 @@ Founders OS is a multi-agent operating system for startup work. It now targets a
 - Handoffs and state stay in-repo for auditability
 - Google Drive, Docs, and Gmail mirror founder-facing work products
 - Founder replies arrive by email and are normalized back into repo state
+- Founder conversations start with project selection unless the request is clearly startup-wide
+- Specialist agents receive scoped, project-specific work through handoffs and return outputs that MERIDIAN synthesizes back to the founder
+- The runtime contracts are being prepared so a future standalone web app can become the founder control center, dashboard, and execution surface without redesigning the backend model
 
 ## Agent Activation
 
@@ -43,7 +46,7 @@ Every dispatched run uses the same core request shape:
 - `changed_context`
 - `instance_path`
 
-Specialist agents remain stateless per run. `MERIDIAN-ORCHESTRATOR` is the only component that normalizes shared state into `outputs/state.json`.
+Specialist agents remain stateless per run. `MERIDIAN-ORCHESTRATOR` is the only component that normalizes shared state into `outputs/state.json`, asks the founder which project they want to work on, reports startup and project status, and routes work to the appropriate specialists.
 
 ## File Structure
 
@@ -62,10 +65,11 @@ Specialist agents remain stateless per run. `MERIDIAN-ORCHESTRATOR` is the only 
 │   └── agent-skills.json             ← External artifact guidance by agent
 ├── docs/
 │   ├── runtime-contract.md           ← Dispatch, state, artifact, and communication contracts
+│   ├── agent-run-sequence.md         ← Founder intake, routing, and execution sequence
 │   ├── google-workspace.md           ← Workspace integration model
 │   └── publish-checklist.md          ← Validation and publish sequence
 ├── runner/
-│   ├── orchestrate.py                ← Dispatcher planner / CLI scaffold
+│   ├── orchestrate.py                ← Future app/backend orchestration entrypoint
 │   ├── communications.py             ← Channel abstraction with Email/Slack stubs
 │   └── google_workspace.py           ← Drive / Docs / Gmail adapter scaffolding
 ├── .github/workflows/
@@ -84,7 +88,8 @@ Specialist agents remain stateless per run. `MERIDIAN-ORCHESTRATOR` is the only 
 2. 24/7 means responsive dispatch, not constant re-running. No-work cycles should skip cleanly.
 3. Founder communication is email-first in v1, but every outbound and inbound flow goes through a pluggable communication interface.
 4. Token efficiency is a product requirement. Only changed inputs, pending handoffs, unresolved escalations, and the most recent relevant outputs should be injected into prompts.
-5. `MERIDIAN-ORCHESTRATOR` owns system normalization, triage, and founder digests. Specialist agents should stay narrow and cheap.
+5. `MERIDIAN-ORCHESTRATOR` owns founder intake, project selection, system normalization, triage, and founder digests. Specialist agents should stay narrow, project-scoped, and cheap.
+6. The repo should model backend domain concepts cleanly enough that a future standalone web app can sit on top of the same project, task, run, handoff, escalation, and communication contracts.
 
 ## Validation Before Publish
 

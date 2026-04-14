@@ -1,36 +1,78 @@
 {
-  "system_version": "2.1",
+  "system_version": "2.2",
+  "runtime_mode": "document_driven_app_ready_backend",
   "company": {
-    "name": "SIGNAL",
+    "name": "Startup AI Team - One",
     "stage": "PRE-SEED",
-    "last_updated": "2026-04-13T20:43:44+0200",
-    "founder_digest_due_at": "2026-04-14T18:00:00+0200"
+    "last_updated": "2026-04-14T10:42:00+0200",
+    "founder_digest_due_at": "2026-04-14T18:00:00+0200",
+    "founder_intake_agent": "MERIDIAN-ORCHESTRATOR"
+  },
+  "projects": {
+    "startup_ops": {
+      "project_id": "startup_ops",
+      "name": "Startup AI Team Runtime",
+      "slug": "startup-ops",
+      "type": "operating_system",
+      "status": "in_progress",
+      "owner_agent": "MERIDIAN-ORCHESTRATOR",
+      "priority": "high",
+      "work_mode": "startup_wide",
+      "summary": "Internal orchestration, scheduling, founder intake, and runtime design.",
+      "last_activity_at": "2026-04-14T10:42:00+0200"
+    },
+    "SIGNAL": {
+      "project_id": "signal",
+      "name": "SIGNAL",
+      "slug": "signal",
+      "type": "product",
+      "status": "in_progress",
+      "owner_agent": "MERIDIAN-ORCHESTRATOR",
+      "priority": "high",
+      "work_mode": "project",
+      "summary": "Psychographic job market intelligence platform in active product build and GTM preparation.",
+      "last_activity_at": "2026-04-13T21:04:14+0200"
+    }
   },
   "agents": {
     "MERIDIAN-ORCHESTRATOR": {
-      "last_run": "2026-04-13T20:43:44+0200",
-      "last_success": "2026-04-13T20:43:44+0200",
+      "last_run": "2026-04-14T10:42:00+0200",
+      "last_success": "2026-04-14T10:42:00+0200",
       "status": "success",
-      "last_output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
+      "dashboard_status": "completed",
+      "last_output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md",
       "last_trigger": "manual_founder_request",
-      "context_hash": "founder-briefing-2026-04-13-cold-start",
+      "context_hash": "operating-checkpoint-2026-04-14-manual",
       "cooldown_until": "",
+      "active_project": "startup_ops",
       "run_budget": {
         "daily_token_budget": 25000,
         "tokens_used_today": 0,
-        "runs_today": 1
+        "runs_today": 2
       },
       "skip_reason": "",
       "blocked_on_escalation": false,
       "communications": [
         {
           "type": "founder_briefing",
+          "project": "SIGNAL",
+          "task_type": "status_review",
+          "origin": "founder_request",
           "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
           "created_at": "2026-04-13T20:43:44+0200"
+        },
+        {
+          "type": "operating_checkpoint",
+          "project": "startup_ops",
+          "task_type": "operating_review",
+          "origin": "founder_request",
+          "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md",
+          "created_at": "2026-04-14T10:42:00+0200"
         }
       ],
       "external_artifacts": [
-        "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md"
+        "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
+        "outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md"
       ],
       "last_google_sync": ""
     },
@@ -38,10 +80,12 @@
       "last_run": "",
       "last_success": "",
       "status": "not_run",
+      "dashboard_status": "queued",
       "last_output": "",
       "last_trigger": "",
       "context_hash": "",
       "cooldown_until": "",
+      "active_project": "SIGNAL",
       "run_budget": {
         "daily_token_budget": 12000,
         "tokens_used_today": 0,
@@ -57,10 +101,12 @@
       "last_run": "",
       "last_success": "",
       "status": "not_run",
+      "dashboard_status": "queued",
       "last_output": "",
       "last_trigger": "",
       "context_hash": "",
       "cooldown_until": "",
+      "active_project": "SIGNAL",
       "run_budget": {
         "daily_token_budget": 10000,
         "tokens_used_today": 0,
@@ -76,10 +122,12 @@
       "last_run": "",
       "last_success": "",
       "status": "not_run",
+      "dashboard_status": "queued",
       "last_output": "",
       "last_trigger": "",
       "context_hash": "",
       "cooldown_until": "",
+      "active_project": "SIGNAL",
       "run_budget": {
         "daily_token_budget": 16000,
         "tokens_used_today": 0,
@@ -95,10 +143,12 @@
       "last_run": "",
       "last_success": "",
       "status": "not_run",
+      "dashboard_status": "queued",
       "last_output": "",
       "last_trigger": "",
       "context_hash": "",
       "cooldown_until": "",
+      "active_project": "SIGNAL",
       "run_budget": {
         "daily_token_budget": 10000,
         "tokens_used_today": 0,
@@ -114,10 +164,12 @@
       "last_run": "",
       "last_success": "",
       "status": "not_run",
+      "dashboard_status": "queued",
       "last_output": "",
       "last_trigger": "",
       "context_hash": "",
       "cooldown_until": "",
+      "active_project": "SIGNAL",
       "run_budget": {
         "daily_token_budget": 15000,
         "tokens_used_today": 0,
@@ -133,10 +185,12 @@
       "last_run": "",
       "last_success": "",
       "status": "not_run",
+      "dashboard_status": "queued",
       "last_output": "",
       "last_trigger": "",
       "context_hash": "",
       "cooldown_until": "",
+      "active_project": "SIGNAL",
       "run_budget": {
         "daily_token_budget": 8000,
         "tokens_used_today": 0,
@@ -152,10 +206,12 @@
       "last_run": "",
       "last_success": "",
       "status": "not_run",
+      "dashboard_status": "queued",
       "last_output": "",
       "last_trigger": "",
       "context_hash": "",
       "cooldown_until": "",
+      "active_project": "SIGNAL",
       "run_budget": {
         "daily_token_budget": 4000,
         "tokens_used_today": 0,
@@ -171,10 +227,12 @@
       "last_run": "",
       "last_success": "",
       "status": "not_run",
+      "dashboard_status": "queued",
       "last_output": "",
       "last_trigger": "",
       "context_hash": "",
       "cooldown_until": "",
+      "active_project": "SIGNAL",
       "run_budget": {
         "daily_token_budget": 4000,
         "tokens_used_today": 0,
@@ -190,10 +248,12 @@
       "last_run": "",
       "last_success": "",
       "status": "not_run",
+      "dashboard_status": "queued",
       "last_output": "",
       "last_trigger": "",
       "context_hash": "",
       "cooldown_until": "",
+      "active_project": "SIGNAL",
       "run_budget": {
         "daily_token_budget": 8000,
         "tokens_used_today": 0,
@@ -209,10 +269,12 @@
       "last_run": "",
       "last_success": "",
       "status": "not_run",
+      "dashboard_status": "queued",
       "last_output": "",
       "last_trigger": "",
       "context_hash": "",
       "cooldown_until": "",
+      "active_project": "SIGNAL",
       "run_budget": {
         "daily_token_budget": 8000,
         "tokens_used_today": 0,
@@ -225,66 +287,172 @@
       "last_google_sync": ""
     }
   },
+  "founder_requests": [
+    {
+      "request_id": "FR-2026-04-14-001",
+      "project": "startup_ops",
+      "task_type": "operating_review",
+      "origin": "founder_request",
+      "status": "completed",
+      "summary": "Run MERIDIAN and inspect runtime readiness."
+    }
+  ],
+  "task_board": [
+    {
+      "task_id": "TASK-SIGNAL-001",
+      "project": "SIGNAL",
+      "title": "Implementation gap-closure plan",
+      "task_type": "implementation_plan",
+      "status": "queued",
+      "owner_agent": "FORGE-ENGINEERING",
+      "origin": "founder_request",
+      "source_handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-001",
+      "created_at": "2026-04-13T20:43:44+0200",
+      "updated_at": "2026-04-13T20:43:44+0200",
+      "blocked_by": ["TASK-SIGNAL-005"],
+      "depends_on": ["CANVAS-PRODUCT"],
+      "result_output": ""
+    },
+    {
+      "task_id": "TASK-SIGNAL-002",
+      "project": "SIGNAL",
+      "title": "Early customer pipeline",
+      "task_type": "pipeline_plan",
+      "status": "queued",
+      "owner_agent": "CURRENT-SALES",
+      "origin": "founder_request",
+      "source_handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-002",
+      "created_at": "2026-04-13T20:43:44+0200",
+      "updated_at": "2026-04-13T20:43:44+0200",
+      "blocked_by": [],
+      "depends_on": [],
+      "result_output": ""
+    },
+    {
+      "task_id": "TASK-SIGNAL-003",
+      "project": "SIGNAL",
+      "title": "ICP and assumption validation",
+      "task_type": "research_brief",
+      "status": "queued",
+      "owner_agent": "ATLAS-RESEARCH",
+      "origin": "founder_request",
+      "source_handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-003",
+      "created_at": "2026-04-13T20:43:44+0200",
+      "updated_at": "2026-04-13T20:43:44+0200",
+      "blocked_by": [],
+      "depends_on": [],
+      "result_output": ""
+    },
+    {
+      "task_id": "TASK-OPS-001",
+      "project": "startup_ops",
+      "title": "App-ready runtime refactor",
+      "task_type": "runtime_contract_upgrade",
+      "status": "in_progress",
+      "owner_agent": "MERIDIAN-ORCHESTRATOR",
+      "origin": "founder_request",
+      "source_handoff_id": "",
+      "created_at": "2026-04-14T10:42:00+0200",
+      "updated_at": "2026-04-14T10:42:00+0200",
+      "blocked_by": [],
+      "depends_on": [],
+      "result_output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md"
+    }
+  ],
   "open_escalations": [],
   "pending_events": [
     {
       "type": "handoff_created",
+      "project": "SIGNAL",
+      "task_type": "implementation_plan",
       "to": "FORGE-ENGINEERING",
       "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-001"
     },
     {
       "type": "handoff_created",
+      "project": "SIGNAL",
+      "task_type": "pipeline_plan",
       "to": "CURRENT-SALES",
       "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-002"
     },
     {
       "type": "handoff_created",
+      "project": "SIGNAL",
+      "task_type": "research_brief",
       "to": "ATLAS-RESEARCH",
       "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-003"
-    },
-    {
-      "type": "handoff_created",
-      "to": "HERALD-COMMS",
-      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-004"
-    },
-    {
-      "type": "handoff_created",
-      "to": "CANVAS-PRODUCT",
-      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-005"
-    },
-    {
-      "type": "handoff_created",
-      "to": "MARKETING-BRAND",
-      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-006"
-    },
-    {
-      "type": "handoff_created",
-      "to": "NEXUS-TALENT",
-      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-007"
-    },
-    {
-      "type": "handoff_created",
-      "to": "COUNSEL-LEGAL",
-      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-008"
-    },
-    {
-      "type": "handoff_created",
-      "to": "VECTOR-ANALYTICS",
-      "handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-009"
     }
   ],
   "run_queue": [],
   "communications": [
     {
       "type": "founder_briefing",
+      "project": "SIGNAL",
+      "task_type": "status_review",
+      "origin": "founder_request",
       "from": "MERIDIAN-ORCHESTRATOR",
       "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
       "created_at": "2026-04-13T20:43:44+0200"
+    },
+    {
+      "type": "operating_checkpoint",
+      "project": "startup_ops",
+      "task_type": "operating_review",
+      "origin": "founder_request",
+      "from": "MERIDIAN-ORCHESTRATOR",
+      "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md",
+      "created_at": "2026-04-14T10:42:00+0200"
     }
   ],
   "external_artifacts": [
-    "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md"
+    "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
+    "outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md"
   ],
+  "dashboard": {
+    "project_summaries": [
+      {
+        "project": "startup_ops",
+        "status": "in_progress",
+        "open_tasks": 1,
+        "blocked_tasks": 0,
+        "last_activity_at": "2026-04-14T10:42:00+0200"
+      },
+      {
+        "project": "SIGNAL",
+        "status": "in_progress",
+        "open_tasks": 3,
+        "blocked_tasks": 1,
+        "last_activity_at": "2026-04-13T21:04:14+0200"
+      }
+    ],
+    "agent_summaries": [
+      {
+        "agent": "MERIDIAN-ORCHESTRATOR",
+        "status": "completed",
+        "project": "startup_ops"
+      },
+      {
+        "agent": "FORGE-ENGINEERING",
+        "status": "queued",
+        "project": "SIGNAL"
+      },
+      {
+        "agent": "CURRENT-SALES",
+        "status": "queued",
+        "project": "SIGNAL"
+      },
+      {
+        "agent": "ATLAS-RESEARCH",
+        "status": "queued",
+        "project": "SIGNAL"
+      }
+    ]
+  },
+  "compatibility_artifacts": {
+    "legacy_handoffs_present": true,
+    "legacy_handoff_prefix": "HANDOFF-2026-04-13-MERIDIAN-*",
+    "policy": "legacy handoffs are compatibility artifacts and should be treated as stale unless migrated"
+  },
   "metrics": {
     "tokens_used_today": 0,
     "estimated_cost_usd_today": 0.0,
@@ -293,10 +461,27 @@
   },
   "last_runs": [
     {
+      "run_id": "RUN-2026-04-14-MERIDIAN-001",
       "agent": "MERIDIAN-ORCHESTRATOR",
-      "run_at": "2026-04-13T20:43:44+0200",
-      "trigger": "manual_founder_request",
-      "status": "success",
+      "project": "startup_ops",
+      "task_type": "operating_review",
+      "origin": "founder_request",
+      "trigger_type": "manual",
+      "status": "completed",
+      "started_at": "2026-04-14T10:42:00+0200",
+      "finished_at": "2026-04-14T10:42:00+0200",
+      "output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md"
+    },
+    {
+      "run_id": "RUN-2026-04-13-MERIDIAN-001",
+      "agent": "MERIDIAN-ORCHESTRATOR",
+      "project": "SIGNAL",
+      "task_type": "status_review",
+      "origin": "founder_request",
+      "trigger_type": "manual",
+      "status": "completed",
+      "started_at": "2026-04-13T20:43:44+0200",
+      "finished_at": "2026-04-13T20:43:44+0200",
       "output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md"
     }
   ]
