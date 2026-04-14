@@ -15,6 +15,7 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from runner.communications import Message, get_default_channel
+from runner.specialists import ENABLED_SPECIALISTS, execute_specialist
 
 
 ROOT_DIRS = (
@@ -77,6 +78,7 @@ class ResultRecord:
     processed_handoffs_count: int = 0
     processed_escalations_count: int = 0
     created_escalations_count: int = 0
+    created_handoffs_count: int = 0
     error: str = ""
     notes: list[str] | None = None
 
@@ -859,6 +861,7 @@ def update_meridian_state(
     output_paths: list[str],
     processed_handoff_paths: list[str],
     open_escalations: list[dict[str, Any]],
+    recent_outputs: list[dict[str, Any]],
 ) -> None:
     meridian_state = state.setdefault("agents", {}).setdefault("MERIDIAN-ORCHESTRATOR", {})
     run_budget = meridian_state.setdefault("run_budget", {})
@@ -910,11 +913,10 @@ def update_meridian_state(
                 }
             )
 
-    processed_handoff_ids = {Path(path).stem for path in processed_handoff_paths}
-    if processed_handoff_ids:
-        state["pending_events"] = [
-            item for item in state.get("pending_events", []) if item.get("handoff_id") not in processed_handoff_ids
-        ]
+    remaining_pending_handoff_ids = {item["handoff_id"] for item in discover_pending_handoffs(instance_path)}
+    state["pending_events"] = [
+        item for item in state.get("pending_events", []) if item.get("handoff_id") in remaining_pending_handoff_ids
+    ]
 
     state.setdefault("metrics", {})
     if status == "skipped":
@@ -926,10 +928,21 @@ def update_meridian_state(
         active_project = state.get("projects", {}).get(request.project)
         if active_project is not None:
             active_project["last_activity_at"] = finished_at
+        latest_output_by_agent_project = {
+            (item["agent_id"], item["front_matter"].get("project", request.project)): item["path"] for item in recent_outputs
+        }
         for task in state.get("task_board", []):
             if task.get("owner_agent") == "MERIDIAN-ORCHESTRATOR" and task.get("project") == request.project:
                 task["updated_at"] = finished_at
                 task["result_output"] = output_paths[0]
+            source_handoff_id = task.get("source_handoff_id", "")
+            if source_handoff_id and source_handoff_id not in remaining_pending_handoff_ids:
+                task["status"] = "completed"
+                task["updated_at"] = finished_at
+                if not task.get("result_output"):
+                    task["result_output"] = latest_output_by_agent_project.get(
+                        (task.get("owner_agent", ""), task.get("project", "")), ""
+                    )
 
     last_runs = state.setdefault("last_runs", [])
     last_runs.append(
@@ -1042,6 +1055,7 @@ def execute_meridian_request(
         output_paths=output_paths,
         processed_handoff_paths=processed_handoff_paths,
         open_escalations=open_escalations,
+        recent_outputs=recent_outputs,
     )
     temp_request = DispatchRequest(**asdict(request))
     post_context_hash = compute_context_hash(
@@ -1119,8 +1133,21 @@ def execute_request(instance_path: Path, request_path: Path) -> dict[str, Any]:
         if request.agent_id == "MERIDIAN-ORCHESTRATOR":
             result = execute_meridian_request(instance_path, request, state, schedule, result)
         else:
-            result.status = "success"
-            result.notes = list(result.notes or []) + ["stateless_specialist_execution"]
+            schedule_entry = schedule.get("agents", {}).get(request.agent_id, {})
+            specialist_result = execute_specialist(
+                instance_path=instance_path,
+                agent_id=request.agent_id,
+                schedule_entry=schedule_entry,
+                request=request,
+                run_id=result.run_id,
+            )
+            result.status = specialist_result.status
+            result.output_path = specialist_result.output_paths[0] if specialist_result.output_paths else ""
+            result.output_paths = specialist_result.output_paths
+            result.processed_handoffs_count = len(specialist_result.processed_handoff_paths)
+            result.created_handoffs_count = len(specialist_result.created_handoff_paths)
+            specialist_notes = ["real_specialist_execution"] if request.agent_id in ENABLED_SPECIALISTS else []
+            result.notes = list(result.notes or []) + specialist_notes + specialist_result.notes
 
     result_path = instance_path / "runtime/results" / f"{run_id}.json"
     write_json(result_path, asdict(result))

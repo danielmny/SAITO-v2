@@ -55,7 +55,7 @@ The runtime is driven in this order:
 2. The planner reads `config/schedule.json` and `outputs/state.json`.
 3. Eligible agents are selected using schedule rules, project/task state, and changed context.
 4. `MERIDIAN-ORCHESTRATOR` handles founder intake, project selection, status synthesis, and delegation.
-5. Specialist agents execute project-scoped work from handoffs or normalized founder requests.
+5. Enabled specialist agents execute project-scoped work from handoffs or normalized founder requests, produce real markdown outputs under `outputs/{AGENT_NAME}/`, and may create deterministic downstream handoffs when the input clearly justifies it.
 6. The repo-native planner writes request manifests to `runtime/requests/`, enqueues them in `runtime/queue/`, and drains them serially into `runtime/results/`.
 7. A MERIDIAN run is a real orchestration pass: it may skip cleanly when nothing meaningful changed, or it may write a founder-facing briefing and normalize shared state.
 8. Outputs, handoffs, escalations, communications, and run records are written back to canonical state.
@@ -66,7 +66,7 @@ The runtime is driven in this order:
 
 - `outputs/state.json` is the canonical structured state snapshot.
 - `MERIDIAN-ORCHESTRATOR` is the only shared-state normalizer.
-- Specialist agents produce outputs and handoffs with enough metadata for MERIDIAN or a future app backend to update state safely.
+- Specialist agents remain stateless beyond outputs, handoffs, and result manifests, with enough metadata for MERIDIAN or a future app backend to update state safely.
 
 ## Canonical statuses
 
@@ -134,6 +134,12 @@ Run records should support auditability and a future execution dashboard:
 - `started_at`
 - `finished_at`
 - `output`
+
+Enabled specialist result manifests should also include:
+
+- `output_paths`
+- `processed_handoffs_count`
+- `created_handoffs_count`
 
 MERIDIAN runs may end in two normal modes:
 

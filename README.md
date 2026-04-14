@@ -12,7 +12,7 @@ Founders OS is a multi-agent operating system for startup work. In `Startup AI T
 - Founder communication defaults to repo files in `outputs/communications/outbox/` and `inputs/founder-replies/`
 - Google Drive, Docs, and Gmail stay disabled until real adapters exist
 - Founder conversations start with project selection unless the request is clearly startup-wide
-- Specialist agents receive scoped, project-specific work through handoffs and return outputs that MERIDIAN synthesizes back to the founder
+- Enabled specialist agents receive scoped, project-specific work through handoffs, generate real markdown artifacts, and may create justified downstream handoffs that MERIDIAN later synthesizes back to the founder
 - The runtime contracts are being prepared so a future standalone web app can become the founder control center, dashboard, and execution surface without redesigning the backend model
 
 ## Agent Activation
@@ -78,6 +78,7 @@ Specialist agents remain stateless per run. `MERIDIAN-ORCHESTRATOR` is the only 
 │   ├── orchestrate.py                ← Repo-native planner, queue runner, reply ingest, and reconciliation CLI
 │   ├── communications.py             ← File-first founder communication backend
 │   ├── google_workspace.py           ← Feature-flagged Google adapter boundary
+│   ├── specialists.py                ← Deterministic executor layer for enabled specialist agents
 │   └── smoke_test.py                 ← Minimal temp-copy runtime validation
 ├── runtime/
 │   ├── requests/                     ← Canonical request manifests
