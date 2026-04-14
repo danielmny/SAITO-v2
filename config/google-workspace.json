@@ -1,5 +1,5 @@
 {
-  "enabled": true,
+  "enabled": false,
   "workspace_mode": "mirror_to_google",
   "google_drive": {
     "shared_drive_id": "",
@@ -11,7 +11,7 @@
     }
   },
   "google_docs": {
-    "enabled": true,
+    "enabled": false,
     "templates": {
       "meridian_briefing": "",
       "herald_update": "",
@@ -19,7 +19,7 @@
     }
   },
   "gmail": {
-    "enabled": true,
+    "enabled": false,
     "mailbox": "",
     "reply_ingestion_label": "founders-os"
   },

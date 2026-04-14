@@ -56,7 +56,8 @@ The runtime is driven in this order:
 3. Eligible agents are selected using schedule rules, project/task state, and changed context.
 4. `MERIDIAN-ORCHESTRATOR` handles founder intake, project selection, status synthesis, and delegation.
 5. Specialist agents execute project-scoped work from handoffs or normalized founder requests.
-6. Outputs, handoffs, escalations, communications, and run records are written back to canonical state.
+6. The repo-native planner writes request manifests to `runtime/requests/`, enqueues them in `runtime/queue/`, and drains them serially into `runtime/results/`.
+7. Outputs, handoffs, escalations, communications, and run records are written back to canonical state.
 
 `config/schedule.json` remains the sequencing authority. The future web app may replace the scheduler surface, but not the core runtime concepts.
 
@@ -174,7 +175,7 @@ communication_thread_id: ""
 
 ## Communication contract
 
-Outbound communication is channel-agnostic:
+Outbound communication is channel-agnostic and file-first by default:
 
 - `message_type`
 - `subject`
@@ -186,6 +187,11 @@ Outbound communication is channel-agnostic:
 - `project`
 - `task_type`
 - `origin`
+
+Default v1 paths:
+
+- outbound: `outputs/communications/outbox/`
+- inbound: `inputs/founder-replies/`
 
 Inbound communication must be normalizable into:
 
@@ -200,6 +206,7 @@ Inbound communication must be normalizable into:
 These are delivery adapters, not core runtime requirements:
 
 - GitHub Actions scheduler
+- File-backed founder communication channel
 - Gmail communication
 - Google Drive / Docs mirroring
 
@@ -207,7 +214,7 @@ The future standalone web app should be another adapter and control surface over
 
 ## Lean-token rules
 
-- unchanged effective context should yield a skip
+- unchanged effective context should yield a skip via context hashing
 - only changed inputs, pending handoffs, unresolved escalations, and recent relevant outputs may be injected
 - long-running history should be summarized into rolling notes
-- budgets should be enforced per agent and per day
+- budgets should be enforced per agent and per day, with fallback defaults when an agent lacks an explicit model or token entry

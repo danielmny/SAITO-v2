@@ -14,4 +14,6 @@ jobs:
         with:
           python-version: "3.12"
       - name: Plan due runs
-        run: python runner/orchestrate.py plan --schedule config/schedule.json --state outputs/state.json --instance-path .
+        run: python runner/orchestrate.py plan --instance-path .
+      - name: Drain planned queue
+        run: python runner/orchestrate.py drain-queue --instance-path .

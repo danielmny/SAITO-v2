@@ -15,3 +15,5 @@ jobs:
           python-version: "3.12"
       - name: Build MERIDIAN digest request
         run: python runner/orchestrate.py run-once --agent MERIDIAN-ORCHESTRATOR --trigger-type heartbeat --reason daily_digest --instance-path . --project startup_ops --task-type founder_digest
+      - name: Drain digest queue
+        run: python runner/orchestrate.py drain-queue --instance-path .

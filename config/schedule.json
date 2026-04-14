@@ -59,7 +59,7 @@
     },
     "CANVAS-PRODUCT": {
       "function": "Product",
-      "enabled": true,
+      "enabled": false,
       "phase": 2,
       "priority": 60,
       "trigger_mode": ["event"],
@@ -108,7 +108,7 @@
     },
     "MARKETING-BRAND": {
       "function": "Brand & Demand Gen",
-      "enabled": true,
+      "enabled": false,
       "phase": 2,
       "priority": 50,
       "trigger_mode": ["event"],
@@ -158,7 +158,7 @@
     },
     "LEDGER-FINANCE": {
       "function": "Finance & Fundraising",
-      "enabled": true,
+      "enabled": false,
       "phase": 1,
       "priority": 65,
       "trigger_mode": ["event"],
@@ -182,7 +182,7 @@
     },
     "NEXUS-TALENT": {
       "function": "Talent & Hiring",
-      "enabled": true,
+      "enabled": false,
       "phase": 3,
       "priority": 40,
       "trigger_mode": ["manual", "event"],
@@ -205,7 +205,7 @@
     },
     "COUNSEL-LEGAL": {
       "function": "Legal",
-      "enabled": true,
+      "enabled": false,
       "phase": 3,
       "priority": 40,
       "trigger_mode": ["manual", "event"],
@@ -228,7 +228,7 @@
     },
     "VECTOR-ANALYTICS": {
       "function": "Analytics & Growth",
-      "enabled": true,
+      "enabled": false,
       "phase": 2,
       "priority": 55,
       "trigger_mode": ["event"],
@@ -261,7 +261,7 @@
       "cooldown_minutes": 180,
       "max_runs_per_day": 6,
       "run_if_changed": true,
-      "depends_on": ["MERIDIAN-ORCHESTRATOR", "LEDGER-FINANCE"],
+      "depends_on": ["MERIDIAN-ORCHESTRATOR"],
       "context_inputs": [
         "config/company-brief.md",
         "outputs/state.json",
