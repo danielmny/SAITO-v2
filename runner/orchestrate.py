@@ -5,7 +5,7 @@ import hashlib
 import json
 import os
 import sys
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -72,6 +72,11 @@ class ResultRecord:
     model_profile: dict[str, Any]
     token_policy: dict[str, Any]
     output_path: str = ""
+    output_paths: list[str] = field(default_factory=list)
+    state_updated: bool = False
+    processed_handoffs_count: int = 0
+    processed_escalations_count: int = 0
+    created_escalations_count: int = 0
     error: str = ""
     notes: list[str] | None = None
 
@@ -164,6 +169,38 @@ def write_front_matter(path: Path, front_matter: dict[str, str], body: str) -> N
         lines.append(f"{key}: {value}")
     lines.append("---")
     path.write_text("\n".join(lines) + "\n" + body.lstrip("\n"), encoding="utf-8")
+
+
+def isoformat_or_empty(value: datetime | None) -> str:
+    return value.isoformat(timespec="seconds") if value is not None else ""
+
+
+def sanitize_state_for_hash(state: dict[str, Any]) -> dict[str, Any]:
+    sanitized = json.loads(json.dumps(state))
+    sanitized.get("company", {}).pop("last_updated", None)
+    sanitized.pop("last_runs", None)
+    sanitized.pop("run_queue", None)
+    sanitized.pop("metrics", None)
+    for agent_state in sanitized.get("agents", {}).values():
+        for key in (
+            "last_run",
+            "last_success",
+            "status",
+            "dashboard_status",
+            "last_output",
+            "last_trigger",
+            "context_hash",
+            "cooldown_until",
+            "skip_reason",
+            "communications",
+            "external_artifacts",
+            "last_google_sync",
+        ):
+            agent_state.pop(key, None)
+        if "run_budget" in agent_state:
+            agent_state["run_budget"].pop("tokens_used_today", None)
+            agent_state["run_budget"].pop("runs_today", None)
+    return sanitized
 
 
 def list_existing_hashes(directory: Path) -> set[str]:
@@ -307,7 +344,11 @@ def compute_context_hash(
         for file_path in sorted(files):
             relative_file = file_path.relative_to(instance_path).as_posix()
             hasher.update(relative_file.encode("utf-8"))
-            hasher.update(file_path.read_bytes())
+            if relative_file == "outputs/state.json":
+                sanitized_state = sanitize_state_for_hash(load_json(file_path))
+                hasher.update(json.dumps(sanitized_state, sort_keys=True).encode("utf-8"))
+            else:
+                hasher.update(file_path.read_bytes())
     return hasher.hexdigest()
 
 
@@ -373,6 +414,8 @@ def discover_pending_handoffs(instance_path: Path) -> list[dict[str, Any]]:
         handoffs.append(
             {
                 "agent_id": to_agent,
+                "to": to_agent,
+                "from": from_agent,
                 "project": front_matter.get("project", "startup_ops"),
                 "task_type": front_matter.get("task_type", "handoff"),
                 "reason": front_matter.get("reason", front_matter.get("handoff_id", handoff_path.stem)),
@@ -380,6 +423,7 @@ def discover_pending_handoffs(instance_path: Path) -> list[dict[str, Any]]:
                 "handoff_id": front_matter.get("handoff_id", handoff_path.stem),
                 "path": handoff_path.relative_to(instance_path).as_posix(),
                 "created_at": front_matter.get("created_at", ""),
+                "front_matter": front_matter,
             }
         )
     return handoffs
@@ -613,20 +657,411 @@ def queue_request(instance_path: Path, request: DispatchRequest) -> dict[str, An
     }
 
 
-def mark_consumed_handoffs(instance_path: Path, request: DispatchRequest, result: ResultRecord) -> None:
-    for relative_path in request.changed_context:
-        if not relative_path.startswith("outputs/handoffs/"):
+def write_markdown_with_front_matter(path: Path, front_matter: dict[str, str], body: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    write_front_matter(path, front_matter, body)
+
+
+def list_recent_agent_outputs(
+    instance_path: Path,
+    schedule: dict[str, Any],
+    since: datetime | None,
+    exclude_agent: str = "MERIDIAN-ORCHESTRATOR",
+) -> list[dict[str, Any]]:
+    outputs: list[dict[str, Any]] = []
+    for agent_id, schedule_entry in sorted(schedule.get("agents", {}).items()):
+        if agent_id == exclude_agent or not schedule_entry.get("enabled", False):
             continue
+        agent_dir = instance_path / "outputs" / agent_id
+        if not agent_dir.exists():
+            continue
+        candidate_files = sorted(agent_dir.glob("*.md"), key=lambda item: item.stat().st_mtime, reverse=True)
+        if not candidate_files:
+            continue
+        latest_path = candidate_files[0]
+        modified_at = datetime.fromtimestamp(latest_path.stat().st_mtime, tz=timezone.utc)
+        front_matter, body = read_front_matter(latest_path)
+        outputs.append(
+            {
+                "agent_id": agent_id,
+                "path": latest_path.relative_to(instance_path).as_posix(),
+                "modified_at": modified_at,
+                "is_new": since is None or modified_at > since.astimezone(timezone.utc),
+                "front_matter": front_matter,
+                "body": body.strip(),
+            }
+        )
+    return outputs
+
+
+def mark_handoffs_processed(instance_path: Path, handoff_paths: list[str], run_id: str, processed_at: str) -> int:
+    processed = 0
+    for relative_path in sorted(set(handoff_paths)):
         handoff_path = instance_path / relative_path
         if not handoff_path.exists():
             continue
         front_matter, body = read_front_matter(handoff_path)
         if front_matter.get("status") != "queued":
             continue
-        front_matter["status"] = "completed"
-        front_matter["processed_at"] = result.finished_at
-        front_matter["runtime_result"] = f"runtime/results/{result.run_id}.json"
+        front_matter["status"] = "processed"
+        front_matter["processed_at"] = processed_at
+        front_matter["runtime_result"] = f"runtime/results/{run_id}.json"
         write_front_matter(handoff_path, front_matter, body)
+        processed += 1
+    return processed
+
+
+def detect_founder_decision_outputs(
+    instance_path: Path,
+    recent_outputs: list[dict[str, Any]],
+    existing_escalations: list[dict[str, Any]],
+    now: datetime,
+) -> tuple[list[dict[str, Any]], int]:
+    pending_dir = instance_path / "outputs/escalations/pending"
+    pending_dir.mkdir(parents=True, exist_ok=True)
+    existing_paths = {item.get("path", "") for item in existing_escalations}
+    existing_source_paths = {item.get("source_output", "") for item in existing_escalations}
+    created = 0
+
+    for output in recent_outputs:
+        if "[ESCALATE TO FOUNDER]" not in output["body"]:
+            continue
+        if output["path"] in existing_source_paths:
+            continue
+        escalation_id = f"ESCALATION-{now.strftime('%Y-%m-%d')}-{slugify(output['agent_id'])}-{created + 1:03d}"
+        escalation_path = pending_dir / f"{escalation_id}.md"
+        relative_path = escalation_path.relative_to(instance_path).as_posix()
+        if relative_path in existing_paths:
+            continue
+        front_matter = {
+            "escalation_id": escalation_id,
+            "from": output["agent_id"],
+            "project": output["front_matter"].get("project", "startup_ops"),
+            "status": "pending",
+            "created_at": now.isoformat(timespec="seconds"),
+            "reason": "founder_decision_required",
+            "source_output": output["path"],
+        }
+        body = "\n".join(
+            [
+                f"# {escalation_id}",
+                "",
+                "## Source",
+                output["path"],
+                "",
+                "## Decision Needed",
+                "A recent agent output explicitly requested founder input.",
+            ]
+        )
+        write_markdown_with_front_matter(escalation_path, front_matter, body)
+        existing_escalations.append(
+            {
+                "escalation_id": escalation_id,
+                "path": relative_path,
+                "project": front_matter["project"],
+                "reason": front_matter["reason"],
+                "source_output": output["path"],
+            }
+        )
+        created += 1
+    return existing_escalations, created
+
+
+def build_meridian_briefing(
+    *,
+    state: dict[str, Any],
+    pending_handoffs: list[dict[str, Any]],
+    open_escalations: list[dict[str, Any]],
+    recent_outputs: list[dict[str, Any]],
+    processed_handoff_paths: list[str],
+) -> str:
+    new_outputs = [item for item in recent_outputs if item["is_new"]]
+    wins: list[str] = []
+    risks: list[str] = []
+    decisions_needed: list[str] = []
+    next_actions: list[str] = []
+
+    if new_outputs:
+        for output in new_outputs[:3]:
+            wins.append(f"`{output['agent_id']}` added new output: `{output['path']}`.")
+    else:
+        wins.append("No new specialist outputs landed since the last MERIDIAN success.")
+
+    downstream_handoffs = [item for item in pending_handoffs if item["to"] != "MERIDIAN-ORCHESTRATOR"]
+    if downstream_handoffs:
+        risks.append(f"{len(downstream_handoffs)} downstream handoffs remain queued across active agents.")
+    if open_escalations:
+        risks.append(f"{len(open_escalations)} open escalations require founder attention or explicit routing.")
+        decisions_needed.extend(
+            f"`{item['escalation_id']}` for `{item['project']}`: {item['reason']}." for item in open_escalations[:3]
+        )
+    if processed_handoff_paths:
+        wins.append(f"MERIDIAN processed {len(processed_handoff_paths)} handoff(s) addressed directly to the orchestrator.")
+
+    if not decisions_needed:
+        decisions_needed.append("No new founder decision is required in this pass.")
+
+    for handoff in downstream_handoffs[:4]:
+        next_actions.append(
+            f"Keep `{handoff['handoff_id']}` queued for `{handoff['to']}` on `{handoff['project']}`."
+        )
+    if not next_actions:
+        next_actions.append("No immediate downstream routing changes are required.")
+
+    handoff_summary_lines = [
+        f"- `{item['handoff_id']}` -> `{item['to']}` on `{item['project']}` ({item['task_type']})"
+        for item in pending_handoffs[:6]
+    ] or ["- No queued handoffs."]
+    escalation_summary_lines = [
+        f"- `{item['escalation_id']}` on `{item['project']}`: {item['reason']}"
+        for item in open_escalations[:6]
+    ] or ["- No open escalations."]
+    risk_lines = [f"- {item}" for item in risks] if risks else ["- No new operating risks surfaced in this pass."]
+
+    return "\n".join(
+        [
+            "[Acting as: MERIDIAN-ORCHESTRATOR]",
+            "",
+            f"# Founder Briefing — {datetime.now().date().isoformat()}",
+            "",
+            "## Wins",
+            *[f"- {item}" for item in wins],
+            "",
+            "## Risks",
+            *risk_lines,
+            "",
+            "## Decisions Needed",
+            *[f"- {item}" for item in decisions_needed],
+            "",
+            "## Next Actions",
+            *[f"- {item}" for item in next_actions],
+            "",
+            "## Open Handoffs Summary",
+            *handoff_summary_lines,
+            "",
+            "## Escalation Summary",
+            *escalation_summary_lines,
+        ]
+    )
+
+
+def update_meridian_state(
+    *,
+    instance_path: Path,
+    state: dict[str, Any],
+    schedule: dict[str, Any],
+    request: DispatchRequest,
+    run_id: str,
+    started_at: str,
+    finished_at: str,
+    status: str,
+    post_context_hash: str,
+    output_paths: list[str],
+    processed_handoff_paths: list[str],
+    open_escalations: list[dict[str, Any]],
+) -> None:
+    meridian_state = state.setdefault("agents", {}).setdefault("MERIDIAN-ORCHESTRATOR", {})
+    run_budget = meridian_state.setdefault("run_budget", {})
+    run_budget["daily_token_budget"] = run_budget.get("daily_token_budget", DEFAULT_DAILY_TOKEN_BUDGET)
+    run_budget["tokens_used_today"] = run_budget.get("tokens_used_today", 0)
+    run_budget["runs_today"] = run_budget.get("runs_today", 0) + 1
+    meridian_state["last_run"] = finished_at
+    meridian_state["status"] = status
+    meridian_state["dashboard_status"] = "completed" if status in {"success", "skipped"} else status
+    meridian_state["last_trigger"] = request.trigger_type
+    meridian_state["context_hash"] = post_context_hash
+    meridian_state["skip_reason"] = "no_meaningful_changed_context" if status == "skipped" else ""
+    meridian_state["active_project"] = request.project
+    if status in {"success", "skipped"}:
+        meridian_state["last_success"] = finished_at
+    if output_paths:
+        meridian_state["last_output"] = output_paths[0]
+    communications = meridian_state.setdefault("communications", [])
+    external_artifacts = meridian_state.setdefault("external_artifacts", [])
+
+    state["open_escalations"] = open_escalations
+    state["run_queue"] = sorted(path.relative_to(instance_path).as_posix() for path in (instance_path / "runtime/queue").glob("*.json"))
+
+    if output_paths:
+        for output_path in output_paths:
+            communications.append(
+                {
+                    "type": "founder_briefing",
+                    "project": request.project,
+                    "task_type": request.task_type,
+                    "origin": request.origin,
+                    "path": output_path,
+                    "created_at": finished_at,
+                }
+            )
+            if output_path not in external_artifacts:
+                external_artifacts.append(output_path)
+            if output_path not in state.setdefault("external_artifacts", []):
+                state["external_artifacts"].append(output_path)
+            state.setdefault("communications", []).append(
+                {
+                    "type": "founder_briefing",
+                    "project": request.project,
+                    "task_type": request.task_type,
+                    "origin": request.origin,
+                    "from": "MERIDIAN-ORCHESTRATOR",
+                    "path": output_path,
+                    "created_at": finished_at,
+                }
+            )
+
+    processed_handoff_ids = {Path(path).stem for path in processed_handoff_paths}
+    if processed_handoff_ids:
+        state["pending_events"] = [
+            item for item in state.get("pending_events", []) if item.get("handoff_id") not in processed_handoff_ids
+        ]
+
+    state.setdefault("metrics", {})
+    if status == "skipped":
+        state["metrics"]["skipped_runs_today"] = state["metrics"].get("skipped_runs_today", 0) + 1
+        if request.trigger_type == "heartbeat":
+            state["metrics"]["no_op_heartbeats_today"] = state["metrics"].get("no_op_heartbeats_today", 0) + 1
+    state["company"]["last_updated"] = finished_at
+    if output_paths:
+        active_project = state.get("projects", {}).get(request.project)
+        if active_project is not None:
+            active_project["last_activity_at"] = finished_at
+        for task in state.get("task_board", []):
+            if task.get("owner_agent") == "MERIDIAN-ORCHESTRATOR" and task.get("project") == request.project:
+                task["updated_at"] = finished_at
+                task["result_output"] = output_paths[0]
+
+    last_runs = state.setdefault("last_runs", [])
+    last_runs.append(
+        {
+            "run_id": run_id,
+            "agent": "MERIDIAN-ORCHESTRATOR",
+            "project": request.project,
+            "task_type": request.task_type,
+            "origin": request.origin,
+            "trigger_type": request.trigger_type,
+            "status": "completed" if status == "success" else status,
+            "started_at": started_at,
+            "finished_at": finished_at,
+            "output": output_paths[0] if output_paths else "",
+        }
+    )
+    state["last_runs"] = last_runs[-50:]
+    write_json(instance_path / "outputs/state.json", state)
+
+
+def execute_meridian_request(
+    instance_path: Path,
+    request: DispatchRequest,
+    state: dict[str, Any],
+    schedule: dict[str, Any],
+    result: ResultRecord,
+) -> ResultRecord:
+    meridian_state = state.get("agents", {}).get("MERIDIAN-ORCHESTRATOR", {})
+    last_success = parse_iso8601(meridian_state.get("last_success", ""))
+    pending_handoffs = discover_pending_handoffs(instance_path)
+    open_escalations = discover_open_escalations(instance_path, state)
+    recent_outputs = list_recent_agent_outputs(instance_path, schedule, last_success)
+    now = current_time(schedule)
+
+    consumed_handoffs = [
+        item for item in pending_handoffs if item["to"] == "MERIDIAN-ORCHESTRATOR"
+    ]
+    new_downstream_handoffs = [
+        item
+        for item in pending_handoffs
+        if item["to"] != "MERIDIAN-ORCHESTRATOR"
+        and (last_success is None or parse_iso8601(item.get("created_at", "")) is None or parse_iso8601(item.get("created_at", "")) > last_success)
+    ]
+    new_recent_outputs = [item for item in recent_outputs if item["is_new"]]
+    meaningful_misc_context = any(
+        (instance_path / relative_path).exists() for relative_path in request.changed_context if relative_path
+    )
+
+    open_escalations, created_escalations = detect_founder_decision_outputs(
+        instance_path, new_recent_outputs, open_escalations, now
+    )
+
+    meaningful_context = bool(
+        consumed_handoffs or open_escalations or new_recent_outputs or new_downstream_handoffs or meaningful_misc_context
+    )
+    processed_handoff_paths: list[str] = []
+    output_paths: list[str] = []
+    notes = list(result.notes or [])
+    notes.append("meridian_orchestration_pass")
+
+    if not meaningful_context:
+        result.status = "skipped"
+        notes.append("no_meaningful_changed_context")
+    else:
+        processed_handoff_paths = [item["path"] for item in consumed_handoffs]
+        if processed_handoff_paths:
+            mark_handoffs_processed(instance_path, processed_handoff_paths, result.run_id, result.finished_at)
+            notes.append(f"processed_{len(processed_handoff_paths)}_handoff(s)")
+
+        remaining_pending_handoffs = [
+            item for item in pending_handoffs if item["path"] not in set(processed_handoff_paths)
+        ]
+        filename = f"{now.date().isoformat()}-founder-briefing.md"
+        output_path = instance_path / "outputs/MERIDIAN-ORCHESTRATOR" / filename
+        front_matter = {
+            "artifact_type": "founder_briefing",
+            "audience": "founder",
+            "project": request.project,
+            "task_type": request.task_type,
+            "origin": request.origin,
+            "source_run_id": result.run_id,
+            "status": "completed",
+            "google_drive_id": "",
+            "google_doc_id": "",
+            "communication_thread_id": f"meridian-{now.strftime('%Y%m%d')}",
+        }
+        body = build_meridian_briefing(
+            state=state,
+            pending_handoffs=remaining_pending_handoffs,
+            open_escalations=open_escalations,
+            recent_outputs=recent_outputs,
+            processed_handoff_paths=processed_handoff_paths,
+        )
+        write_markdown_with_front_matter(output_path, front_matter, body)
+        output_paths.append(output_path.relative_to(instance_path).as_posix())
+        result.status = "success"
+        notes.append("founder_output_created")
+
+    post_state = load_state(instance_path)
+    update_meridian_state(
+        instance_path=instance_path,
+        state=post_state,
+        schedule=schedule,
+        request=request,
+        run_id=result.run_id,
+        started_at=result.started_at,
+        finished_at=result.finished_at,
+        status=result.status,
+        post_context_hash="",
+        output_paths=output_paths,
+        processed_handoff_paths=processed_handoff_paths,
+        open_escalations=open_escalations,
+    )
+    temp_request = DispatchRequest(**asdict(request))
+    post_context_hash = compute_context_hash(
+        instance_path,
+        schedule.get("agents", {}).get("MERIDIAN-ORCHESTRATOR", {}),
+        temp_request,
+    )
+    updated_state = load_state(instance_path)
+    updated_state["agents"]["MERIDIAN-ORCHESTRATOR"]["context_hash"] = post_context_hash
+    write_json(instance_path / "outputs/state.json", updated_state)
+
+    result.output_path = output_paths[0] if output_paths else ""
+    result.output_paths = output_paths
+    result.state_updated = True
+    result.processed_handoffs_count = len(processed_handoff_paths)
+    result.processed_escalations_count = 0
+    result.created_escalations_count = created_escalations
+    result.context_hash = post_context_hash
+    result.notes = notes
+    return result
 
 
 def execute_request(instance_path: Path, request_path: Path) -> dict[str, Any]:
@@ -680,18 +1115,22 @@ def execute_request(instance_path: Path, request_path: Path) -> dict[str, Any]:
         error=error,
         notes=notes,
     )
+    if status == "completed":
+        if request.agent_id == "MERIDIAN-ORCHESTRATOR":
+            result = execute_meridian_request(instance_path, request, state, schedule, result)
+        else:
+            result.status = "success"
+            result.notes = list(result.notes or []) + ["stateless_specialist_execution"]
+
     result_path = instance_path / "runtime/results" / f"{run_id}.json"
     write_json(result_path, asdict(result))
-
-    if status == "completed":
-        mark_consumed_handoffs(instance_path, request, result)
 
     request_path.unlink(missing_ok=True)
     return {
         "run_id": run_id,
-        "status": status,
+        "status": result.status,
         "result_path": result_path.relative_to(instance_path).as_posix(),
-        "notes": notes,
+        "notes": result.notes or [],
         "error": error,
     }
 

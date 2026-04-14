@@ -4,7 +4,7 @@ Founders OS is a multi-agent operating system for startup work. In `Startup AI T
 
 ## Operating Model
 
-- Codex-compatible runner executes agents as stateless jobs
+- Codex-compatible runner executes agents as stateless jobs, with a full MERIDIAN orchestration pass on top of the serial harness
 - GitHub Actions remains the scheduler of record
 - A 15-minute dispatcher heartbeat scans for new events, changed context, and overdue work
 - Handoffs and state stay in-repo for auditability
@@ -48,6 +48,11 @@ Every dispatched run uses the same core request shape:
 - `instance_path`
 
 Specialist agents remain stateless per run. `MERIDIAN-ORCHESTRATOR` is the only component that normalizes shared state into `outputs/state.json`, asks the founder which project they want to work on, reports startup and project status, and routes work to the appropriate specialists.
+
+`make run-meridian` queues a real MERIDIAN orchestration pass. After `make drain`, MERIDIAN either:
+
+- records a skip when no meaningful changed context exists, or
+- writes a founder-facing briefing and normalizes shared state when context changed
 
 ## File Structure
 

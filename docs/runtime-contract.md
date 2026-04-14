@@ -1,6 +1,6 @@
 # Runtime Contract
 
-This repo is the canonical runtime model for **Startup AI Team - One**. The current surface is document-driven, but every contract in this file is intended to be portable into a future standalone web application without redesign.
+This repo is the canonical runtime model for **Startup AI Team - One**. The current surface is repo-native and serial, and every contract in this file is intended to be portable into a future standalone web application without redesign.
 
 ## Core design rule
 
@@ -57,7 +57,8 @@ The runtime is driven in this order:
 4. `MERIDIAN-ORCHESTRATOR` handles founder intake, project selection, status synthesis, and delegation.
 5. Specialist agents execute project-scoped work from handoffs or normalized founder requests.
 6. The repo-native planner writes request manifests to `runtime/requests/`, enqueues them in `runtime/queue/`, and drains them serially into `runtime/results/`.
-7. Outputs, handoffs, escalations, communications, and run records are written back to canonical state.
+7. A MERIDIAN run is a real orchestration pass: it may skip cleanly when nothing meaningful changed, or it may write a founder-facing briefing and normalize shared state.
+8. Outputs, handoffs, escalations, communications, and run records are written back to canonical state.
 
 `config/schedule.json` remains the sequencing authority. The future web app may replace the scheduler surface, but not the core runtime concepts.
 
@@ -76,6 +77,7 @@ Use these statuses wherever applicable:
 - `waiting_on_founder`
 - `blocked`
 - `completed`
+- `processed`
 - `stale`
 
 For agent lifecycle states, `success` may remain as the run-result status, but dashboard-facing task and workflow objects should prefer the canonical statuses above.
@@ -132,6 +134,11 @@ Run records should support auditability and a future execution dashboard:
 - `started_at`
 - `finished_at`
 - `output`
+
+MERIDIAN runs may end in two normal modes:
+
+- `skipped`: no meaningful changed context was found, so state was updated without a new founder artifact
+- `success`: a founder-facing output was created and shared state was normalized
 
 ## Handoff contract
 
