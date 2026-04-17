@@ -283,8 +283,26 @@ def downstream_handoffs_for_agent(
 
     created_paths: list[dict[str, str]] = []
     handoff_dir = instance_path / "outputs/handoffs"
+
+    existing_signatures: set[tuple[str, str, str, str]] = set()
+    for existing_path in sorted(handoff_dir.glob("*.md")):
+        front_matter, _body = read_front_matter(existing_path)
+        if front_matter.get("compatibility") == "legacy":
+            continue
+        existing_signatures.add(
+            (
+                front_matter.get("from", ""),
+                front_matter.get("to", ""),
+                front_matter.get("project", ""),
+                front_matter.get("task_type", ""),
+            )
+        )
+
     existing_count = len(list(handoff_dir.glob(f"HANDOFF-{now.date().isoformat()}-{agent_id}-*.md")))
     for index, item in enumerate(created, start=1):
+        signature = (agent_id, item["to"], project, item["task_type"])
+        if signature in existing_signatures:
+            continue
         handoff_id = f"HANDOFF-{now.date().isoformat()}-{agent_id}-{existing_count + index:03d}"
         handoff_path = handoff_dir / f"{handoff_id}.md"
         front_matter = {
@@ -315,6 +333,7 @@ def downstream_handoffs_for_agent(
         )
         write_front_matter(handoff_path, front_matter, body)
         created_paths.append({"path": handoff_path.relative_to(instance_path).as_posix()})
+        existing_signatures.add(signature)
     return created_paths
 
 

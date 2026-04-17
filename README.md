@@ -7,12 +7,14 @@ Founders OS is a multi-agent operating system for startup work. In `Startup AI T
 - Codex-compatible runner executes agents as stateless jobs, with a full MERIDIAN orchestration pass on top of the serial harness
 - GitHub Actions remains the scheduler of record
 - A 15-minute dispatcher heartbeat scans for new events, changed context, and overdue work
+- The planner coalesces pending handoffs into one queued request per agent per cycle to avoid duplicate serial work
 - Handoffs and state stay in-repo for auditability
 - File-backed runtime manifests are the default execution path
 - Founder communication defaults to repo files in `outputs/communications/outbox/` and `inputs/founder-replies/`
 - Google Drive, Docs, and Gmail stay disabled until real adapters exist
 - Founder conversations start with project selection unless the request is clearly startup-wide
 - Enabled specialist agents receive scoped, project-specific work through handoffs, generate real markdown artifacts, and may create justified downstream handoffs that MERIDIAN later synthesizes back to the founder
+- Equivalent downstream handoffs are suppressed so repeated runs do not reopen the same follow-on work without new justification
 - The runtime contracts are being prepared so a future standalone web app can become the founder control center, dashboard, and execution surface without redesigning the backend model
 
 ## Agent Activation

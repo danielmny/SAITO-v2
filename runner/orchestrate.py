@@ -366,6 +366,10 @@ def request_signature(request: DispatchRequest) -> str:
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
 
 
+def planner_request_key(request: DispatchRequest) -> tuple[str, str, str]:
+    return (request.agent_id, request.project, request.trigger_type)
+
+
 def build_request(
     *,
     agent_id: str,
@@ -524,18 +528,27 @@ def plan_requests(instance_path: Path) -> dict[str, Any]:
     now = current_time(schedule)
     requests: list[DispatchRequest] = []
     planning_notes: list[str] = []
+    planned_keys: set[tuple[str, str, str]] = set()
 
+    handoffs_by_agent: dict[str, list[dict[str, Any]]] = {}
     for handoff in pending_handoffs:
+        handoffs_by_agent.setdefault(handoff["agent_id"], []).append(handoff)
+
+    for agent_id, agent_handoffs in sorted(handoffs_by_agent.items()):
+        changed_context = [item["path"] for item in agent_handoffs]
+        projects = {item["project"] for item in agent_handoffs}
+        task_types = {item["task_type"] for item in agent_handoffs}
+        reasons = [item["reason"] for item in agent_handoffs]
         request = build_request(
-            agent_id=handoff["agent_id"],
+            agent_id=agent_id,
             trigger_type="event",
-            reason=handoff["reason"],
+            reason=reasons[0] if len(reasons) == 1 else f"{len(agent_handoffs)} pending handoffs",
             run_timestamp=now.isoformat(timespec="seconds"),
-            changed_context=[handoff["path"]],
+            changed_context=changed_context,
             instance_path=instance_path,
-            project=handoff["project"],
-            task_type=handoff["task_type"],
-            origin=handoff["origin"],
+            project=sorted(projects)[0] if len(projects) == 1 else "startup_ops",
+            task_type=sorted(task_types)[0] if len(task_types) == 1 else "handoff_batch",
+            origin="handoff" if all(item["origin"] == "handoff" for item in agent_handoffs) else "integration",
         )
         if request.request_hash in queue_hashes or request.request_hash in result_hashes:
             continue
@@ -543,6 +556,7 @@ def plan_requests(instance_path: Path) -> dict[str, Any]:
         eligible, reason = can_enqueue_request(request, state, schedule, token_policy, instance_path)
         if eligible:
             requests.append(request)
+            planned_keys.add(planner_request_key(request))
         else:
             planning_notes.append(f"{request.agent_id}:{reason}")
 
@@ -559,11 +573,16 @@ def plan_requests(instance_path: Path) -> dict[str, Any]:
             task_type="escalation",
             origin="integration",
         )
-        if request.request_hash not in queue_hashes and request.request_hash not in result_hashes:
+        if (
+            planner_request_key(request) not in planned_keys
+            and request.request_hash not in queue_hashes
+            and request.request_hash not in result_hashes
+        ):
             token_policy = resolve_token_policy(instance_path, state, request.agent_id)
             eligible, reason = can_enqueue_request(request, state, schedule, token_policy, instance_path)
             if eligible:
                 requests.append(request)
+                planned_keys.add(planner_request_key(request))
             else:
                 planning_notes.append(f"{request.agent_id}:{reason}")
 
@@ -589,11 +608,16 @@ def plan_requests(instance_path: Path) -> dict[str, Any]:
                     task_type="status_review" if agent_id != "MERIDIAN-ORCHESTRATOR" else "operating_review",
                     origin="scheduler",
                 )
-                if request.request_hash not in queue_hashes and request.request_hash not in result_hashes:
+                if (
+                    planner_request_key(request) not in planned_keys
+                    and request.request_hash not in queue_hashes
+                    and request.request_hash not in result_hashes
+                ):
                     token_policy = resolve_token_policy(instance_path, state, request.agent_id)
                     eligible, reason = can_enqueue_request(request, state, schedule, token_policy, instance_path)
                     if eligible:
                         requests.append(request)
+                        planned_keys.add(planner_request_key(request))
                     else:
                         planning_notes.append(f"{request.agent_id}:{reason}")
 
@@ -614,11 +638,16 @@ def plan_requests(instance_path: Path) -> dict[str, Any]:
                     task_type="overdue_sweep",
                     origin="scheduler",
                 )
-                if request.request_hash not in queue_hashes and request.request_hash not in result_hashes:
+                if (
+                    planner_request_key(request) not in planned_keys
+                    and request.request_hash not in queue_hashes
+                    and request.request_hash not in result_hashes
+                ):
                     token_policy = resolve_token_policy(instance_path, state, request.agent_id)
                     eligible, reason = can_enqueue_request(request, state, schedule, token_policy, instance_path)
                     if eligible:
                         requests.append(request)
+                        planned_keys.add(planner_request_key(request))
                     else:
                         planning_notes.append(f"{request.agent_id}:{reason}")
 

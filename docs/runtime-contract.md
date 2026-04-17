@@ -56,7 +56,7 @@ The runtime is driven in this order:
 3. Eligible agents are selected using schedule rules, project/task state, and changed context.
 4. `MERIDIAN-ORCHESTRATOR` handles founder intake, project selection, status synthesis, and delegation.
 5. Enabled specialist agents execute project-scoped work from handoffs or normalized founder requests, produce real markdown outputs under `outputs/{AGENT_NAME}/`, and may create deterministic downstream handoffs when the input clearly justifies it.
-6. The repo-native planner writes request manifests to `runtime/requests/`, enqueues them in `runtime/queue/`, and drains them serially into `runtime/results/`.
+6. The repo-native planner writes request manifests to `runtime/requests/`, coalesces pending handoffs into a single queued request per agent per cycle when possible, enqueues them in `runtime/queue/`, and drains them serially into `runtime/results/`.
 7. A MERIDIAN run is a real orchestration pass: it may skip cleanly when nothing meaningful changed, or it may write a founder-facing briefing and normalize shared state.
 8. Outputs, handoffs, escalations, communications, and run records are written back to canonical state.
 
@@ -140,6 +140,11 @@ Enabled specialist result manifests should also include:
 - `output_paths`
 - `processed_handoffs_count`
 - `created_handoffs_count`
+
+Specialist-generated downstream handoffs should be deterministic and idempotent:
+
+- create them only when the source handoff or output explicitly justifies the dependency
+- avoid emitting an equivalent canonical handoff if one already exists for the same `from`, `to`, `project`, and `task_type`
 
 MERIDIAN runs may end in two normal modes:
 

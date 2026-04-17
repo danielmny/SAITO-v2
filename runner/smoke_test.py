@@ -25,10 +25,77 @@ def run(command: list[str], cwd: Path) -> None:
         )
 
 
+def reset_runtime_fixture(repo: Path) -> None:
+    for relative_dir in [
+        "runtime/requests",
+        "runtime/queue",
+        "runtime/results",
+        "runtime/logs",
+        "outputs/handoffs",
+        "outputs/ATLAS-RESEARCH",
+        "outputs/CURRENT-SALES",
+        "outputs/FORGE-ENGINEERING",
+        "outputs/HERALD-COMMS",
+    ]:
+        target = repo / relative_dir
+        shutil.rmtree(target, ignore_errors=True)
+        target.mkdir(parents=True, exist_ok=True)
+
+    pending_escalations = repo / "outputs/escalations/pending"
+    if pending_escalations.exists():
+        for path in pending_escalations.glob("*.md"):
+            path.unlink()
+
+
+def write_handoff(
+    *,
+    repo: Path,
+    handoff_id: str,
+    to_agent: str,
+    task_type: str,
+    reason: str,
+    subject: str,
+    action_required: str,
+) -> str:
+    handoff_path = repo / "outputs/handoffs" / f"{handoff_id}.md"
+    handoff_path.write_text(
+        "\n".join(
+            [
+                "---",
+                f"handoff_id: {handoff_id}",
+                "from: MERIDIAN-ORCHESTRATOR",
+                f"to: {to_agent}",
+                "project: SIGNAL",
+                f"task_type: {task_type}",
+                "origin: founder_request",
+                "status: queued",
+                "created_at: 2026-04-17T10:00:00+00:00",
+                f"reason: {reason}",
+                "source_output: outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md",
+                "compatibility: canonical",
+                "---",
+                "## FROM: MERIDIAN-ORCHESTRATOR",
+                f"## TO: {to_agent}",
+                "## PROJECT: SIGNAL",
+                f"## TASK TYPE: {task_type}",
+                "## ORIGIN: founder_request",
+                f"## RE: {subject}",
+                "## CONTEXT: Seeded by smoke test.",
+                "## OUTPUT: None yet.",
+                f"## ACTION REQUIRED: {action_required}",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    return handoff_path.relative_to(repo).as_posix()
+
+
 def queue_run(
     *,
     repo: Path,
     agent: str,
+    trigger_type: str,
     reason: str,
     project: str,
     task_type: str,
@@ -42,7 +109,7 @@ def queue_run(
         "--agent",
         agent,
         "--trigger-type",
-        "event" if agent != "MERIDIAN-ORCHESTRATOR" else "heartbeat",
+        trigger_type,
         "--reason",
         reason,
         "--instance-path",
@@ -70,25 +137,56 @@ def latest_result_for_agent(temp_repo: Path, agent_id: str) -> dict[str, object]
     return results[-1]
 
 
+def write_state(repo: Path, state: dict[str, object]) -> None:
+    (repo / "outputs/state.json").write_text(json.dumps(state, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
 def main() -> int:
     repo_root = Path(__file__).resolve().parent.parent
     with tempfile.TemporaryDirectory(prefix="founders-os-smoke-") as tmp_dir:
         temp_repo = Path(tmp_dir) / "repo"
         copy_repo(repo_root, temp_repo)
+        reset_runtime_fixture(temp_repo)
 
-        forge_handoff = "outputs/handoffs/HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-001.md"
+        forge_handoff = write_handoff(
+            repo=temp_repo,
+            handoff_id="HANDOFF-2026-04-17-MERIDIAN-ORCHESTRATOR-901",
+            to_agent="FORGE-ENGINEERING",
+            task_type="implementation_plan",
+            reason="Need an implementation plan for the psychographic matching core.",
+            subject="Implementation Plan",
+            action_required="Produce the implementation plan and flag any CANVAS-PRODUCT dependency that must be resolved before build execution continues.",
+        )
+        write_handoff(
+            repo=temp_repo,
+            handoff_id="HANDOFF-2026-04-17-MERIDIAN-ORCHESTRATOR-902",
+            to_agent="FORGE-ENGINEERING",
+            task_type="implementation_plan",
+            reason="Need a second implementation note tied to the same project.",
+            subject="Implementation Plan Follow-up",
+            action_required="Extend the engineering plan with sequencing notes and keep any CANVAS-PRODUCT dependency explicit.",
+        )
+
         state_before = json.loads((temp_repo / "outputs/state.json").read_text(encoding="utf-8"))
         meridian_before = state_before["agents"]["MERIDIAN-ORCHESTRATOR"]["last_run"]
 
-        queue_run(
-            repo=temp_repo,
-            agent="FORGE-ENGINEERING",
-            reason="smoke_test_forge",
-            project="SIGNAL",
-            task_type="implementation_plan",
-            origin="validation",
-            changed_context=[forge_handoff],
-        )
+        run([sys.executable, "runner/orchestrate.py", "plan", "--instance-path", "."], temp_repo)
+        queued_requests = sorted((temp_repo / "runtime/queue").glob("*.json"))
+        forge_requests = [
+            json.loads(path.read_text(encoding="utf-8"))
+            for path in queued_requests
+            if json.loads(path.read_text(encoding="utf-8")).get("agent_id") == "FORGE-ENGINEERING"
+        ]
+        if len(forge_requests) != 1:
+            raise RuntimeError(f"Expected planner to coalesce FORGE into one queued request, got {len(forge_requests)}")
+        if sorted(forge_requests[0].get("changed_context", [])) != sorted(
+            [
+                "outputs/handoffs/HANDOFF-2026-04-17-MERIDIAN-ORCHESTRATOR-901.md",
+                "outputs/handoffs/HANDOFF-2026-04-17-MERIDIAN-ORCHESTRATOR-902.md",
+            ]
+        ):
+            raise RuntimeError("Expected planner to carry both pending FORGE handoffs into one request")
+
         run([sys.executable, "runner/orchestrate.py", "drain-queue", "--instance-path", "."], temp_repo)
 
         forge_result = latest_result_for_agent(temp_repo, "FORGE-ENGINEERING")
@@ -98,22 +196,34 @@ def main() -> int:
             raise RuntimeError("Expected FORGE to create a real output artifact")
         if forge_result.get("created_handoffs_count", 0) < 1:
             raise RuntimeError("Expected FORGE to create a downstream handoff")
+        if forge_result.get("processed_handoffs_count") != 2:
+            raise RuntimeError("Expected FORGE to consume both coalesced handoffs")
 
         forge_output = temp_repo / str(forge_result["output_paths"][0])
         if not forge_output.exists():
             raise RuntimeError("Expected FORGE output artifact to exist")
 
-        forge_source_handoff = (temp_repo / forge_handoff).read_text(encoding="utf-8")
-        if "status: completed" not in forge_source_handoff:
-            raise RuntimeError("Expected the consumed FORGE handoff to be marked completed")
+        for seeded_handoff in [
+            forge_handoff,
+            "outputs/handoffs/HANDOFF-2026-04-17-MERIDIAN-ORCHESTRATOR-902.md",
+        ]:
+            handoff_text = (temp_repo / seeded_handoff).read_text(encoding="utf-8")
+            if "status: completed" not in handoff_text:
+                raise RuntimeError("Expected each consumed FORGE handoff to be marked completed")
 
         created_canvas_handoffs = sorted((temp_repo / "outputs/handoffs").glob("HANDOFF-*-FORGE-ENGINEERING-*.md"))
-        if not created_canvas_handoffs:
+        if len(created_canvas_handoffs) != 1:
             raise RuntimeError("Expected FORGE to create a downstream handoff file")
+
+        updated_state = json.loads((temp_repo / "outputs/state.json").read_text(encoding="utf-8"))
+        updated_state["agents"]["MERIDIAN-ORCHESTRATOR"]["last_run"] = ""
+        updated_state["agents"]["MERIDIAN-ORCHESTRATOR"]["cooldown_until"] = ""
+        write_state(temp_repo, updated_state)
 
         queue_run(
             repo=temp_repo,
             agent="MERIDIAN-ORCHESTRATOR",
+            trigger_type="heartbeat",
             reason="smoke_test_meridian_after_forge",
             project="startup_ops",
             task_type="operating_review",
