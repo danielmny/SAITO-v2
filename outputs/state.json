@@ -169,7 +169,7 @@
       "status": "not_run"
     },
     "MERIDIAN-ORCHESTRATOR": {
-      "active_project": "startup_ops",
+      "active_project": "CreditBank",
       "blocked_on_escalation": false,
       "communications": [
         {
@@ -211,28 +211,80 @@
           "project": "startup_ops",
           "task_type": "operating_review",
           "type": "founder_briefing"
+        },
+        {
+          "created_at": "2026-04-17T21:58:06+00:00",
+          "origin": "manual",
+          "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-project-intake.md",
+          "project": "portfolio",
+          "task_type": "project_selection",
+          "type": "founder_briefing"
+        },
+        {
+          "created_at": "2026-04-17T21:59:39+00:00",
+          "origin": "founder_reply",
+          "path": "projects/creditbank/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-creditbank-project-setup.md",
+          "project": "CreditBank",
+          "task_type": "founder_reply",
+          "type": "founder_briefing"
+        },
+        {
+          "created_at": "2026-04-17T22:01:35+00:00",
+          "origin": "manual",
+          "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-project-intake.md",
+          "project": "portfolio",
+          "task_type": "project_selection",
+          "type": "founder_briefing"
+        },
+        {
+          "created_at": "2026-04-17T22:05:47+00:00",
+          "origin": "manual",
+          "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-project-intake.md",
+          "project": "portfolio",
+          "task_type": "project_selection",
+          "type": "founder_briefing"
+        },
+        {
+          "created_at": "2026-04-17T22:50:21+00:00",
+          "origin": "founder_reply",
+          "path": "projects/creditbank/outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-creditbank-project-setup.md",
+          "project": "CreditBank",
+          "task_type": "founder_reply",
+          "type": "founder_briefing"
+        },
+        {
+          "created_at": "2026-04-17T23:04:08+00:00",
+          "origin": "manual",
+          "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-project-intake.md",
+          "project": "portfolio",
+          "task_type": "project_selection",
+          "type": "founder_briefing"
         }
       ],
-      "context_hash": "0912801f814606186c1176e346c06bcc8436e756de9e754e285d192557d5f7ab",
+      "context_hash": "7534d4e5231dde77147d6ce3608ae20e67274686c88d5e7ca4e0a4aed4c2b4c6",
       "cooldown_until": "",
-      "dashboard_status": "completed",
+      "dashboard_status": "waiting_on_founder",
       "external_artifacts": [
         "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
         "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md",
-        "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md"
+        "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
+        "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-project-intake.md",
+        "projects/creditbank/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-creditbank-project-setup.md",
+        "outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-project-intake.md",
+        "projects/creditbank/outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-creditbank-project-setup.md"
       ],
       "last_google_sync": "",
-      "last_output": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
-      "last_run": "2026-04-17T10:47:01+00:00",
-      "last_success": "2026-04-17T10:47:01+00:00",
-      "last_trigger": "heartbeat",
+      "last_output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-project-intake.md",
+      "last_run": "2026-04-17T23:04:08+00:00",
+      "last_success": "2026-04-17T22:50:21+00:00",
+      "last_trigger": "manual",
       "run_budget": {
         "daily_token_budget": 25000,
-        "runs_today": 5,
+        "runs_today": 11,
         "tokens_used_today": 0
       },
       "skip_reason": "",
-      "status": "success"
+      "status": "waiting_on_founder"
     },
     "NEXUS-TALENT": {
       "active_project": "SIGNAL",
@@ -322,12 +374,66 @@
       "project": "startup_ops",
       "task_type": "operating_review",
       "type": "founder_briefing"
+    },
+    {
+      "created_at": "2026-04-17T21:58:06+00:00",
+      "from": "MERIDIAN-ORCHESTRATOR",
+      "origin": "manual",
+      "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-project-intake.md",
+      "project": "portfolio",
+      "task_type": "project_selection",
+      "type": "founder_briefing"
+    },
+    {
+      "created_at": "2026-04-17T21:59:39+00:00",
+      "from": "MERIDIAN-ORCHESTRATOR",
+      "origin": "founder_reply",
+      "path": "projects/creditbank/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-creditbank-project-setup.md",
+      "project": "CreditBank",
+      "task_type": "founder_reply",
+      "type": "founder_briefing"
+    },
+    {
+      "created_at": "2026-04-17T22:01:35+00:00",
+      "from": "MERIDIAN-ORCHESTRATOR",
+      "origin": "manual",
+      "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-project-intake.md",
+      "project": "portfolio",
+      "task_type": "project_selection",
+      "type": "founder_briefing"
+    },
+    {
+      "created_at": "2026-04-17T22:05:47+00:00",
+      "from": "MERIDIAN-ORCHESTRATOR",
+      "origin": "manual",
+      "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-project-intake.md",
+      "project": "portfolio",
+      "task_type": "project_selection",
+      "type": "founder_briefing"
+    },
+    {
+      "created_at": "2026-04-17T22:50:21+00:00",
+      "from": "MERIDIAN-ORCHESTRATOR",
+      "origin": "founder_reply",
+      "path": "projects/creditbank/outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-creditbank-project-setup.md",
+      "project": "CreditBank",
+      "task_type": "founder_reply",
+      "type": "founder_briefing"
+    },
+    {
+      "created_at": "2026-04-17T23:04:08+00:00",
+      "from": "MERIDIAN-ORCHESTRATOR",
+      "origin": "manual",
+      "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-project-intake.md",
+      "project": "portfolio",
+      "task_type": "project_selection",
+      "type": "founder_briefing"
     }
   ],
   "company": {
     "founder_digest_due_at": "2026-04-14T18:00:00+0200",
     "founder_intake_agent": "MERIDIAN-ORCHESTRATOR",
-    "last_updated": "2026-04-17T10:47:01+00:00",
+    "last_updated": "2026-04-17T23:04:08+00:00",
     "name": "SAITO Framework",
     "stage": "PRE-SEED"
   },
@@ -379,8 +485,62 @@
   "external_artifacts": [
     "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
     "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md",
-    "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md"
+    "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
+    "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-project-intake.md",
+    "projects/creditbank/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-creditbank-project-setup.md",
+    "outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-project-intake.md",
+    "projects/creditbank/outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-creditbank-project-setup.md"
   ],
+  "founder_intake": {
+    "active_session_id": "intake-20260418T010408",
+    "sessions": {
+      "intake-20260418T010408": {
+        "answers": {},
+        "asked_questions": [
+          "project_name"
+        ],
+        "delivery_mode": "conversational",
+        "last_question": "project_name",
+        "project": "portfolio",
+        "question_order": [
+          "project_name",
+          "project_key",
+          "project_type",
+          "stage",
+          "summary",
+          "objective",
+          "core_problem",
+          "who_feels_it",
+          "why_now",
+          "primary_icp",
+          "observable_traits",
+          "early_adopters",
+          "product_wedge",
+          "core_workflow",
+          "why_it_wins",
+          "evidence_collected",
+          "assumptions_to_test",
+          "next_proof_steps",
+          "go_to_market",
+          "positioning",
+          "key_risks",
+          "revenue_model",
+          "costs_and_burn",
+          "fundraising_notes",
+          "roadmap_now",
+          "roadmap_next",
+          "roadmap_later",
+          "open_decisions",
+          "locked_decisions",
+          "revisit_later"
+        ],
+        "session_id": "intake-20260418T010408",
+        "started_at": "2026-04-18T01:04:08+02:00",
+        "status": "in_progress",
+        "updated_at": "2026-04-18T01:04:08+02:00"
+      }
+    }
+  },
   "founder_requests": [
     {
       "origin": "founder_request",
@@ -389,6 +549,15 @@
       "status": "completed",
       "summary": "Run MERIDIAN and inspect runtime readiness.",
       "task_type": "operating_review"
+    }
+  ],
+  "founder_sessions": [
+    {
+      "project": "portfolio",
+      "session_id": "intake-20260418T010408",
+      "started_at": "2026-04-18T01:04:08+02:00",
+      "status": "in_progress",
+      "updated_at": "2026-04-18T01:04:08+02:00"
     }
   ],
   "last_runs": [
@@ -451,6 +620,78 @@
       "status": "completed",
       "task_type": "operating_review",
       "trigger_type": "heartbeat"
+    },
+    {
+      "agent": "MERIDIAN-ORCHESTRATOR",
+      "finished_at": "2026-04-17T21:58:06+00:00",
+      "origin": "manual",
+      "output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-project-intake.md",
+      "project": "portfolio",
+      "run_id": "RUN-20260417T2358000200-MERIDIAN-ORCHESTRATOR-b2b2b470",
+      "started_at": "2026-04-17T21:58:06+00:00",
+      "status": "waiting_on_founder",
+      "task_type": "project_selection",
+      "trigger_type": "manual"
+    },
+    {
+      "agent": "MERIDIAN-ORCHESTRATOR",
+      "finished_at": "2026-04-17T21:59:39+00:00",
+      "origin": "founder_reply",
+      "output": "projects/creditbank/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-creditbank-project-setup.md",
+      "project": "CreditBank",
+      "run_id": "RUN-20260417T2359390200-MERIDIAN-ORCHESTRATOR-f4319433",
+      "started_at": "2026-04-17T21:59:39+00:00",
+      "status": "completed",
+      "task_type": "founder_reply",
+      "trigger_type": "event"
+    },
+    {
+      "agent": "MERIDIAN-ORCHESTRATOR",
+      "finished_at": "2026-04-17T22:01:35+00:00",
+      "origin": "manual",
+      "output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-project-intake.md",
+      "project": "portfolio",
+      "run_id": "RUN-20260418T0001310200-MERIDIAN-ORCHESTRATOR-6f6f1156",
+      "started_at": "2026-04-17T22:01:35+00:00",
+      "status": "waiting_on_founder",
+      "task_type": "project_selection",
+      "trigger_type": "manual"
+    },
+    {
+      "agent": "MERIDIAN-ORCHESTRATOR",
+      "finished_at": "2026-04-17T22:05:47+00:00",
+      "origin": "manual",
+      "output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-project-intake.md",
+      "project": "portfolio",
+      "run_id": "RUN-20260418T0005470200-MERIDIAN-ORCHESTRATOR-b39cbff2",
+      "started_at": "2026-04-17T22:05:47+00:00",
+      "status": "waiting_on_founder",
+      "task_type": "project_selection",
+      "trigger_type": "manual"
+    },
+    {
+      "agent": "MERIDIAN-ORCHESTRATOR",
+      "finished_at": "2026-04-17T22:50:21+00:00",
+      "origin": "founder_reply",
+      "output": "projects/creditbank/outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-creditbank-project-setup.md",
+      "project": "CreditBank",
+      "run_id": "RUN-20260418T0050180200-MERIDIAN-ORCHESTRATOR-17615171",
+      "started_at": "2026-04-17T22:50:21+00:00",
+      "status": "completed",
+      "task_type": "founder_reply",
+      "trigger_type": "event"
+    },
+    {
+      "agent": "MERIDIAN-ORCHESTRATOR",
+      "finished_at": "2026-04-17T23:04:08+00:00",
+      "origin": "manual",
+      "output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-project-intake.md",
+      "project": "portfolio",
+      "run_id": "RUN-20260418T0104080200-MERIDIAN-ORCHESTRATOR-1d3445cd",
+      "started_at": "2026-04-17T23:04:08+00:00",
+      "status": "waiting_on_founder",
+      "task_type": "project_selection",
+      "trigger_type": "manual"
     }
   ],
   "metrics": {
@@ -464,15 +705,15 @@
   "projects": {
     "CreditBank": {
       "folder_path": "projects/creditbank",
-      "last_activity_at": "",
-      "name": "TOV-creditbank-v2",
+      "last_activity_at": "2026-04-17T22:50:21+00:00",
+      "name": "CreditBank",
       "owner_agent": "MERIDIAN-ORCHESTRATOR",
       "priority": "medium",
       "project_id": "creditbank",
       "slug": "creditbank",
       "status": "in_progress",
-      "summary": "transaction system between users and agents, and agent to agent",
-      "type": "product",
+      "summary": "CreditBank is a transaction system that uses credits to pay for transactions between users and agents, including services, data, processing, and transactions between agents.",
+      "type": "Software project with an API plus front-end and back-end surfaces.",
       "work_mode": "project"
     },
     "SIGNAL": {
@@ -503,11 +744,7 @@
     }
   },
   "run_queue": [
-    "runtime/queue/REQ-20260417T1246270200-MERIDIAN-ORCHESTRATOR-e31fe771.json",
-    "runtime/queue/REQ-20260417T1246270200-MERIDIAN-ORCHESTRATOR-fda268c2.json",
-    "runtime/queue/REQ-20260417T1246470200-COUNSEL-LEGAL-649d8c28.json",
-    "runtime/queue/REQ-20260417T1246470200-MERIDIAN-ORCHESTRATOR-5a5340a0.json",
-    "runtime/queue/REQ-20260417T1246470200-MERIDIAN-ORCHESTRATOR-73b67f7b.json"
+    "runtime/queue/REQ-20260418T0104080200-MERIDIAN-ORCHESTRATOR-1d3445cd.json"
   ],
   "runtime_mode": "document_driven_app_ready_backend",
   "system_version": "2.2",
@@ -525,7 +762,7 @@
       "task_id": "TASK-SIGNAL-001",
       "task_type": "implementation_plan",
       "title": "Implementation gap-closure plan",
-      "updated_at": "2026-04-17T10:47:01+00:00"
+      "updated_at": "2026-04-17T23:04:08+00:00"
     },
     {
       "blocked_by": [],
@@ -540,7 +777,7 @@
       "task_id": "TASK-SIGNAL-002",
       "task_type": "pipeline_plan",
       "title": "Early customer pipeline",
-      "updated_at": "2026-04-17T10:47:01+00:00"
+      "updated_at": "2026-04-17T23:04:08+00:00"
     },
     {
       "blocked_by": [],
@@ -555,7 +792,7 @@
       "task_id": "TASK-SIGNAL-003",
       "task_type": "research_brief",
       "title": "ICP and assumption validation",
-      "updated_at": "2026-04-17T10:47:01+00:00"
+      "updated_at": "2026-04-17T23:04:08+00:00"
     },
     {
       "blocked_by": [],

@@ -58,6 +58,7 @@ The runtime is driven in this order:
 4. `MERIDIAN-ORCHESTRATOR` handles founder intake, project selection, status synthesis, and delegation.
 5. Enabled specialist agents execute project-scoped work from handoffs or normalized founder requests, produce real markdown outputs under `projects/{startup-slug}/outputs/{AGENT_NAME}/` when a startup is in scope, and may create deterministic downstream handoffs when the input clearly justifies it. The current enabled specialist set is `ATLAS-RESEARCH`, `CANVAS-PRODUCT`, `COUNSEL-LEGAL`, `FORGE-ENGINEERING`, `MARKETING-BRAND`, `CURRENT-SALES`, `LEDGER-FINANCE`, `NEXUS-TALENT`, `VECTOR-ANALYTICS`, and `HERALD-COMMS`.
 6. The repo-native planner writes request manifests to `runtime/requests/`, coalesces pending handoffs into a single queued request per agent per cycle when possible, enqueues them in `runtime/queue/`, and drains them serially into `runtime/results/`.
+   The runtime also supports atomic `run-cycle`, `manual-meridian`, and `ingest-and-drain-replies` commands to avoid planner/drain races during founder sessions.
 7. A MERIDIAN run is a real orchestration pass: it may skip cleanly when nothing meaningful changed, or it may write a founder-facing briefing and normalize shared state.
 8. Outputs, handoffs, escalations, communications, and run records are written back to canonical state.
 
@@ -107,6 +108,7 @@ Every task, handoff, founder request, and agent output must belong to either:
 Each named project should also have a folder hierarchy under `projects/{startup-slug}/` containing startup-specific files such as `project.md`, `problem.md`, `icp.md`, `solution.md`, `validation.md`, `strategy.md`, `financials.md`, `roadmap.md`, and `decisions.md`.
 
 The repo may also provide a scaffold helper that copies `projects/_template/` into a new `projects/{startup-slug}/` folder and registers the project in `outputs/state.json`.
+Project identity should preserve canonical `name`, `key`, and `slug` separately so likely duplicates can be merged rather than duplicated.
 
 ## Tasks contract
 
@@ -175,6 +177,14 @@ source_output: outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-signal-status.md
 compatibility: canonical
 ```
 
+Kickoff or parallel-safe handoffs may additionally include:
+
+- `founder_priority: true`
+- `dependency_mode: soft`
+- `kickoff_bundle`
+- `parallel_group`
+- `wave`
+
 Legacy handoffs that use old agent names or omit required metadata should be marked as:
 
 - `status: stale`
@@ -224,6 +234,8 @@ Inbound communication must be normalizable into:
 - founder response timestamp
 - delivery and ingestion status
 - unblock or routing action
+
+Founder intake may now be incremental and conversational. Partial replies should be normalizable into the active intake session rather than requiring a full questionnaire in one message.
 
 ## Adapter boundary
 

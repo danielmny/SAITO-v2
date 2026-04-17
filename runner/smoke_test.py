@@ -59,6 +59,12 @@ def reset_runtime_fixture(repo: Path) -> None:
             if outputs_dir.exists():
                 shutil.rmtree(outputs_dir, ignore_errors=True)
 
+    schedule_path = repo / "config/schedule.json"
+    schedule = json.loads(schedule_path.read_text(encoding="utf-8"))
+    for entry in schedule.get("agents", {}).values():
+        entry["quiet_hours_policy"] = {"mode": "allow", "start_hour_local": 0, "end_hour_local": 0}
+    schedule_path.write_text(json.dumps(schedule, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
 
 def write_handoff(
     *,

@@ -10,10 +10,13 @@ plan:
 	$(PYTHON) runner/orchestrate.py plan --instance-path .
 
 run-meridian:
-	$(PYTHON) runner/orchestrate.py run-once --agent MERIDIAN-ORCHESTRATOR --trigger-type manual --reason make_run_meridian --instance-path . --project portfolio --task-type project_selection --origin manual
+	$(PYTHON) runner/orchestrate.py manual-meridian --instance-path .
 
 drain:
 	$(PYTHON) runner/orchestrate.py drain-queue --instance-path .
+
+run-cycle:
+	$(PYTHON) runner/orchestrate.py run-cycle --instance-path .
 
 scaffold-project:
 	$(PYTHON) runner/projects.py --instance-path . --name "$(NAME)" --project-key "$(KEY)" --type "$(TYPE)" --stage "$(STAGE)" --summary "$(SUMMARY)"

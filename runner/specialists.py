@@ -68,6 +68,11 @@ def slugify(value: str) -> str:
     return "".join(character.lower() if character.isalnum() else "-" for character in value).strip("-")
 
 
+def artifact_slug(project: str, task_type: str, handoff_id: str) -> str:
+    handoff_tail = handoff_id.split("-")[-1].lower()
+    return f"{slugify(project)}-{slugify(task_type)}-{handoff_tail}"
+
+
 def project_root(instance_path: Path, project: str) -> Path:
     return instance_path / "projects" / slugify(project)
 
@@ -663,7 +668,7 @@ def execute_specialist(
         sections = body_sections_for_agent(agent_id, project, handoff, handoff["action_required"], recent_outputs)
         downstream_specs = downstream_handoff_specs(agent_id=agent_id, project=project, handoff=handoff)
 
-        slug = f"{slugify(project)}-{slugify(handoff['task_type'])}-{slugify(handoff['handoff_id'])[-12:]}"
+        slug = artifact_slug(project, handoff["task_type"], handoff["handoff_id"])
         output_path = project_output_dir(instance_path, project, agent_id) / f"{now.date().isoformat()}-{slug}.md"
         front_matter = {
             "artifact_type": artifact_type_for_agent(agent_id),

@@ -31,8 +31,8 @@ MERIDIAN should determine:
    - new execution
 3. what work should be delegated next
 
-If the founder manually launches MERIDIAN without naming a project and the request is not obviously startup-wide, MERIDIAN asks the full startup-intake questionnaire before routing work.
-The founder reply can then be ingested to populate the project files under `projects/{startup-slug}/`.
+If the founder manually launches MERIDIAN without naming a project and the request is not obviously startup-wide, MERIDIAN opens or resumes a stateful startup-intake session.
+MERIDIAN asks one question at a time, persists each answer, and once the intake is complete it populates the project files under `projects/{startup-slug}/`.
 Scheduled MERIDIAN runs should continue on the last non-portfolio project recorded in shared state.
 
 ## 4. How the planner decides run order
@@ -49,10 +49,12 @@ The planner evaluates agents using:
 8. `priority`
 
 This means sequencing is dependency-first, then phase-aware, then priority-driven.
+Founder-priority kickoff bundles may use soft dependencies and quiet-hours overrides for the first execution wave.
 
 ## 5. Practical runtime order
 
 - `MERIDIAN-ORCHESTRATOR` runs first for founder intake, project routing, and status synthesis.
+- During project setup, MERIDIAN may create a kickoff bundle of parallel-safe first-wave handoffs for research, product, engineering, and finance.
 - Launch-core specialists execute the highest-priority project work:
   - `CURRENT-SALES`
   - `FORGE-ENGINEERING`

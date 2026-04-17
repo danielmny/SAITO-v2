@@ -13,7 +13,9 @@ Founders OS is a multi-agent operating system for startup work. In the SAITO har
 - Founder communication defaults to repo files in `outputs/communications/outbox/` and `inputs/founder-replies/`
 - Google Drive, Docs, and Gmail stay disabled until real adapters exist
 - Manual founder launches start with project selection unless the request is clearly startup-wide
-- Manual founder launches now ask the full project questionnaire and can populate the startup files from a founder reply in `inputs/founder-replies/`
+- Manual founder launches now run as a stateful conversational intake session and can populate the startup files from partial or complete founder replies in `inputs/founder-replies/`
+- Project setup automatically creates a founder-priority kickoff bundle so independent specialist work can run in parallel when possible
+- Founder-priority kickoff bundles can bypass normal quiet-hours suppression and use soft dependency handling for the first wave
 - Scheduled MERIDIAN runs continue on the last real project in `MERIDIAN-ORCHESTRATOR.active_project`
 - Enabled specialist agents receive scoped, project-specific work through handoffs, generate real markdown artifacts, and may create justified downstream handoffs that MERIDIAN later synthesizes back to the founder
 - Equivalent downstream handoffs are suppressed so repeated runs do not reopen the same follow-on work without new justification
@@ -53,10 +55,15 @@ Every dispatched run uses the same core request shape:
 
 Specialist agents remain stateless per run. `MERIDIAN-ORCHESTRATOR` is the only component that normalizes shared state into `outputs/state.json`, asks the founder which project they want to work on, reports startup and project status, and routes work to the appropriate specialists.
 
-`make run-meridian` now queues a manual MERIDIAN intake pass. After `make drain`, MERIDIAN either:
+`make run-meridian` now queues and drains a manual MERIDIAN founder session atomically. MERIDIAN either:
 
-- asks which startup/project to work on, or
+- resumes the current founder intake session and asks the next question, or
+- writes project files, kickoff handoffs, and a founder session summary once intake is complete, or
 - writes a founder-facing briefing and normalizes shared state once project scope is clear
+
+To atomically plan and drain the wider runtime:
+
+- `make run-cycle`
 
 To scaffold a new startup project from the template:
 

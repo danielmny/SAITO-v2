@@ -26,6 +26,7 @@ ROOT_DIRS = (
     "runtime/logs",
     "outputs/communications/outbox",
     "inputs/founder-replies",
+    "inputs/founder-replies/processed",
     "projects",
 )
 REQUEST_FIELDS = (
@@ -42,6 +43,46 @@ RESULT_RETENTION_LIMIT = 200
 REQUEST_RETENTION_LIMIT = 200
 PORTFOLIO_PROJECT = "portfolio"
 STARTUP_WIDE_PROJECT = "startup_ops"
+PROJECT_SETUP_TASK_TYPE = "project_setup"
+KICKOFF_TASK_TYPES = {
+    "market_validation",
+    "architecture_exploration",
+    "product_framing",
+    "economics_assessment",
+}
+INTAKE_QUESTION_SPECS = [
+    ("What should we call this project?", "project_name"),
+    ("What project key should SAITO use for it?", "project_key"),
+    ("What kind of project is it?", "project_type"),
+    ("What stage is it in right now?", "stage"),
+    ("Give me the one-line summary.", "summary"),
+    ("What is the main objective right now?", "objective"),
+    ("What core problem does it solve?", "core_problem"),
+    ("Who feels this problem most directly?", "who_feels_it"),
+    ("Why does this matter now?", "why_now"),
+    ("Who is the primary ICP?", "primary_icp"),
+    ("What observable traits define that ICP?", "observable_traits"),
+    ("Who are the likely early adopters?", "early_adopters"),
+    ("What is the product wedge?", "product_wedge"),
+    ("What is the core workflow?", "core_workflow"),
+    ("Why does this win over alternatives?", "why_it_wins"),
+    ("What evidence do we already have?", "evidence_collected"),
+    ("Which assumptions still need testing?", "assumptions_to_test"),
+    ("What are the next proof steps?", "next_proof_steps"),
+    ("What is the go-to-market plan?", "go_to_market"),
+    ("How should we position it?", "positioning"),
+    ("What are the key risks?", "key_risks"),
+    ("What is the revenue model?", "revenue_model"),
+    ("What do costs and burn look like?", "costs_and_burn"),
+    ("Any fundraising notes?", "fundraising_notes"),
+    ("What is on the roadmap now?", "roadmap_now"),
+    ("What comes next on the roadmap?", "roadmap_next"),
+    ("What is later on the roadmap?", "roadmap_later"),
+    ("What open decisions are still unresolved?", "open_decisions"),
+    ("What decisions are already locked?", "locked_decisions"),
+    ("What should we revisit later?", "revisit_later"),
+]
+INTAKE_FIELD_TO_QUESTION = {field: question for question, field in INTAKE_QUESTION_SPECS}
 
 
 @dataclass
@@ -87,6 +128,44 @@ class ResultRecord:
     created_handoffs_count: int = 0
     error: str = ""
     notes: list[str] | None = None
+
+
+def intake_field_aliases() -> dict[str, str]:
+    aliases = {
+        "project name": "project_name",
+        "project key": "project_key",
+        "project type": "project_type",
+        "stage": "stage",
+        "summary": "summary",
+        "objective": "objective",
+        "core problem": "core_problem",
+        "who feels it": "who_feels_it",
+        "why now": "why_now",
+        "primary icp": "primary_icp",
+        "observable traits": "observable_traits",
+        "early adopters": "early_adopters",
+        "product wedge": "product_wedge",
+        "core workflow": "core_workflow",
+        "why it wins": "why_it_wins",
+        "evidence collected": "evidence_collected",
+        "assumptions to test": "assumptions_to_test",
+        "next proof steps": "next_proof_steps",
+        "go-to-market": "go_to_market",
+        "positioning": "positioning",
+        "key risks": "key_risks",
+        "revenue model": "revenue_model",
+        "costs and burn": "costs_and_burn",
+        "fundraising notes": "fundraising_notes",
+        "roadmap now": "roadmap_now",
+        "roadmap next": "roadmap_next",
+        "roadmap later": "roadmap_later",
+        "open decisions": "open_decisions",
+        "locked decisions": "locked_decisions",
+        "revisit later": "revisit_later",
+    }
+    for question, field in INTAKE_QUESTION_SPECS:
+        aliases[question.lower()] = field
+    return aliases
 
 
 def ensure_runtime_dirs(instance_path: Path) -> None:
@@ -215,6 +294,77 @@ def current_time(schedule: dict[str, Any]) -> datetime:
     return datetime.now(ZoneInfo(timezone_name))
 
 
+def intake_session_store(state: dict[str, Any]) -> dict[str, Any]:
+    return state.setdefault("founder_intake", {"active_session_id": "", "sessions": {}})
+
+
+def active_intake_session(state: dict[str, Any]) -> dict[str, Any] | None:
+    intake_state = intake_session_store(state)
+    session_id = str(intake_state.get("active_session_id", "")).strip()
+    if not session_id:
+        return None
+    return intake_state.setdefault("sessions", {}).get(session_id)
+
+
+def next_intake_question(session: dict[str, Any]) -> tuple[str, str] | None:
+    answers = session.get("answers", {})
+    for question, field in INTAKE_QUESTION_SPECS:
+        if str(answers.get(field, "")).strip():
+            continue
+        return question, field
+    return None
+
+
+def start_intake_session(state: dict[str, Any], now: datetime) -> dict[str, Any]:
+    intake_state = intake_session_store(state)
+    session_id = f"intake-{now.strftime('%Y%m%dT%H%M%S')}"
+    session = {
+        "session_id": session_id,
+        "status": "in_progress",
+        "started_at": now.isoformat(timespec="seconds"),
+        "updated_at": now.isoformat(timespec="seconds"),
+        "project": PORTFOLIO_PROJECT,
+        "answers": {},
+        "question_order": [field for _question, field in INTAKE_QUESTION_SPECS],
+        "last_question": INTAKE_QUESTION_SPECS[0][1],
+        "asked_questions": [INTAKE_QUESTION_SPECS[0][1]],
+        "delivery_mode": "conversational",
+    }
+    intake_state.setdefault("sessions", {})[session_id] = session
+    intake_state["active_session_id"] = session_id
+    return session
+
+
+def merge_intake_answers(session: dict[str, Any], answers: dict[str, str], now: datetime) -> dict[str, Any]:
+    stored_answers = session.setdefault("answers", {})
+    for key, value in answers.items():
+        if not value.strip():
+            continue
+        stored_answers[key] = value.strip()
+    next_question = next_intake_question(session)
+    session["updated_at"] = now.isoformat(timespec="seconds")
+    if next_question is None:
+        session["status"] = "completed"
+        session["last_question"] = ""
+    else:
+        _question_text, next_field = next_question
+        session["status"] = "in_progress"
+        session["last_question"] = next_field
+        asked = session.setdefault("asked_questions", [])
+        if next_field not in asked:
+            asked.append(next_field)
+    return session
+
+
+def question_prompt(question: str) -> str:
+    examples = {
+        "What is the core workflow?": "Describe the simplest end-to-end transaction flow you want to support first.",
+        "What is the product wedge?": "Name the narrowest entry point that can win early adoption before the full platform exists.",
+        "What observable traits define that ICP?": "List behaviors or characteristics we can actually look for when deciding who to interview or target.",
+    }
+    return examples.get(question, "")
+
+
 def read_front_matter(path: Path) -> tuple[dict[str, str], str]:
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---\n"):
@@ -330,6 +480,10 @@ def quiet_hours_block_reason(request: DispatchRequest, schedule_entry: dict[str,
         return None
 
     mode = policy.get("mode", "allow")
+    founder_priority = request.origin in {"founder_reply", "founder_request", "manual"} or request.task_type in KICKOFF_TASK_TYPES
+    if founder_priority and request.task_type != "founder_digest":
+        return None
+
     if mode == "manual_only" and request.trigger_type != "manual":
         return "quiet_hours_manual_only"
     if mode == "digest_only" and request.task_type != "founder_digest" and request.reason != "daily_digest":
@@ -560,6 +714,138 @@ def discover_pending_handoffs(instance_path: Path) -> list[dict[str, Any]]:
     return handoffs
 
 
+def handoff_runtime_overrides(instance_path: Path, request: DispatchRequest) -> dict[str, Any]:
+    overrides = {
+        "founder_priority": False,
+        "dependency_mode": "strict",
+        "kickoff_bundle": "",
+        "parallel_group": "",
+        "wave": "",
+    }
+    for relative_path in request.changed_context:
+        path = instance_path / relative_path
+        if not path.exists() or path.suffix != ".md":
+            continue
+        front_matter, _body = read_front_matter(path)
+        if front_matter.get("founder_priority", "").lower() == "true":
+            overrides["founder_priority"] = True
+        dependency_mode = front_matter.get("dependency_mode", "").strip()
+        if dependency_mode:
+            overrides["dependency_mode"] = dependency_mode
+        for key in ("kickoff_bundle", "parallel_group", "wave"):
+            value = front_matter.get(key, "").strip()
+            if value:
+                overrides[key] = value
+    return overrides
+
+
+def kickoff_bundle_specs(project: str, stage: str, session_id: str) -> list[dict[str, str]]:
+    bundle_name = "idea_validation_bundle" if stage.upper() == "IDEA" else "project_kickoff_bundle"
+    parallel_group = f"{project_slug(project)}-{bundle_name}-{session_id[-8:]}"
+    return [
+        {
+            "to": "ATLAS-RESEARCH",
+            "task_type": "market_validation",
+            "subject": "Market Validation Kickoff",
+            "reason": "Project setup completed with unresolved market, ICP, wedge, and validation questions.",
+            "action_required": "Produce a research brief covering competitors, adjacent alternatives, likely ICP segments, urgency, and the first validation interviews or tests.",
+        },
+        {
+            "to": "FORGE-ENGINEERING",
+            "task_type": "architecture_exploration",
+            "subject": "Architecture Exploration Kickoff",
+            "reason": "Project setup completed with open architecture, security, and settlement questions.",
+            "action_required": "Outline candidate architectures, core entities and ledgers, trust and security concerns, and the smallest technical proof loop worth building first.",
+        },
+        {
+            "to": "CANVAS-PRODUCT",
+            "task_type": "product_framing",
+            "subject": "Product Wedge Kickoff",
+            "reason": "Project setup completed without a locked wedge, proof loop, or validation-first roadmap.",
+            "action_required": "Define the narrowest product wedge, the first proof-generating workflow, and a validation-first Now / Next / Later roadmap.",
+        },
+        {
+            "to": "LEDGER-FINANCE",
+            "task_type": "economics_assessment",
+            "subject": "Economics Assessment Kickoff",
+            "reason": "Project setup completed with open monetization, commission, cost, and unit-economics assumptions.",
+            "action_required": "Assess plausible monetization mechanics, cost drivers, unit-economics risks, and the financial assumptions that need testing first.",
+        },
+    ]
+
+
+def create_meridian_kickoff_handoffs(
+    *,
+    instance_path: Path,
+    project: str,
+    stage: str,
+    source_output: str,
+    session_id: str,
+    now: datetime,
+) -> list[str]:
+    handoff_dir = instance_path / "outputs/handoffs"
+    existing_signatures: set[tuple[str, str, str, str]] = set()
+    for existing_path in sorted(handoff_dir.glob("*.md")):
+        front_matter, _body = read_front_matter(existing_path)
+        if front_matter.get("compatibility") == "legacy":
+            continue
+        existing_signatures.add(
+            (
+                front_matter.get("from", ""),
+                front_matter.get("to", ""),
+                front_matter.get("project", ""),
+                front_matter.get("task_type", ""),
+            )
+        )
+
+    created_paths: list[str] = []
+    bundle_specs = kickoff_bundle_specs(project, stage, session_id)
+    bundle_name = "idea_validation_bundle" if stage.upper() == "IDEA" else "project_kickoff_bundle"
+    parallel_group = f"{project_slug(project)}-{bundle_name}-{session_id[-8:]}"
+    existing_count = len(list(handoff_dir.glob(f"HANDOFF-{now.date().isoformat()}-MERIDIAN-ORCHESTRATOR-*.md")))
+    for index, item in enumerate(bundle_specs, start=1):
+        signature = ("MERIDIAN-ORCHESTRATOR", item["to"], project, item["task_type"])
+        if signature in existing_signatures:
+            continue
+        handoff_id = f"HANDOFF-{now.date().isoformat()}-MERIDIAN-ORCHESTRATOR-{existing_count + index:03d}"
+        handoff_path = handoff_dir / f"{handoff_id}.md"
+        front_matter = {
+            "handoff_id": handoff_id,
+            "from": "MERIDIAN-ORCHESTRATOR",
+            "to": item["to"],
+            "project": project,
+            "task_type": item["task_type"],
+            "origin": "founder_request",
+            "status": "queued",
+            "created_at": now.isoformat(timespec="seconds"),
+            "reason": item["reason"],
+            "source_output": source_output,
+            "compatibility": "canonical",
+            "founder_priority": "true",
+            "dependency_mode": "soft",
+            "kickoff_bundle": bundle_name,
+            "parallel_group": parallel_group,
+            "wave": "first_wave",
+        }
+        body = "\n".join(
+            [
+                "## FROM: MERIDIAN-ORCHESTRATOR",
+                f"## TO: {item['to']}",
+                f"## PROJECT: {project}",
+                f"## TASK TYPE: {item['task_type']}",
+                "## ORIGIN: founder_request",
+                f"## RE: {item['subject']}",
+                f"## CONTEXT: Generated automatically from founder project setup session `{session_id}`.",
+                f"## OUTPUT: See `{source_output}` for the latest project setup artifact.",
+                f"## ACTION REQUIRED: {item['action_required']}",
+            ]
+        )
+        write_front_matter(handoff_path, front_matter, body)
+        created_paths.append(handoff_path.relative_to(instance_path).as_posix())
+        existing_signatures.add(signature)
+    return created_paths
+
+
 def discover_open_escalations(instance_path: Path, state: dict[str, Any]) -> list[dict[str, Any]]:
     escalations: list[dict[str, Any]] = []
     seen_paths: set[str] = set()
@@ -618,13 +904,20 @@ def can_enqueue_request(
     last_run = parse_iso8601(agent_state.get("last_run", ""))
     cooldown_minutes = schedule_entry.get("cooldown_minutes", 0)
     now = current_time(schedule)
-    cooldown_exempt = request.origin == "founder_reply" or request.task_type == "founder_reply"
+    cooldown_exempt = (
+        request.trigger_type == "manual"
+        or request.origin == "founder_reply"
+        or request.task_type == "founder_reply"
+    )
     if not cooldown_exempt and last_run is not None and cooldown_minutes and now < last_run + timedelta(minutes=cooldown_minutes):
         return False, "cooldown_active"
 
-    for dependency in schedule_entry.get("depends_on", []):
-        if not dependency_satisfied(instance_path, state.get("agents", {}).get(dependency, {}), dependency):
-            return False, f"blocked_on_{dependency}"
+    overrides = handoff_runtime_overrides(instance_path, request)
+    dependency_mode = overrides.get("dependency_mode", "strict")
+    if dependency_mode != "soft":
+        for dependency in schedule_entry.get("depends_on", []):
+            if not dependency_satisfied(instance_path, state.get("agents", {}).get(dependency, {}), dependency):
+                return False, f"blocked_on_{dependency}"
 
     quiet_reason = quiet_hours_block_reason(request, schedule_entry, now)
     if quiet_reason:
@@ -813,6 +1106,21 @@ def queue_request(instance_path: Path, request: DispatchRequest) -> dict[str, An
         "queue_path": queue_path.relative_to(instance_path).as_posix(),
         "request_hash": request.request_hash,
     }
+
+
+def archive_reply_file(instance_path: Path, relative_path: str) -> str:
+    source_path = instance_path / relative_path
+    if not source_path.exists():
+        return ""
+    processed_dir = instance_path / "inputs/founder-replies" / "processed"
+    processed_dir.mkdir(parents=True, exist_ok=True)
+    target_path = processed_dir / source_path.name
+    counter = 1
+    while target_path.exists():
+        target_path = processed_dir / f"{source_path.stem}-{counter}{source_path.suffix}"
+        counter += 1
+    source_path.rename(target_path)
+    return target_path.relative_to(instance_path).as_posix()
 
 
 def write_markdown_with_front_matter(path: Path, front_matter: dict[str, str], body: str) -> None:
@@ -1039,6 +1347,11 @@ def build_meridian_briefing(
         f"- `{item['handoff_id']}` -> `{item['to']}` on `{item['project']}` ({item['task_type']})"
         for item in pending_handoffs[:6]
     ] or ["- No queued handoffs."]
+    parallel_status_lines = [
+        f"- `{item['to']}` in bundle `{item['front_matter'].get('kickoff_bundle', 'none')}` wave `{item['front_matter'].get('wave', 'unscoped')}`."
+        for item in pending_handoffs
+        if item["front_matter"].get("parallel_group")
+    ] or ["- No parallel kickoff bundle is currently queued."]
     escalation_summary_lines = [
         f"- `{item['escalation_id']}` on `{item['project']}`: {item['reason']}"
         for item in open_escalations[:6]
@@ -1066,13 +1379,16 @@ def build_meridian_briefing(
             "## Open Handoffs Summary",
             *handoff_summary_lines,
             "",
+            "## Parallel Execution Status",
+            *parallel_status_lines,
+            "",
             "## Escalation Summary",
             *escalation_summary_lines,
         ]
     )
 
 
-def build_meridian_project_intake(state: dict[str, Any], instance_path: Path) -> str:
+def build_meridian_project_intake(state: dict[str, Any], instance_path: Path, session: dict[str, Any]) -> str:
     projects = known_startup_projects(instance_path, state)
     project_lines = [f"- `{item['name']}` (`{item['slug']}`): {item['summary']}" for item in projects] or [
         "- No startup projects are registered yet. Add a startup under `projects/{startup-slug}/` and try again."
@@ -1092,87 +1408,46 @@ def build_meridian_project_intake(state: dict[str, Any], instance_path: Path) ->
             next_step_lines.append(
                 f"- `{item['name']}`: review current status and choose the next proof, GTM, or product task."
             )
+    next_question = next_intake_question(session)
+    asked_fields = [field for field in session.get("asked_questions", []) if session.get("answers", {}).get(field, "").strip()]
+    known_answer_lines = [
+        f"- {INTAKE_FIELD_TO_QUESTION[field]} {session['answers'][field]}"
+        for field in asked_fields[-5:]
+    ] or ["- No answers captured yet."]
+    progress_line = f"{len(session.get('answers', {}))} of {len(INTAKE_QUESTION_SPECS)} intake answers captured."
     return "\n".join(
         [
             "[Acting as: MERIDIAN-ORCHESTRATOR]",
             "",
             "# Founder Project Intake Required",
             "",
-            "Manual MERIDIAN runs now start with a founder intake that can fully set up a startup project.",
+            "Let’s set up or refine a startup project properly.",
+            "This intake is conversational and stateful. Reply with the answer to the current question only, and MERIDIAN will persist progress automatically.",
             "",
             "## Active Startup Projects",
             *project_lines,
             "",
-            "## How To Reply",
-            "- Copy the template below into a file under `inputs/founder-replies/`.",
-            "- Fill every section you can. MERIDIAN will use your answers to create or update the project files.",
-            "- If the project already exists, answered sections will overwrite the current project files.",
+            "## Intake Progress",
+            f"- Session ID: `{session['session_id']}`",
+            f"- Progress: {progress_line}",
             "",
             "## Suggested Next Steps",
             *next_step_lines,
             "",
-            "## Reply Template",
-            "Use these exact headings:",
+            "## Recent Answers",
             "",
-            "## Project Name",
+            *known_answer_lines,
             "",
-            "## Project Key",
+            "## Current Question",
             "",
-            "## Project Type",
+            f"## {next_question[0] if next_question else 'Intake complete.'}",
+            question_prompt(next_question[0]) if next_question else "MERIDIAN can now populate the project files and trigger kickoff work.",
             "",
-            "## Stage",
+            "## Reply Format",
             "",
-            "## Summary",
+            f"## {next_question[0] if next_question else 'Intake complete.'}",
             "",
-            "## Objective",
-            "",
-            "## Core Problem",
-            "",
-            "## Who Feels It",
-            "",
-            "## Why Now",
-            "",
-            "## Primary ICP",
-            "",
-            "## Observable Traits",
-            "",
-            "## Early Adopters",
-            "",
-            "## Product Wedge",
-            "",
-            "## Core Workflow",
-            "",
-            "## Why It Wins",
-            "",
-            "## Evidence Collected",
-            "",
-            "## Assumptions To Test",
-            "",
-            "## Next Proof Steps",
-            "",
-            "## Go-To-Market",
-            "",
-            "## Positioning",
-            "",
-            "## Key Risks",
-            "",
-            "## Revenue Model",
-            "",
-            "## Costs And Burn",
-            "",
-            "## Fundraising Notes",
-            "",
-            "## Roadmap Now",
-            "",
-            "## Roadmap Next",
-            "",
-            "## Roadmap Later",
-            "",
-            "## Open Decisions",
-            "",
-            "## Locked Decisions",
-            "",
-            "## Revisit Later",
+            "<your answer>",
         ]
     )
 
@@ -1196,39 +1471,20 @@ def extract_markdown_sections(body: str) -> dict[str, str]:
 
 def founder_reply_intake_answers(reply_body: str) -> dict[str, str]:
     sections = extract_markdown_sections(reply_body)
-    mapping = {
-        "project name": "project_name",
-        "project key": "project_key",
-        "project type": "project_type",
-        "stage": "stage",
-        "summary": "summary",
-        "objective": "objective",
-        "core problem": "core_problem",
-        "who feels it": "who_feels_it",
-        "why now": "why_now",
-        "primary icp": "primary_icp",
-        "observable traits": "observable_traits",
-        "early adopters": "early_adopters",
-        "product wedge": "product_wedge",
-        "core workflow": "core_workflow",
-        "why it wins": "why_it_wins",
-        "evidence collected": "evidence_collected",
-        "assumptions to test": "assumptions_to_test",
-        "next proof steps": "next_proof_steps",
-        "go-to-market": "go_to_market",
-        "positioning": "positioning",
-        "key risks": "key_risks",
-        "revenue model": "revenue_model",
-        "costs and burn": "costs_and_burn",
-        "fundraising notes": "fundraising_notes",
-        "roadmap now": "roadmap_now",
-        "roadmap next": "roadmap_next",
-        "roadmap later": "roadmap_later",
-        "open decisions": "open_decisions",
-        "locked decisions": "locked_decisions",
-        "revisit later": "revisit_later",
-    }
-    return {target: sections.get(source, "") for source, target in mapping.items()}
+    aliases = intake_field_aliases()
+    answers: dict[str, str] = {}
+    if not sections and reply_body.strip():
+        stripped = reply_body.strip()
+        first_line = stripped.splitlines()[0].strip().lower()
+        if first_line in aliases:
+            sections[first_line] = "\n".join(stripped.splitlines()[1:]).strip()
+        else:
+            sections[""] = stripped
+    for source, value in sections.items():
+        target = aliases.get(source)
+        if target:
+            answers[target] = value
+    return answers
 
 
 def update_meridian_state(
@@ -1298,6 +1554,20 @@ def update_meridian_state(
                 }
             )
 
+    intake_state = state.get("founder_intake", {})
+    sessions = intake_state.get("sessions", {})
+    if sessions:
+        state["founder_sessions"] = [
+            {
+                "session_id": item.get("session_id", session_id),
+                "status": item.get("status", ""),
+                "project": item.get("project", PORTFOLIO_PROJECT),
+                "started_at": item.get("started_at", ""),
+                "updated_at": item.get("updated_at", ""),
+            }
+            for session_id, item in sorted(sessions.items())
+        ][-20:]
+
     remaining_pending_handoff_ids = {item["handoff_id"] for item in discover_pending_handoffs(instance_path)}
     state["pending_events"] = [
         item for item in state.get("pending_events", []) if item.get("handoff_id") in remaining_pending_handoff_ids
@@ -1348,6 +1618,69 @@ def update_meridian_state(
     write_json(instance_path / "outputs/state.json", state)
 
 
+def build_project_setup_body(project_info: dict[str, str], kickoff_handoffs: list[str]) -> str:
+    kickoff_lines = [f"- `{path}`" for path in kickoff_handoffs] or ["- No kickoff handoffs were created."]
+    return "\n".join(
+        [
+            "[Acting as: MERIDIAN-ORCHESTRATOR]",
+            "",
+            f"# Project Setup Completed — {project_info['name']}",
+            "",
+            f"- Project key: `{project_info['key']}`",
+            f"- Project folder: `{project_info['folder_path']}`",
+            "- Updated files:",
+            f"  - `{project_info['folder_path']}/project.md`",
+            f"  - `{project_info['folder_path']}/problem.md`",
+            f"  - `{project_info['folder_path']}/icp.md`",
+            f"  - `{project_info['folder_path']}/solution.md`",
+            f"  - `{project_info['folder_path']}/validation.md`",
+            f"  - `{project_info['folder_path']}/strategy.md`",
+            f"  - `{project_info['folder_path']}/financials.md`",
+            f"  - `{project_info['folder_path']}/roadmap.md`",
+            f"  - `{project_info['folder_path']}/decisions.md`",
+            "",
+            "## Kickoff Bundle",
+            *kickoff_lines,
+            "",
+            "## Recommended Next Move",
+            "- Use `run-cycle` or `make drain` to execute the first specialist wave and then ask MERIDIAN for a synthesized project briefing.",
+        ]
+    )
+
+
+def build_founder_session_summary(
+    *,
+    session: dict[str, Any],
+    project: str,
+    setup_output_path: str,
+    kickoff_handoffs: list[str],
+    pending_handoffs: list[dict[str, Any]],
+) -> str:
+    queued = [item for item in pending_handoffs if item["path"] in set(kickoff_handoffs)]
+    queued_lines = [
+        f"- `{item['to']}`: `{item['task_type']}` ({item['front_matter'].get('wave', 'unscoped')})"
+        for item in queued
+    ] or ["- No kickoff handoffs are queued."]
+    return "\n".join(
+        [
+            "[Acting as: MERIDIAN-ORCHESTRATOR]",
+            "",
+            f"# Founder Session Summary — {project}",
+            "",
+            f"- Session ID: `{session['session_id']}`",
+            f"- Session status: `{session['status']}`",
+            f"- Setup artifact: `{setup_output_path}`",
+            "",
+            "## Kickoff Status",
+            *queued_lines,
+            "",
+            "## Next Founder Actions",
+            "- Let the kickoff bundle run in parallel where eligible.",
+            "- Ask MERIDIAN for a project checkpoint once the first specialist outputs land.",
+        ]
+    )
+
+
 def execute_meridian_request(
     instance_path: Path,
     request: DispatchRequest,
@@ -1389,21 +1722,45 @@ def execute_meridian_request(
     notes.append("meridian_orchestration_pass")
     needs_project_selection = request.origin == "manual" and request.project == PORTFOLIO_PROJECT
     founder_reply_paths = [instance_path / path for path in request.changed_context if path and (instance_path / path).exists()]
+    session = active_intake_session(state)
+    kickoff_handoffs: list[str] = []
 
     if request.origin == "founder_reply" and founder_reply_paths:
         reply_path = founder_reply_paths[0]
-        _front_matter, reply_body = read_front_matter(reply_path)
+        front_matter, reply_body = read_front_matter(reply_path)
         answers = founder_reply_intake_answers(reply_body)
-        if answers.get("project_name", "").strip():
-            project_info = upsert_project_from_intake(instance_path, answers)
+        if session is None:
+            session = start_intake_session(state, now)
+        if not answers and reply_body.strip():
+            last_question = str(session.get("last_question", "")).strip()
+            if last_question:
+                answers[last_question] = reply_body.strip()
+        merge_intake_answers(session, answers, now)
+        write_json(instance_path / "outputs/state.json", state)
+        next_question = next_intake_question(session)
+        if next_question is None and session.get("answers", {}).get("project_name", "").strip():
+            session["project"] = session["answers"].get("project_key", session["answers"].get("project_name", project_slug("project"))).strip()
+            session["status"] = "completed"
+            session["completed_at"] = now.isoformat(timespec="seconds")
+            state["founder_intake"]["active_session_id"] = ""
+            write_json(instance_path / "outputs/state.json", state)
+            project_info = upsert_project_from_intake(instance_path, session.get("answers", {}))
             request.project = project_info["key"]
             filename = f"{now.date().isoformat()}-{project_info['slug']}-project-setup.md"
             output_path = project_output_dir(instance_path, project_info["key"], "MERIDIAN-ORCHESTRATOR", load_state(instance_path)) / filename
+            kickoff_handoffs = create_meridian_kickoff_handoffs(
+                instance_path=instance_path,
+                project=project_info["key"],
+                stage=session["answers"].get("stage", "IDEA"),
+                source_output=output_path.relative_to(instance_path).as_posix(),
+                session_id=session["session_id"],
+                now=now,
+            )
             front_matter = {
                 "artifact_type": "project_setup",
                 "audience": "founder",
                 "project": project_info["key"],
-                "task_type": "project_setup",
+                "task_type": PROJECT_SETUP_TASK_TYPE,
                 "origin": request.origin,
                 "source_run_id": result.run_id,
                 "status": "completed",
@@ -1411,67 +1768,61 @@ def execute_meridian_request(
                 "google_doc_id": "",
                 "communication_thread_id": f"meridian-project-setup-{now.strftime('%Y%m%d')}",
             }
-            body = "\n".join(
-                [
-                    "[Acting as: MERIDIAN-ORCHESTRATOR]",
-                    "",
-                    f"# Project Setup Completed — {project_info['name']}",
-                    "",
-                    f"- Project key: `{project_info['key']}`",
-                    f"- Project folder: `{project_info['folder_path']}`",
-                    "- Updated files:",
-                    f"  - `{project_info['folder_path']}/project.md`",
-                    f"  - `{project_info['folder_path']}/problem.md`",
-                    f"  - `{project_info['folder_path']}/icp.md`",
-                    f"  - `{project_info['folder_path']}/solution.md`",
-                    f"  - `{project_info['folder_path']}/validation.md`",
-                    f"  - `{project_info['folder_path']}/strategy.md`",
-                    f"  - `{project_info['folder_path']}/financials.md`",
-                    f"  - `{project_info['folder_path']}/roadmap.md`",
-                    f"  - `{project_info['folder_path']}/decisions.md`",
-                    "",
-                    "## Recommended Next Move",
-                    "- Run MERIDIAN again for this project and request product, research, or GTM execution.",
-                ]
-            )
+            body = build_project_setup_body(project_info, kickoff_handoffs)
             write_markdown_with_front_matter(output_path, front_matter, body)
             output_paths.append(output_path.relative_to(instance_path).as_posix())
+            summary_path = project_output_dir(instance_path, project_info["key"], "MERIDIAN-ORCHESTRATOR", load_state(instance_path)) / f"{now.date().isoformat()}-{project_info['slug']}-founder-session-summary.md"
+            summary_front_matter = {
+                "artifact_type": "founder_session_summary",
+                "audience": "founder",
+                "project": project_info["key"],
+                "task_type": "founder_session_summary",
+                "origin": request.origin,
+                "source_run_id": result.run_id,
+                "status": "completed",
+                "google_drive_id": "",
+                "google_doc_id": "",
+                "communication_thread_id": f"meridian-session-{now.strftime('%Y%m%d')}",
+            }
+            pending_after_kickoff = discover_pending_handoffs(instance_path)
+            summary_body = build_founder_session_summary(
+                session=session,
+                project=project_info["key"],
+                setup_output_path=output_paths[0],
+                kickoff_handoffs=kickoff_handoffs,
+                pending_handoffs=pending_after_kickoff,
+            )
+            write_markdown_with_front_matter(summary_path, summary_front_matter, summary_body)
+            output_paths.append(summary_path.relative_to(instance_path).as_posix())
             result.status = "success"
-            notes.append("founder_project_files_populated")
+            notes.extend(["founder_project_files_populated", "project_kickoff_bundle_created"])
         else:
-            filename = f"{now.date().isoformat()}-founder-intake-incomplete.md"
+            filename = f"{now.date().isoformat()}-project-intake.md"
             output_path = instance_path / "outputs" / "MERIDIAN-ORCHESTRATOR" / filename
             front_matter = {
                 "artifact_type": "founder_intake",
                 "audience": "founder",
                 "project": PORTFOLIO_PROJECT,
-                "task_type": "project_setup_incomplete",
+                "task_type": "project_selection",
                 "origin": request.origin,
                 "source_run_id": result.run_id,
                 "status": "waiting_on_founder",
                 "google_drive_id": "",
                 "google_doc_id": "",
-                "communication_thread_id": f"meridian-intake-incomplete-{now.strftime('%Y%m%d')}",
+                "communication_thread_id": f"meridian-intake-{session['session_id']}",
             }
-            body = "\n".join(
-                [
-                    "[Acting as: MERIDIAN-ORCHESTRATOR]",
-                    "",
-                    "# Founder Intake Incomplete",
-                    "",
-                    "The reply did not include `## Project Name`, so MERIDIAN could not populate the project files.",
-                    "",
-                    "Reply again using the full questionnaire template from the latest manual intake.",
-                ]
-            )
+            body = build_meridian_project_intake(state, instance_path, session)
             write_markdown_with_front_matter(output_path, front_matter, body)
             output_paths.append(output_path.relative_to(instance_path).as_posix())
             result.status = "waiting_on_founder"
-            notes.append("founder_reply_missing_project_fields")
+            notes.append("founder_reply_session_progressed")
 
     if output_paths:
         pass
     elif needs_project_selection:
+        if session is None:
+            session = start_intake_session(state, now)
+            write_json(instance_path / "outputs/state.json", state)
         filename = f"{now.date().isoformat()}-project-intake.md"
         output_path = instance_path / "outputs" / "MERIDIAN-ORCHESTRATOR" / filename
         front_matter = {
@@ -1484,9 +1835,9 @@ def execute_meridian_request(
             "status": "waiting_on_founder",
             "google_drive_id": "",
             "google_doc_id": "",
-            "communication_thread_id": f"meridian-intake-{now.strftime('%Y%m%d')}",
+            "communication_thread_id": f"meridian-intake-{session['session_id']}",
         }
-        body = build_meridian_project_intake(state, instance_path)
+        body = build_meridian_project_intake(state, instance_path, session)
         write_markdown_with_front_matter(output_path, front_matter, body)
         output_paths.append(output_path.relative_to(instance_path).as_posix())
         result.status = "waiting_on_founder"
@@ -1640,6 +1991,17 @@ def execute_request(instance_path: Path, request_path: Path) -> dict[str, Any]:
     result_path = instance_path / "runtime/results" / f"{run_id}.json"
     write_json(result_path, asdict(result))
 
+    archived_source_path = ""
+    if request.origin == "founder_reply":
+        for relative_path in request.changed_context:
+            if relative_path.startswith("inputs/founder-replies/"):
+                archived_source_path = archive_reply_file(instance_path, relative_path)
+                break
+        if archived_source_path:
+            payload = load_json(result_path)
+            payload["archived_source_path"] = archived_source_path
+            write_json(result_path, payload)
+
     request_path.unlink(missing_ok=True)
     (instance_path / "runtime/queue" / f"{request.request_id}.json").unlink(missing_ok=True)
     return {
@@ -1692,6 +2054,33 @@ def drain_queue(instance_path: Path, limit: int | None = None) -> dict[str, Any]
     }
 
 
+def run_cycle(instance_path: Path, limit: int | None = None) -> dict[str, Any]:
+    planned = plan_requests(instance_path)
+    drained = drain_queue(instance_path, limit=limit)
+    return {
+        "status": drained.get("status", "drained"),
+        "planned": planned,
+        "drained": drained,
+    }
+
+
+def manual_meridian(instance_path: Path) -> dict[str, Any]:
+    request = build_request(
+        agent_id="MERIDIAN-ORCHESTRATOR",
+        trigger_type="manual",
+        reason="manual_founder_session",
+        run_timestamp=current_time(load_schedule(instance_path)).isoformat(timespec="seconds"),
+        changed_context=[],
+        instance_path=instance_path,
+        project=PORTFOLIO_PROJECT,
+        task_type="project_selection",
+        origin="manual",
+    )
+    queued = queue_request(instance_path, request)
+    drained = drain_queue(instance_path)
+    return {"status": drained.get("status", "drained"), "queued": queued, "drained": drained}
+
+
 def ingest_replies(instance_path: Path) -> dict[str, Any]:
     ensure_runtime_dirs(instance_path)
     channel = get_default_channel(instance_path)
@@ -1716,6 +2105,12 @@ def ingest_replies(instance_path: Path) -> dict[str, Any]:
         "reply_count": len(replies),
         "queued_requests": queued,
     }
+
+
+def ingest_and_drain_replies(instance_path: Path) -> dict[str, Any]:
+    ingested = ingest_replies(instance_path)
+    drained = drain_queue(instance_path)
+    return {"status": drained.get("status", "drained"), "ingested": ingested, "drained": drained}
 
 
 def reconcile_state(instance_path: Path) -> dict[str, Any]:
@@ -1754,6 +2149,13 @@ def build_parser() -> argparse.ArgumentParser:
     plan_parser = subparsers.add_parser("plan", help="Plan eligible runs and enqueue request manifests")
     plan_parser.add_argument("--instance-path", default=".")
 
+    run_cycle_parser = subparsers.add_parser("run-cycle", help="Atomically plan and drain the runtime queue")
+    run_cycle_parser.add_argument("--instance-path", default=".")
+    run_cycle_parser.add_argument("--limit", type=int, default=None)
+
+    manual_meridian_parser = subparsers.add_parser("manual-meridian", help="Queue and immediately run a manual Meridian founder session")
+    manual_meridian_parser.add_argument("--instance-path", default=".")
+
     run_once_parser = subparsers.add_parser("run-once", help="Queue a one-off dispatch request")
     run_once_parser.add_argument("--agent", required=True)
     run_once_parser.add_argument("--trigger-type", required=True)
@@ -1771,6 +2173,9 @@ def build_parser() -> argparse.ArgumentParser:
     ingest_parser = subparsers.add_parser("ingest-replies", help="Ingest founder replies from the file-backed channel")
     ingest_parser.add_argument("--instance-path", default=".")
 
+    ingest_and_drain_parser = subparsers.add_parser("ingest-and-drain-replies", help="Ingest founder replies and immediately drain the queue")
+    ingest_and_drain_parser.add_argument("--instance-path", default=".")
+
     reconcile_parser = subparsers.add_parser("reconcile-state", help="Audit repo-native runtime state and queue health")
     reconcile_parser.add_argument("--instance-path", default=".")
 
@@ -1785,6 +2190,10 @@ def main() -> int:
 
     if args.command == "plan":
         payload = plan_requests(instance_path)
+    elif args.command == "run-cycle":
+        payload = run_cycle(instance_path, limit=args.limit)
+    elif args.command == "manual-meridian":
+        payload = manual_meridian(instance_path)
     elif args.command == "run-once":
         request = build_request(
             agent_id=args.agent,
@@ -1802,6 +2211,8 @@ def main() -> int:
         payload = drain_queue(instance_path, limit=args.limit)
     elif args.command == "ingest-replies":
         payload = ingest_replies(instance_path)
+    elif args.command == "ingest-and-drain-replies":
+        payload = ingest_and_drain_replies(instance_path)
     elif args.command == "reconcile-state":
         payload = reconcile_state(instance_path)
     else:  # pragma: no cover

@@ -24,12 +24,61 @@ def write_text(path: Path, text: str) -> None:
     path.write_text(text.rstrip() + "\n", encoding="utf-8")
 
 
+def canonical_project_identity(state: dict[str, Any], *, name: str, project_key: str | None) -> dict[str, str]:
+    requested_key = (project_key or name).strip()
+    requested_slug = slugify(requested_key or name)
+    requested_name = name.strip()
+    projects = state.get("projects", {})
+
+    for existing_key, existing in projects.items():
+        existing_slug = str(existing.get("slug", ""))
+        existing_name = str(existing.get("name", existing_key))
+        if requested_key and existing_key.lower() == requested_key.lower():
+            return {"key": existing_key, "slug": existing_slug or slugify(existing_key), "name": existing_name}
+        if requested_name and existing_name.lower() == requested_name.lower():
+            return {"key": existing_key, "slug": existing_slug or slugify(existing_key), "name": existing_name}
+        if requested_slug and existing_slug == requested_slug:
+            return {"key": existing_key, "slug": existing_slug, "name": existing_name}
+
+    return {"key": requested_key or requested_name, "slug": requested_slug, "name": requested_name}
+
+
+def field_status(value: str) -> str:
+    normalized = value.strip().lower()
+    if not normalized or normalized in {"tbd", "none"}:
+        return "unknown"
+    unknown_markers = (
+        "undetermined",
+        "needs research",
+        "needs validation",
+        "needs to be researched",
+        "needs some research",
+        "to be determined",
+        "not yet",
+        "not clear",
+        "all",
+    )
+    if any(marker in normalized for marker in unknown_markers):
+        return "hypothesis"
+    return "known"
+
+
+def knowledge_block(items: list[tuple[str, str]]) -> list[str]:
+    lines = ["## Knowledge Status", ""]
+    for label, value in items:
+        lines.append(f"- {label}: `{field_status(value)}`")
+    lines.append("")
+    return lines
+
+
 def scaffold_project(instance_path: Path, *, name: str, project_key: str | None, project_type: str, stage: str, summary: str) -> dict[str, str]:
     state_path = instance_path / "outputs/state.json"
     state = load_json(state_path)
 
-    slug = slugify(project_key or name)
-    key = project_key or name
+    identity = canonical_project_identity(state, name=name, project_key=project_key)
+    slug = identity["slug"]
+    key = identity["key"]
+    name = identity["name"]
     project_dir = instance_path / "projects" / slug
     template_dir = instance_path / "projects" / "_template"
 
@@ -53,6 +102,11 @@ def scaffold_project(instance_path: Path, *, name: str, project_key: str | None,
             "- Status: Active",
             "- Owner: MERIDIAN-ORCHESTRATOR",
             f"- Summary: {summary}",
+            "",
+            "## Operating Posture",
+            "",
+            "- Stage template: idea-stage startup unless future evidence moves it forward.",
+            "- Unknowns are expected and should be treated as explicit hypotheses rather than missing work.",
             "",
             "## Objective",
             "",
@@ -83,6 +137,7 @@ def scaffold_project(instance_path: Path, *, name: str, project_key: str | None,
 
 def _render_section_file(title: str, sections: list[tuple[str, str]]) -> str:
     lines = [f"# {title}", ""]
+    lines.extend(knowledge_block(sections))
     for heading, body in sections:
         lines.append(f"## {heading}")
         lines.append("")
@@ -96,14 +151,17 @@ def upsert_project_from_intake(instance_path: Path, answers: dict[str, str]) -> 
     if not name:
         raise SystemExit("Founder intake is missing Project Name.")
 
-    project_key = answers.get("project_key", "").strip() or name
+    requested_project_key = answers.get("project_key", "").strip() or name
     project_type = answers.get("project_type", "").strip() or "product"
     stage = answers.get("stage", "").strip() or "IDEA"
     summary = answers.get("summary", "").strip() or "Founder-defined startup project."
 
     state_path = instance_path / "outputs/state.json"
     state = load_json(state_path)
-    slug = slugify(project_key or name)
+    identity = canonical_project_identity(state, name=name, project_key=requested_project_key)
+    project_key = identity["key"]
+    name = identity["name"] or name
+    slug = identity["slug"]
     project_dir = instance_path / "projects" / slug
 
     if not project_dir.exists():
@@ -129,6 +187,18 @@ def upsert_project_from_intake(instance_path: Path, answers: dict[str, str]) -> 
             "- Owner: MERIDIAN-ORCHESTRATOR",
             f"- Summary: {summary}",
             "",
+            "## Operating Posture",
+            "",
+            f"- Stage template: `{stage}`",
+            "- Treat unknowns as explicit hypotheses to validate, not as missing documentation.",
+            "- Use specialist work to convert `unknown` and `hypothesis` sections into evidence-backed decisions.",
+            "",
+            *knowledge_block(
+                [
+                    ("Objective", answers.get("objective", "")),
+                    ("Summary", summary),
+                ]
+            ),
             "## Objective",
             "",
             answers.get("objective", "").strip() or "TBD",
@@ -227,6 +297,8 @@ def upsert_project_from_intake(instance_path: Path, answers: dict[str, str]) -> 
     state.setdefault("projects", {})[project_key] = {
         "folder_path": f"projects/{slug}",
         "last_activity_at": state.get("projects", {}).get(project_key, {}).get("last_activity_at", ""),
+        "canonical_name": name,
+        "canonical_key": project_key,
         "name": name,
         "owner_agent": "MERIDIAN-ORCHESTRATOR",
         "priority": state.get("projects", {}).get(project_key, {}).get("priority", "medium"),
