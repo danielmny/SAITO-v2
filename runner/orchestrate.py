@@ -36,6 +36,8 @@ REQUEST_FIELDS = (
 )
 CRITICAL_TASK_TYPES = {"escalation", "founder_reply", "reply_needed", "founder_digest"}
 DEFAULT_DAILY_TOKEN_BUDGET = 10000
+RESULT_RETENTION_LIMIT = 200
+REQUEST_RETENTION_LIMIT = 200
 
 
 @dataclass
@@ -220,8 +222,27 @@ def list_existing_hashes(directory: Path) -> set[str]:
     return hashes
 
 
-def dependency_satisfied(agent_state: dict[str, Any]) -> bool:
-    return bool(agent_state.get("last_success")) or agent_state.get("status") in {"success", "completed"}
+def latest_runtime_result_status(instance_path: Path, agent_id: str, required_status: str | None = None) -> str:
+    latest_payload: dict[str, Any] | None = None
+    for path in sorted((instance_path / "runtime/results").glob("*.json")):
+        try:
+            payload = load_json(path)
+        except json.JSONDecodeError:
+            continue
+        if payload.get("agent_id") != agent_id:
+            continue
+        if required_status is not None and payload.get("status") != required_status:
+            continue
+        latest_payload = payload
+    if latest_payload is None:
+        return ""
+    return str(latest_payload.get("status", ""))
+
+
+def dependency_satisfied(instance_path: Path, agent_state: dict[str, Any], dependency: str) -> bool:
+    if bool(agent_state.get("last_success")) or agent_state.get("status") in {"success", "completed"}:
+        return True
+    return latest_runtime_result_status(instance_path, dependency, required_status="success") == "success"
 
 
 def quiet_hours_block_reason(request: DispatchRequest, schedule_entry: dict[str, Any], now: datetime) -> str | None:
@@ -366,8 +387,8 @@ def request_signature(request: DispatchRequest) -> str:
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
 
 
-def planner_request_key(request: DispatchRequest) -> tuple[str, str, str]:
-    return (request.agent_id, request.project, request.trigger_type)
+def planner_request_key(request: DispatchRequest) -> tuple[str, str]:
+    return (request.agent_id, request.project)
 
 
 def build_request(
@@ -497,7 +518,7 @@ def can_enqueue_request(
         return False, "cooldown_active"
 
     for dependency in schedule_entry.get("depends_on", []):
-        if not dependency_satisfied(state.get("agents", {}).get(dependency, {})):
+        if not dependency_satisfied(instance_path, state.get("agents", {}).get(dependency, {}), dependency):
             return False, f"blocked_on_{dependency}"
 
     quiet_reason = quiet_hours_block_reason(request, schedule_entry, now)
@@ -519,6 +540,7 @@ def can_enqueue_request(
 
 def plan_requests(instance_path: Path) -> dict[str, Any]:
     ensure_runtime_dirs(instance_path)
+    trim_runtime_manifests(instance_path)
     state = load_state(instance_path)
     schedule = load_schedule(instance_path)
     pending_handoffs = discover_pending_handoffs(instance_path)
@@ -720,9 +742,61 @@ def list_recent_agent_outputs(
                 "is_new": since is None or modified_at > since.astimezone(timezone.utc),
                 "front_matter": front_matter,
                 "body": body.strip(),
+                "summary": next(
+                    (line.strip("- ").strip() for line in body.splitlines() if line.startswith("- ")),
+                    body.splitlines()[0].strip() if body.splitlines() else "",
+                ),
             }
         )
     return outputs
+
+
+def recent_output_priority(output: dict[str, Any], pending_handoffs: list[dict[str, Any]]) -> tuple[int, str]:
+    score = 0
+    front_matter = output.get("front_matter", {})
+    artifact_type = front_matter.get("artifact_type", "")
+    task_type = front_matter.get("task_type", "")
+    audience = front_matter.get("audience", "internal")
+    score += sum(3 for item in pending_handoffs if item["from"] == output["agent_id"])
+    if audience == "founder":
+        score += 4
+    if artifact_type in {"finance_memo", "legal_brief", "founder_briefing"}:
+        score += 3
+    if artifact_type in {"product_memo", "analytics_brief"}:
+        score += 2
+    if task_type in {"metric_alignment_review", "fundraise_preparation", "diligence_readiness"}:
+        score += 2
+    if "[ESCALATE TO FOUNDER]" in output.get("body", ""):
+        score += 5
+    return score, output["path"]
+
+
+def trim_runtime_manifests(instance_path: Path) -> None:
+    queue_ids = {path.stem for path in (instance_path / "runtime/queue").glob("*.json")}
+
+    request_paths: list[Path] = []
+    for path in (instance_path / "runtime/requests").glob("*.json"):
+        if path.exists():
+            request_paths.append(path)
+    request_paths.sort(key=lambda path: path.stat().st_mtime, reverse=True)
+    kept_requests = 0
+    for path in request_paths:
+        if path.stem in queue_ids:
+            kept_requests += 1
+            continue
+        result_path = instance_path / "runtime/results" / path.name.replace("REQ-", "RUN-", 1)
+        if result_path.exists() or kept_requests >= REQUEST_RETENTION_LIMIT:
+            path.unlink(missing_ok=True)
+            continue
+        kept_requests += 1
+
+    result_paths: list[Path] = []
+    for path in (instance_path / "runtime/results").glob("*.json"):
+        if path.exists():
+            result_paths.append(path)
+    result_paths.sort(key=lambda path: path.stat().st_mtime, reverse=True)
+    for stale_path in result_paths[RESULT_RETENTION_LIMIT:]:
+        stale_path.unlink(missing_ok=True)
 
 
 def mark_handoffs_processed(instance_path: Path, handoff_paths: list[str], run_id: str, processed_at: str) -> int:
@@ -807,14 +881,27 @@ def build_meridian_briefing(
     processed_handoff_paths: list[str],
 ) -> str:
     new_outputs = [item for item in recent_outputs if item["is_new"]]
+    prioritized_outputs = sorted(
+        new_outputs,
+        key=lambda item: recent_output_priority(item, pending_handoffs),
+        reverse=True,
+    )
     wins: list[str] = []
     risks: list[str] = []
     decisions_needed: list[str] = []
     next_actions: list[str] = []
 
-    if new_outputs:
-        for output in new_outputs[:3]:
-            wins.append(f"`{output['agent_id']}` added new output: `{output['path']}`.")
+    if prioritized_outputs:
+        for output in prioritized_outputs[:4]:
+            handoff_count = sum(1 for item in pending_handoffs if item["from"] == output["agent_id"])
+            summary = output.get("summary", "").strip()
+            detail = f" Summary: {summary}" if summary else ""
+            if handoff_count:
+                wins.append(
+                    f"`{output['agent_id']}` advanced `{output['path']}` and generated {handoff_count} downstream follow-on(s).{detail}"
+                )
+            else:
+                wins.append(f"`{output['agent_id']}` advanced `{output['path']}`.{detail}")
     else:
         wins.append("No new specialist outputs landed since the last MERIDIAN success.")
 
@@ -832,7 +919,14 @@ def build_meridian_briefing(
     if not decisions_needed:
         decisions_needed.append("No new founder decision is required in this pass.")
 
-    for handoff in downstream_handoffs[:4]:
+    ranked_handoffs = sorted(
+        downstream_handoffs,
+        key=lambda item: (
+            0 if item["to"] in {"COUNSEL-LEGAL", "LEDGER-FINANCE"} else 1,
+            item["handoff_id"],
+        ),
+    )
+    for handoff in ranked_handoffs[:4]:
         next_actions.append(
             f"Keep `{handoff['handoff_id']}` queued for `{handoff['to']}` on `{handoff['project']}`."
         )
@@ -1182,6 +1276,7 @@ def execute_request(instance_path: Path, request_path: Path) -> dict[str, Any]:
     write_json(result_path, asdict(result))
 
     request_path.unlink(missing_ok=True)
+    (instance_path / "runtime/queue" / f"{request.request_id}.json").unlink(missing_ok=True)
     return {
         "run_id": run_id,
         "status": result.status,
@@ -1193,6 +1288,7 @@ def execute_request(instance_path: Path, request_path: Path) -> dict[str, Any]:
 
 def drain_queue(instance_path: Path, limit: int | None = None) -> dict[str, Any]:
     ensure_runtime_dirs(instance_path)
+    trim_runtime_manifests(instance_path)
     queue_dir = instance_path / "runtime/queue"
     processed: list[dict[str, Any]] = []
     failures: list[dict[str, Any]] = []
@@ -1219,6 +1315,7 @@ def drain_queue(instance_path: Path, limit: int | None = None) -> dict[str, Any]
                 "request_path": queue_path.relative_to(instance_path).as_posix(),
             }
             write_json(result_path, failure_payload)
+            queue_path.unlink(missing_ok=True)
             failures.append(failure_payload)
             processed.append(failure_payload)
 
@@ -1258,6 +1355,7 @@ def ingest_replies(instance_path: Path) -> dict[str, Any]:
 
 def reconcile_state(instance_path: Path) -> dict[str, Any]:
     ensure_runtime_dirs(instance_path)
+    trim_runtime_manifests(instance_path)
     state = load_state(instance_path)
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),

@@ -54,8 +54,9 @@ The runtime is driven in this order:
 1. GitHub Actions or a future app scheduler triggers the dispatcher.
 2. The planner reads `config/schedule.json` and `outputs/state.json`.
 3. Eligible agents are selected using schedule rules, project/task state, and changed context.
+   Dependency gates may be satisfied either by normalized shared state or by the latest successful runtime result manifest for the upstream agent.
 4. `MERIDIAN-ORCHESTRATOR` handles founder intake, project selection, status synthesis, and delegation.
-5. Enabled specialist agents execute project-scoped work from handoffs or normalized founder requests, produce real markdown outputs under `outputs/{AGENT_NAME}/`, and may create deterministic downstream handoffs when the input clearly justifies it.
+5. Enabled specialist agents execute project-scoped work from handoffs or normalized founder requests, produce real markdown outputs under `outputs/{AGENT_NAME}/`, and may create deterministic downstream handoffs when the input clearly justifies it. The current enabled specialist set is `ATLAS-RESEARCH`, `CANVAS-PRODUCT`, `COUNSEL-LEGAL`, `FORGE-ENGINEERING`, `MARKETING-BRAND`, `CURRENT-SALES`, `LEDGER-FINANCE`, `NEXUS-TALENT`, `VECTOR-ANALYTICS`, and `HERALD-COMMS`.
 6. The repo-native planner writes request manifests to `runtime/requests/`, coalesces pending handoffs into a single queued request per agent per cycle when possible, enqueues them in `runtime/queue/`, and drains them serially into `runtime/results/`.
 7. A MERIDIAN run is a real orchestration pass: it may skip cleanly when nothing meaningful changed, or it may write a founder-facing briefing and normalize shared state.
 8. Outputs, handoffs, escalations, communications, and run records are written back to canonical state.

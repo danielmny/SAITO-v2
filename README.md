@@ -25,18 +25,18 @@ The initial always-active core is intentionally small:
 |----|-------|----------|--------------|
 | A-00 | MERIDIAN-ORCHESTRATOR | Orchestrator | `heartbeat + event` |
 | A-01 | ATLAS-RESEARCH | Market Research | `event` |
+| A-02 | CANVAS-PRODUCT | Product | `event` |
 | A-03 | FORGE-ENGINEERING | Engineering | `event` |
+| A-04 | MARKETING-BRAND | Brand & Demand Gen | `event` |
 | A-05 | CURRENT-SALES | Sales | `event` |
+| A-06 | LEDGER-FINANCE | Finance & Fundraising | `event` |
+| A-07 | NEXUS-TALENT | Talent & Hiring | `event` |
+| A-08 | COUNSEL-LEGAL | Legal | `event` |
+| A-09 | VECTOR-ANALYTICS | Analytics & Growth | `event` |
 | A-10 | HERALD-COMMS | Investor Relations & PR | `event` |
 
 Second-wave agents stay disabled at launch until the core harness is stable and real demand requires them:
 
-- `CANVAS-PRODUCT`
-- `MARKETING-BRAND`
-- `LEDGER-FINANCE`
-- `VECTOR-ANALYTICS`
-- `NEXUS-TALENT`
-- `COUNSEL-LEGAL`
 
 ## Runtime Contract
 

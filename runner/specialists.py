@@ -13,8 +13,14 @@ if __package__ in {None, ""}:
 
 ENABLED_SPECIALISTS = {
     "ATLAS-RESEARCH",
+    "CANVAS-PRODUCT",
+    "COUNSEL-LEGAL",
     "FORGE-ENGINEERING",
     "CURRENT-SALES",
+    "MARKETING-BRAND",
+    "NEXUS-TALENT",
+    "LEDGER-FINANCE",
+    "VECTOR-ANALYTICS",
     "HERALD-COMMS",
 }
 
@@ -113,8 +119,14 @@ def collect_recent_project_outputs(instance_path: Path, project: str, exclude_ag
 def artifact_type_for_agent(agent_id: str) -> str:
     return {
         "ATLAS-RESEARCH": "research_brief",
+        "CANVAS-PRODUCT": "product_memo",
+        "COUNSEL-LEGAL": "legal_brief",
         "FORGE-ENGINEERING": "engineering_memo",
         "CURRENT-SALES": "sales_brief",
+        "MARKETING-BRAND": "marketing_brief",
+        "NEXUS-TALENT": "talent_brief",
+        "LEDGER-FINANCE": "finance_memo",
+        "VECTOR-ANALYTICS": "analytics_brief",
         "HERALD-COMMS": "communications_brief",
     }[agent_id]
 
@@ -181,6 +193,34 @@ def body_sections_for_agent(
             "",
             "## Handoffs Triggered",
         ]
+    if agent_id == "CANVAS-PRODUCT":
+        roadmap = [
+            "Lock the v1 scope around psychographic profile storage, company vector capture, match explanation, and evidence instrumentation before expansion work.",
+            "Defer non-core growth surfaces until the core matching loop has user feedback and measurable proof.",
+            "Translate engineering tradeoffs into a Now / Next / Later roadmap so execution stays tied to validation milestones.",
+        ]
+        return [
+            "## Scope",
+            action_required or "Review the product dependency and define the minimum product scope decisions needed next.",
+            "",
+            "## Product Decisions",
+            *[f"- {item}" for item in roadmap],
+            "",
+            "## Backlog Priorities",
+            "- Now: profile persistence, company-side vector inputs, and match-quality evidence capture.",
+            "- Next: synthesis and recruiter-facing explanation surfaces that improve trust in the match output.",
+            "- Later: broader workflow integrations once the initial wedge is commercially validated.",
+            "",
+            "## Risks",
+            "- If scope stays fuzzy, engineering effort will spread across validation and expansion work at the same time.",
+            "- Product claims will weaken if instrumentation is not defined before core feature delivery.",
+            "",
+            "## Recommended Next Actions",
+            "- Freeze the current MVP boundary in repo-native artifacts so engineering and sales work from the same definition.",
+            "- Keep proof-generating metrics tied to each roadmap increment so MERIDIAN can summarize progress cleanly.",
+            "",
+            "## Handoffs Triggered",
+        ]
     if agent_id == "CURRENT-SALES":
         pipeline = [
             "Prioritize 10 early targets among mission-driven startups, hiring leaders at fast-moving small teams, and design-partner friendly recruiting operators.",
@@ -201,6 +241,127 @@ def body_sections_for_agent(
             "## Risks And Blockers",
             "- ICP ambiguity will lower response quality if targeting is too broad.",
             "- Without proof points, pricing and urgency language should stay exploratory rather than assertive.",
+            "",
+            "## Handoffs Triggered",
+        ]
+    if agent_id == "LEDGER-FINANCE":
+        readiness = [
+            "Start with a lightweight investor pipeline: target list, status tracker, and a short rationale for why each investor fits the SIGNAL story.",
+            "Treat the first data room as a minimum viable package: company narrative, roadmap, early proof points, and operating metrics already available in-repo.",
+            "Keep fundraising readiness explicitly coupled to evidence quality so narrative work does not outrun actual traction.",
+        ]
+        return [
+            "## Scope",
+            action_required or "Prepare the minimum fundraising and finance readiness package for the assigned handoff.",
+            "",
+            "## Fundraising Readiness",
+            *[f"- {item}" for item in readiness],
+            "",
+            "## Required Artifacts",
+            "- Investor target list with stage and thesis fit notes.",
+            "- Data room checklist covering deck, product status, GTM proof, and operating metrics.",
+            "- Short runway and capital-needs framing once commercial assumptions firm up.",
+            "",
+            "## Risks",
+            "- Investor outreach will underperform if proof points stay qualitative rather than repo-backed and measurable.",
+            "- Data-room work can sprawl unless the minimum diligence package is defined up front.",
+            "",
+            "## Recommended Next Actions",
+            "- Convert existing specialist outputs into diligence-ready supporting material rather than recreating context from scratch.",
+            "- Keep finance preparation synchronized with HERALD narrative work so claims stay evidence-backed.",
+            "",
+            "## Handoffs Triggered",
+        ]
+    if agent_id == "MARKETING-BRAND":
+        messaging = [
+            "Lead with a wedge message around better candidate-company alignment rather than generic AI recruiting automation.",
+            "Keep the first external story anchored on psychographic fit, faster signal quality, and a pilot-friendly deployment path.",
+            "Separate current proof from future promise so outreach and fundraising language stay credible at pre-seed stage.",
+        ]
+        return [
+            "## Scope",
+            action_required or "Draft the messaging foundation and demand-generation framing for the assigned project handoff.",
+            "",
+            "## Messaging Or Campaign Plan",
+            *[f"- {item}" for item in messaging],
+            "",
+            "## Success Signals",
+            "- Higher response quality in founder-led outbound and design-partner conversations.",
+            "- Clearer message consistency across research, sales, and fundraising materials.",
+            "- Proof gaps stay explicit instead of being blurred by broad brand claims.",
+            "",
+            "## Dependencies",
+            "- ATLAS research should keep pressure-testing ICP language and buyer objections.",
+            "- HERALD should reuse the strongest proof-backed lines for investor-facing narrative work.",
+            "",
+            "## Handoffs Triggered",
+        ]
+    if agent_id == "VECTOR-ANALYTICS":
+        metrics = [
+            "Use a North Star focused on qualified psychographic match outcomes rather than raw traffic or scrape volume.",
+            "Instrument the seeker profile completion, company vector completion, match generation, and follow-up conversion path first.",
+            "Keep the first dashboard lightweight: activation, match quality signals, pilot pipeline, and founder operating cadence.",
+        ]
+        return [
+            "## Scope",
+            action_required or "Define the initial metrics, instrumentation, and dashboard signals for the assigned project handoff.",
+            "",
+            "## Metrics And Signals",
+            *[f"- {item}" for item in metrics],
+            "",
+            "## Dashboard Implications",
+            "- The future founder dashboard should show project health through activation, evidence quality, and commercial traction together.",
+            "- Product and sales instrumentation should roll up into one project view rather than separate unconnected metric sets.",
+            "",
+            "## Data Gaps",
+            "- Match quality has to be operationalized before it can function as a defensible north-star metric.",
+            "- Event names and ownership should be locked now so engineering instrumentation stays consistent with product and GTM reporting.",
+            "",
+            "## Handoffs Triggered",
+        ]
+    if agent_id == "COUNSEL-LEGAL":
+        risks = [
+            "Candidate and employer data handling should be governed by explicit privacy disclosures, retention limits, and internal access boundaries before broader deployment.",
+            "Pre-seed fundraising preparation should include a lightweight diligence checklist so company records, IP ownership, and core policies are not assembled ad hoc under investor pressure.",
+            "Terms of service, privacy policy, and contractor or assignment paperwork should be treated as launch-blocking housekeeping rather than deferred cleanup.",
+        ]
+        return [
+            "## Scope",
+            action_required or "Outline the immediate legal and compliance priorities for the assigned project handoff.",
+            "",
+            "## Risk Summary",
+            *[f"- {item}" for item in risks],
+            "- [REVIEW WITH QUALIFIED COUNSEL BEFORE ACTING]",
+            "",
+            "## Required Actions",
+            "- Create a minimum policy set covering privacy, terms, and internal data handling expectations for SIGNAL.",
+            "- Confirm IP assignment and contribution ownership across any contractors, founders, and collaborators touching the code or fundraising materials.",
+            "- Prepare a diligence-ready legal checklist covering entity docs, cap table hygiene, material agreements, and customer-data handling assumptions.",
+            "",
+            "## Open Questions",
+            "- What candidate data is retained, for how long, and under what deletion or access process?",
+            "- Which jurisdictions are most likely to matter first for privacy and employment-related compliance?",
+            "- Are there any unsigned contributor, contractor, or advisor agreements that could create IP ambiguity later?",
+            "",
+            "## Handoffs Triggered",
+        ]
+    if agent_id == "NEXUS-TALENT":
+        recommendations = [
+            "Do not scale headcount ahead of customer proof; the next hires should be framed as capability gaps to watch rather than immediate recruiting actions.",
+            "The first likely non-founder additions are a product-minded engineer with strong data-modeling instincts and a GTM operator once outreach converts into repeatable demand.",
+            "Any hiring sequence should stay coupled to runway, customer evidence, and whether founders can still absorb execution load without slowing validation.",
+        ]
+        return [
+            "## Scope",
+            action_required or "Produce the current talent-readiness view and recommend the next likely roles or waiting posture.",
+            "",
+            "## Talent Recommendation",
+            *[f"- {item}" for item in recommendations],
+            "",
+            "## Risks Or Dependencies",
+            "- Hiring too early would increase burn before the SIGNAL wedge and sales motion are validated.",
+            "- Waiting too long to identify capability gaps can leave engineering or GTM load concentrated on founders at the wrong moment.",
+            "- Budget and fundraising timing should shape any hiring sequence rather than abstract org-chart ambition.",
             "",
             "## Handoffs Triggered",
         ]
@@ -228,15 +389,11 @@ def body_sections_for_agent(
     ]
 
 
-def downstream_handoffs_for_agent(
+def downstream_handoff_specs(
     *,
-    instance_path: Path,
     agent_id: str,
     project: str,
     handoff: dict[str, Any],
-    output_relative_path: str,
-    run_id: str,
-    now: datetime,
 ) -> list[dict[str, str]]:
     action_required = handoff["action_required"].lower()
     created: list[dict[str, str]] = []
@@ -280,9 +437,73 @@ def downstream_handoffs_for_agent(
                 "action_required": "Use the updated ICP framing to refine the first outbound list and commercial ask.",
             }
         )
+    if agent_id == "CANVAS-PRODUCT" and ("instrumentation" in action_required or "metrics" in action_required or "analytics" in handoff["body"].lower()):
+        created.append(
+            {
+                "to": "VECTOR-ANALYTICS",
+                "task_type": "instrumentation_definition",
+                "reason": "Product scoping identified an analytics dependency for proof-generating instrumentation.",
+                "subject": "Instrumentation Definition",
+                "action_required": "Define the minimum metrics and instrumentation events required to validate the current product roadmap.",
+            }
+        )
+    if agent_id == "LEDGER-FINANCE" and ("data-room" in action_required or "compliance" in action_required or "legal" in handoff["body"].lower()):
+        created.append(
+            {
+                "to": "COUNSEL-LEGAL",
+                "task_type": "diligence_readiness",
+                "reason": "Finance preparation identified a legal or diligence dependency that should be made explicit.",
+                "subject": "Diligence Readiness",
+                "action_required": "Outline the minimum legal and diligence artifacts needed before formal fundraising outreach accelerates.",
+            }
+        )
+    if agent_id == "MARKETING-BRAND" and ("herald-comms" in action_required or "investor" in handoff["body"].lower() or "narrative" in handoff["body"].lower()):
+        created.append(
+            {
+                "to": "HERALD-COMMS",
+                "task_type": "narrative_alignment",
+                "reason": "Marketing messaging work produced narrative inputs that should carry into founder and investor communications.",
+                "subject": "Narrative Alignment",
+                "action_required": "Fold the approved messaging foundation into founder-facing and investor-facing narrative materials.",
+            }
+        )
+    if agent_id == "VECTOR-ANALYTICS" and ("meridian-orchestrator" in action_required or "north star" in handoff["body"].lower() or "dashboard" in handoff["body"].lower()):
+        created.append(
+            {
+                "to": "MERIDIAN-ORCHESTRATOR",
+                "task_type": "metric_alignment_review",
+                "reason": "Analytics work defined operating metrics that should be reflected in the founder-level operating view.",
+                "subject": "Metric Alignment Review",
+                "action_required": "Review the recommended North Star and dashboard signals, then decide which metrics should appear in founder briefings.",
+            }
+        )
+    if agent_id == "NEXUS-TALENT" and ("budget" in action_required or "fundraising" in action_required or "runway" in handoff["body"].lower()):
+        created.append(
+            {
+                "to": "LEDGER-FINANCE",
+                "task_type": "hiring_budget_alignment",
+                "reason": "Talent planning surfaced a sequencing dependency on runway and fundraising timing.",
+                "subject": "Hiring Budget Alignment",
+                "action_required": "Assess when the next likely hires become financially responsible relative to current runway and fundraising assumptions.",
+            }
+        )
 
+    return created
+
+
+def downstream_handoffs_for_agent(
+    *,
+    instance_path: Path,
+    agent_id: str,
+    project: str,
+    handoff: dict[str, Any],
+    output_relative_path: str,
+    run_id: str,
+    now: datetime,
+) -> list[dict[str, str]]:
     created_paths: list[dict[str, str]] = []
     handoff_dir = instance_path / "outputs/handoffs"
+    created = downstream_handoff_specs(agent_id=agent_id, project=project, handoff=handoff)
 
     existing_signatures: set[tuple[str, str, str, str]] = set()
     for existing_path in sorted(handoff_dir.glob("*.md")):
@@ -417,15 +638,7 @@ def execute_specialist(
         context_paths = relevant_context_paths(instance_path, schedule_entry, [handoff], agent_id)
         recent_outputs = collect_recent_project_outputs(instance_path, project, agent_id)
         sections = body_sections_for_agent(agent_id, project, handoff, handoff["action_required"], recent_outputs)
-        downstream = downstream_handoffs_for_agent(
-            instance_path=instance_path,
-            agent_id=agent_id,
-            project=project,
-            handoff=handoff,
-            output_relative_path="",
-            run_id=run_id,
-            now=now,
-        )
+        downstream_specs = downstream_handoff_specs(agent_id=agent_id, project=project, handoff=handoff)
 
         slug = f"{slugify(project)}-{slugify(handoff['task_type'])}-{slugify(handoff['handoff_id'])[-12:]}"
         output_path = instance_path / "outputs" / agent_id / f"{now.date().isoformat()}-{slug}.md"
@@ -441,7 +654,7 @@ def execute_specialist(
         if agent_id == "HERALD-COMMS":
             front_matter["audience"] = "founder"
 
-        handoff_lines = [f"- `{Path(item['path']).stem}` -> downstream handoff created." for item in downstream]
+        handoff_lines = [f"- `{item['to']}` -> downstream handoff justified." for item in downstream_specs]
         if not handoff_lines:
             handoff_lines = ["- No downstream handoffs were justified in this pass."]
 
@@ -464,6 +677,16 @@ def execute_specialist(
         write_front_matter(output_path, front_matter, body)
         output_relative_path = output_path.relative_to(instance_path).as_posix()
         output_paths.append(output_relative_path)
+
+        downstream = downstream_handoffs_for_agent(
+            instance_path=instance_path,
+            agent_id=agent_id,
+            project=project,
+            handoff=handoff,
+            output_relative_path=output_relative_path,
+            run_id=run_id,
+            now=now,
+        )
 
         if downstream:
             for created in downstream:
