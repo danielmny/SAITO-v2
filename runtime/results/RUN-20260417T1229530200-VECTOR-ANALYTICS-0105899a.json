@@ -1,0 +1,52 @@
+{
+  "agent_id": "VECTOR-ANALYTICS",
+  "changed_context": [
+    "outputs/handoffs/HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-009.md"
+  ],
+  "context_hash": "28ef6ce7c1fc0028099dfb5b957d04575627067b866d3b347f8358e14ef728ec",
+  "created_escalations_count": 0,
+  "created_handoffs_count": 1,
+  "error": "",
+  "finished_at": "2026-04-17T10:30:02+00:00",
+  "model_profile": {
+    "fallback_used": true,
+    "model": "gpt-5.4-mini",
+    "profile_name": "standard",
+    "provider": "codex",
+    "reasoning_effort": "medium"
+  },
+  "notes": [
+    "serial_queue_execution",
+    "model_profile_fallback_used",
+    "token_policy_fallback_used",
+    "real_specialist_execution",
+    "processed_HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-009",
+    "created_1_downstream_handoff(s)"
+  ],
+  "origin": "integration",
+  "output_path": "outputs/VECTOR-ANALYTICS/2026-04-17-signal-analytics-brief-estrator-009.md",
+  "output_paths": [
+    "outputs/VECTOR-ANALYTICS/2026-04-17-signal-analytics-brief-estrator-009.md"
+  ],
+  "processed_escalations_count": 0,
+  "processed_handoffs_count": 1,
+  "project": "SIGNAL",
+  "queue_path": "runtime/queue/REQ-20260417T1229530200-VECTOR-ANALYTICS-0105899a.json",
+  "reason": "Workflow expansion requires analytics ownership to define instrumentation and operating metrics early.",
+  "request_id": "REQ-20260417T1229530200-VECTOR-ANALYTICS-0105899a",
+  "request_path": "runtime/requests/REQ-20260417T1229530200-VECTOR-ANALYTICS-0105899a.json",
+  "run_id": "RUN-20260417T1229530200-VECTOR-ANALYTICS-0105899a",
+  "started_at": "2026-04-17T10:30:02+00:00",
+  "state_updated": false,
+  "status": "success",
+  "task_type": "analytics_brief",
+  "token_policy": {
+    "daily_token_budget": 8000,
+    "fallback_used": true,
+    "max_input_tokens": 4000,
+    "max_output_tokens": 900,
+    "reasoning_tier": "standard",
+    "skip_if_context_unchanged": true
+  },
+  "trigger_type": "event"
+}

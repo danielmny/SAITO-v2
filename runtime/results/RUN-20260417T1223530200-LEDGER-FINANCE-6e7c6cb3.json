@@ -1,0 +1,50 @@
+{
+  "agent_id": "LEDGER-FINANCE",
+  "changed_context": [
+    "outputs/handoffs/HANDOFF-2026-04-17-HERALD-COMMS-001.md"
+  ],
+  "context_hash": "3c1502574716d8a4360ad90e542262003b46e050c86dcfad3e29a711c74717f1",
+  "created_escalations_count": 0,
+  "created_handoffs_count": 1,
+  "error": "",
+  "finished_at": "2026-04-17T10:23:59+00:00",
+  "model_profile": {
+    "fallback_used": false,
+    "model": "gpt-5.4-mini",
+    "profile_name": "cheap",
+    "provider": "codex",
+    "reasoning_effort": "low"
+  },
+  "notes": [
+    "serial_queue_execution",
+    "real_specialist_execution",
+    "processed_HANDOFF-2026-04-17-HERALD-COMMS-001",
+    "created_1_downstream_handoff(s)"
+  ],
+  "origin": "handoff",
+  "output_path": "outputs/LEDGER-FINANCE/2026-04-17-signal-fundraise-preparation-ld-comms-001.md",
+  "output_paths": [
+    "outputs/LEDGER-FINANCE/2026-04-17-signal-fundraise-preparation-ld-comms-001.md"
+  ],
+  "processed_escalations_count": 0,
+  "processed_handoffs_count": 1,
+  "project": "SIGNAL",
+  "queue_path": "runtime/queue/REQ-20260417T1223530200-LEDGER-FINANCE-6e7c6cb3.json",
+  "reason": "Communications work identified a dependency on investor-list or data-room planning.",
+  "request_id": "REQ-20260417T1223530200-LEDGER-FINANCE-6e7c6cb3",
+  "request_path": "runtime/requests/REQ-20260417T1223530200-LEDGER-FINANCE-6e7c6cb3.json",
+  "run_id": "RUN-20260417T1223530200-LEDGER-FINANCE-6e7c6cb3",
+  "started_at": "2026-04-17T10:23:59+00:00",
+  "state_updated": false,
+  "status": "success",
+  "task_type": "fundraise_preparation",
+  "token_policy": {
+    "daily_token_budget": 8000,
+    "fallback_used": false,
+    "max_input_tokens": 3000,
+    "max_output_tokens": 800,
+    "reasoning_tier": "standard",
+    "skip_if_context_unchanged": true
+  },
+  "trigger_type": "event"
+}

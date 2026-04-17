@@ -5,11 +5,13 @@ to: LEDGER-FINANCE
 project: SIGNAL
 task_type: fundraise_preparation
 origin: handoff
-status: queued
+status: completed
 created_at: 2026-04-17T10:07:07+00:00
 reason: Communications work identified a dependency on investor-list or data-room planning.
 source_output: outputs/HERALD-COMMS/2026-04-17-signal-communications-brief-estrator-004.md
 compatibility: canonical
+completed_at: 2026-04-17T10:23:59+00:00
+runtime_result: runtime/results/RUN-20260417T1223530200-LEDGER-FINANCE-6e7c6cb3.json
 ---
 ## FROM: HERALD-COMMS
 ## TO: LEDGER-FINANCE

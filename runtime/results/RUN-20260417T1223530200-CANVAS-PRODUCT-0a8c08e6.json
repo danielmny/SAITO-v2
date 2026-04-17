@@ -1,0 +1,54 @@
+{
+  "agent_id": "CANVAS-PRODUCT",
+  "changed_context": [
+    "outputs/handoffs/HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-005.md",
+    "outputs/handoffs/HANDOFF-2026-04-17-FORGE-ENGINEERING-001.md"
+  ],
+  "context_hash": "3819c56540097da5b91ec1b5a7365ba258f47d8a7e42003794c5ea5ff3eb0d86",
+  "created_escalations_count": 0,
+  "created_handoffs_count": 0,
+  "error": "",
+  "finished_at": "2026-04-17T10:23:59+00:00",
+  "model_profile": {
+    "fallback_used": true,
+    "model": "gpt-5.4-mini",
+    "profile_name": "standard",
+    "provider": "codex",
+    "reasoning_effort": "medium"
+  },
+  "notes": [
+    "serial_queue_execution",
+    "model_profile_fallback_used",
+    "token_policy_fallback_used",
+    "real_specialist_execution",
+    "processed_HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-005",
+    "processed_HANDOFF-2026-04-17-FORGE-ENGINEERING-001"
+  ],
+  "origin": "integration",
+  "output_path": "outputs/CANVAS-PRODUCT/2026-04-17-signal-product-memo-estrator-005.md",
+  "output_paths": [
+    "outputs/CANVAS-PRODUCT/2026-04-17-signal-product-memo-estrator-005.md",
+    "outputs/CANVAS-PRODUCT/2026-04-17-signal-product-dependency-review-ineering-001.md"
+  ],
+  "processed_escalations_count": 0,
+  "processed_handoffs_count": 2,
+  "project": "SIGNAL",
+  "queue_path": "runtime/queue/REQ-20260417T1223530200-CANVAS-PRODUCT-0a8c08e6.json",
+  "reason": "2 pending handoffs",
+  "request_id": "REQ-20260417T1223530200-CANVAS-PRODUCT-0a8c08e6",
+  "request_path": "runtime/requests/REQ-20260417T1223530200-CANVAS-PRODUCT-0a8c08e6.json",
+  "run_id": "RUN-20260417T1223530200-CANVAS-PRODUCT-0a8c08e6",
+  "started_at": "2026-04-17T10:23:59+00:00",
+  "state_updated": false,
+  "status": "success",
+  "task_type": "handoff_batch",
+  "token_policy": {
+    "daily_token_budget": 10000,
+    "fallback_used": true,
+    "max_input_tokens": 4000,
+    "max_output_tokens": 900,
+    "reasoning_tier": "standard",
+    "skip_if_context_unchanged": true
+  },
+  "trigger_type": "event"
+}

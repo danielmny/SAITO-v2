@@ -1,0 +1,49 @@
+{
+  "agent_id": "LEDGER-FINANCE",
+  "changed_context": [
+    "outputs/handoffs/HANDOFF-2026-04-17-NEXUS-TALENT-001.md"
+  ],
+  "context_hash": "e4f274178deffaea75123fd5bd5e5a01bca9f3ca077ac531ef5e97826e9e8df1",
+  "created_escalations_count": 0,
+  "created_handoffs_count": 0,
+  "error": "",
+  "finished_at": "2026-04-17T10:52:17+00:00",
+  "model_profile": {
+    "fallback_used": false,
+    "model": "gpt-5.4-mini",
+    "profile_name": "cheap",
+    "provider": "codex",
+    "reasoning_effort": "low"
+  },
+  "notes": [
+    "serial_queue_execution",
+    "real_specialist_execution",
+    "processed_HANDOFF-2026-04-17-NEXUS-TALENT-001"
+  ],
+  "origin": "handoff",
+  "output_path": "outputs/LEDGER-FINANCE/2026-04-17-signal-hiring-budget-alignment-s-talent-001.md",
+  "output_paths": [
+    "outputs/LEDGER-FINANCE/2026-04-17-signal-hiring-budget-alignment-s-talent-001.md"
+  ],
+  "processed_escalations_count": 0,
+  "processed_handoffs_count": 1,
+  "project": "SIGNAL",
+  "queue_path": "runtime/queue/REQ-20260417T1252040200-LEDGER-FINANCE-1e2cb338.json",
+  "reason": "Talent planning surfaced a sequencing dependency on runway and fundraising timing.",
+  "request_id": "REQ-20260417T1252040200-LEDGER-FINANCE-1e2cb338",
+  "request_path": "runtime/requests/REQ-20260417T1252040200-LEDGER-FINANCE-1e2cb338.json",
+  "run_id": "RUN-20260417T1252040200-LEDGER-FINANCE-1e2cb338",
+  "started_at": "2026-04-17T10:52:17+00:00",
+  "state_updated": false,
+  "status": "success",
+  "task_type": "hiring_budget_alignment",
+  "token_policy": {
+    "daily_token_budget": 8000,
+    "fallback_used": false,
+    "max_input_tokens": 3000,
+    "max_output_tokens": 800,
+    "reasoning_tier": "standard",
+    "skip_if_context_unchanged": true
+  },
+  "trigger_type": "event"
+}

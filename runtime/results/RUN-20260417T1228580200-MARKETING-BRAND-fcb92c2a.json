@@ -1,0 +1,52 @@
+{
+  "agent_id": "MARKETING-BRAND",
+  "changed_context": [
+    "outputs/handoffs/HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-006.md"
+  ],
+  "context_hash": "a193fdae8b66e61001444cda1de694dfe68d81be271076ff32a48783f3d35a7f",
+  "created_escalations_count": 0,
+  "created_handoffs_count": 1,
+  "error": "",
+  "finished_at": "2026-04-17T10:29:13+00:00",
+  "model_profile": {
+    "fallback_used": true,
+    "model": "gpt-5.4-mini",
+    "profile_name": "standard",
+    "provider": "codex",
+    "reasoning_effort": "medium"
+  },
+  "notes": [
+    "serial_queue_execution",
+    "model_profile_fallback_used",
+    "token_policy_fallback_used",
+    "real_specialist_execution",
+    "processed_HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-006",
+    "created_1_downstream_handoff(s)"
+  ],
+  "origin": "integration",
+  "output_path": "outputs/MARKETING-BRAND/2026-04-17-signal-marketing-brief-estrator-006.md",
+  "output_paths": [
+    "outputs/MARKETING-BRAND/2026-04-17-signal-marketing-brief-estrator-006.md"
+  ],
+  "processed_escalations_count": 0,
+  "processed_handoffs_count": 1,
+  "project": "SIGNAL",
+  "queue_path": "runtime/queue/REQ-20260417T1228580200-MARKETING-BRAND-fcb92c2a.json",
+  "reason": "Workflow expansion requires brand and demand generation inputs to support customer discovery and fundraising readiness.",
+  "request_id": "REQ-20260417T1228580200-MARKETING-BRAND-fcb92c2a",
+  "request_path": "runtime/requests/REQ-20260417T1228580200-MARKETING-BRAND-fcb92c2a.json",
+  "run_id": "RUN-20260417T1228580200-MARKETING-BRAND-fcb92c2a",
+  "started_at": "2026-04-17T10:29:13+00:00",
+  "state_updated": false,
+  "status": "success",
+  "task_type": "marketing_brief",
+  "token_policy": {
+    "daily_token_budget": 10000,
+    "fallback_used": true,
+    "max_input_tokens": 4000,
+    "max_output_tokens": 900,
+    "reasoning_tier": "standard",
+    "skip_if_context_unchanged": true
+  },
+  "trigger_type": "event"
+}

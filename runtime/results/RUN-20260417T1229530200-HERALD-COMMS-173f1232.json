@@ -1,0 +1,49 @@
+{
+  "agent_id": "HERALD-COMMS",
+  "changed_context": [
+    "outputs/handoffs/HANDOFF-2026-04-17-MARKETING-BRAND-001.md"
+  ],
+  "context_hash": "0ba11473e67119140874b001be7824c6f1f7d56fa04c55b90b53b4885f8e5cf9",
+  "created_escalations_count": 0,
+  "created_handoffs_count": 0,
+  "error": "",
+  "finished_at": "2026-04-17T10:30:02+00:00",
+  "model_profile": {
+    "fallback_used": false,
+    "model": "gpt-5.4-mini",
+    "profile_name": "cheap",
+    "provider": "codex",
+    "reasoning_effort": "low"
+  },
+  "notes": [
+    "serial_queue_execution",
+    "real_specialist_execution",
+    "processed_HANDOFF-2026-04-17-MARKETING-BRAND-001"
+  ],
+  "origin": "handoff",
+  "output_path": "outputs/HERALD-COMMS/2026-04-17-signal-narrative-alignment-ng-brand-001.md",
+  "output_paths": [
+    "outputs/HERALD-COMMS/2026-04-17-signal-narrative-alignment-ng-brand-001.md"
+  ],
+  "processed_escalations_count": 0,
+  "processed_handoffs_count": 1,
+  "project": "SIGNAL",
+  "queue_path": "runtime/queue/REQ-20260417T1229530200-HERALD-COMMS-173f1232.json",
+  "reason": "Marketing messaging work produced narrative inputs that should carry into founder and investor communications.",
+  "request_id": "REQ-20260417T1229530200-HERALD-COMMS-173f1232",
+  "request_path": "runtime/requests/REQ-20260417T1229530200-HERALD-COMMS-173f1232.json",
+  "run_id": "RUN-20260417T1229530200-HERALD-COMMS-173f1232",
+  "started_at": "2026-04-17T10:30:02+00:00",
+  "state_updated": false,
+  "status": "success",
+  "task_type": "narrative_alignment",
+  "token_policy": {
+    "daily_token_budget": 8000,
+    "fallback_used": false,
+    "max_input_tokens": 3200,
+    "max_output_tokens": 900,
+    "reasoning_tier": "standard",
+    "skip_if_context_unchanged": true
+  },
+  "trigger_type": "event"
+}
