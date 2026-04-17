@@ -1,6 +1,6 @@
 # Founders OS — Codex Runtime
 
-Founders OS is a multi-agent operating system for startup work. In `Startup AI Team - One`, it behaves like a 24/7 team of startup operators working across clearly defined projects, with `MERIDIAN-ORCHESTRATOR` acting as the founder-facing project intake and coordination layer.
+Founders OS is a multi-agent operating system for startup work. In the SAITO harness, it behaves like a 24/7 team of startup operators working across multiple separate startup projects, with `MERIDIAN-ORCHESTRATOR` acting as the founder-facing project intake and coordination layer.
 
 ## Operating Model
 
@@ -12,7 +12,8 @@ Founders OS is a multi-agent operating system for startup work. In `Startup AI T
 - File-backed runtime manifests are the default execution path
 - Founder communication defaults to repo files in `outputs/communications/outbox/` and `inputs/founder-replies/`
 - Google Drive, Docs, and Gmail stay disabled until real adapters exist
-- Founder conversations start with project selection unless the request is clearly startup-wide
+- Manual founder launches start with project selection unless the request is clearly startup-wide
+- Scheduled MERIDIAN runs continue on the last real project in `MERIDIAN-ORCHESTRATOR.active_project`
 - Enabled specialist agents receive scoped, project-specific work through handoffs, generate real markdown artifacts, and may create justified downstream handoffs that MERIDIAN later synthesizes back to the founder
 - Equivalent downstream handoffs are suppressed so repeated runs do not reopen the same follow-on work without new justification
 - The runtime contracts are being prepared so a future standalone web app can become the founder control center, dashboard, and execution surface without redesigning the backend model
@@ -51,10 +52,10 @@ Every dispatched run uses the same core request shape:
 
 Specialist agents remain stateless per run. `MERIDIAN-ORCHESTRATOR` is the only component that normalizes shared state into `outputs/state.json`, asks the founder which project they want to work on, reports startup and project status, and routes work to the appropriate specialists.
 
-`make run-meridian` queues a real MERIDIAN orchestration pass. After `make drain`, MERIDIAN either:
+`make run-meridian` now queues a manual MERIDIAN intake pass. After `make drain`, MERIDIAN either:
 
-- records a skip when no meaningful changed context exists, or
-- writes a founder-facing briefing and normalizes shared state when context changed
+- asks which startup/project to work on, or
+- writes a founder-facing briefing and normalizes shared state once project scope is clear
 
 ## File Structure
 
@@ -64,13 +65,17 @@ Specialist agents remain stateless per run. `MERIDIAN-ORCHESTRATOR` is the only 
 ├── FOUNDERS_OS_AGENT_SYSTEM.md       ← Agent definitions, cadences, responsibilities
 ├── agents/                           ← Per-agent runtime prompts
 ├── config/
-│   ├── company-brief.md              ← Company context
+│   ├── company-brief.md              ← Portfolio context
 │   ├── schedule.json                 ← Event + heartbeat dispatch policy
 │   ├── communications.json           ← Founder channel settings
 │   ├── google-workspace.json         ← Drive / Docs / Gmail integration config
 │   ├── token-policy.json             ← Per-agent budget controls
 │   ├── models.json                   ← Model profile routing
 │   └── agent-skills.json             ← External artifact guidance by agent
+├── projects/
+│   ├── _template/                    ← Reusable startup template hierarchy
+│   ├── signal/                       ← Example startup project
+│   └── startup-ops/                  ← Internal operating-system project
 ├── docs/
 │   ├── runtime-contract.md           ← Dispatch, state, artifact, and communication contracts
 │   ├── agent-run-sequence.md         ← Founder intake, routing, and execution sequence
@@ -95,7 +100,7 @@ Specialist agents remain stateless per run. `MERIDIAN-ORCHESTRATOR` is the only 
 │   ├── handoffs/                     ← Inter-agent work queue
 │   ├── escalations/                  ← Pending / resolved escalations
 │   ├── communications/outbox/        ← File-backed founder outbox
-│   └── {AGENT_NAME}/                 ← Agent output history
+│   └── {AGENT_NAME}/                 ← Startup-wide or legacy agent output history
 ├── inputs/
 │   └── founder-replies/              ← File-backed founder reply inbox
 ```
