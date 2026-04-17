@@ -1,0 +1,43 @@
+{
+  "agent_id": "MERIDIAN-ORCHESTRATOR",
+  "changed_context": [],
+  "context_hash": "78c2deb9b47d336a8bf75d5aac5275d394678dc717908fe547a5683ea8ea6447",
+  "created_escalations_count": 0,
+  "created_handoffs_count": 0,
+  "error": "",
+  "finished_at": "2026-04-17T10:12:23+00:00",
+  "model_profile": {
+    "fallback_used": false,
+    "model": "gpt-5.4",
+    "profile_name": "orchestrator",
+    "provider": "codex",
+    "reasoning_effort": "medium"
+  },
+  "notes": [
+    "cooldown_active"
+  ],
+  "origin": "scheduler",
+  "output_path": "",
+  "output_paths": [],
+  "processed_escalations_count": 0,
+  "processed_handoffs_count": 0,
+  "project": "startup_ops",
+  "queue_path": "runtime/queue/REQ-20260417T1212170200-MERIDIAN-ORCHESTRATOR-8e37f877.json",
+  "reason": "live_meridian_review",
+  "request_id": "REQ-20260417T1212170200-MERIDIAN-ORCHESTRATOR-8e37f877",
+  "request_path": "runtime/requests/REQ-20260417T1212170200-MERIDIAN-ORCHESTRATOR-8e37f877.json",
+  "run_id": "RUN-20260417T1212170200-MERIDIAN-ORCHESTRATOR-8e37f877",
+  "started_at": "2026-04-17T10:12:23+00:00",
+  "state_updated": false,
+  "status": "blocked",
+  "task_type": "operating_review",
+  "token_policy": {
+    "daily_token_budget": 25000,
+    "fallback_used": false,
+    "max_input_tokens": 6000,
+    "max_output_tokens": 1200,
+    "reasoning_tier": "high",
+    "skip_if_context_unchanged": true
+  },
+  "trigger_type": "heartbeat"
+}

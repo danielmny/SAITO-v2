@@ -1,0 +1,47 @@
+{
+  "agent_id": "MERIDIAN-ORCHESTRATOR",
+  "changed_context": [],
+  "context_hash": "9f7eafabfb87e27a70468cc7920a285c8a422aada6e7e2e247cc35fb69b8f7ed",
+  "created_escalations_count": 0,
+  "created_handoffs_count": 0,
+  "error": "",
+  "finished_at": "2026-04-17T10:07:07+00:00",
+  "model_profile": {
+    "fallback_used": false,
+    "model": "gpt-5.4",
+    "profile_name": "orchestrator",
+    "provider": "codex",
+    "reasoning_effort": "medium"
+  },
+  "notes": [
+    "serial_queue_execution",
+    "meridian_orchestration_pass",
+    "founder_output_created"
+  ],
+  "origin": "manual",
+  "output_path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
+  "output_paths": [
+    "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md"
+  ],
+  "processed_escalations_count": 0,
+  "processed_handoffs_count": 0,
+  "project": "startup_ops",
+  "queue_path": "runtime/queue/REQ-20260417T1206330200-MERIDIAN-ORCHESTRATOR-198607a2.json",
+  "reason": "manual_progress_check",
+  "request_id": "REQ-20260417T1206330200-MERIDIAN-ORCHESTRATOR-198607a2",
+  "request_path": "runtime/requests/REQ-20260417T1206330200-MERIDIAN-ORCHESTRATOR-198607a2.json",
+  "run_id": "RUN-20260417T1206330200-MERIDIAN-ORCHESTRATOR-198607a2",
+  "started_at": "2026-04-17T10:07:07+00:00",
+  "state_updated": true,
+  "status": "success",
+  "task_type": "operating_review",
+  "token_policy": {
+    "daily_token_budget": 25000,
+    "fallback_used": false,
+    "max_input_tokens": 6000,
+    "max_output_tokens": 1200,
+    "reasoning_tier": "high",
+    "skip_if_context_unchanged": true
+  },
+  "trigger_type": "heartbeat"
+}

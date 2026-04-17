@@ -1,0 +1,15 @@
+{
+  "agent_id": "CURRENT-SALES",
+  "changed_context": [
+    "outputs/handoffs/HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-002.md"
+  ],
+  "instance_path": "/Users/d3/Codex/startup-ai-team-one",
+  "origin": "scheduler",
+  "project": "SIGNAL",
+  "reason": "overdue_sweep",
+  "request_hash": "3e03f20e2ebf187f85c7e6af7b93eb5585177b55839e010007bacdc4a72f3ca5",
+  "request_id": "REQ-20260417T1206330200-CURRENT-SALES-3e03f20e",
+  "run_timestamp": "2026-04-17T12:06:33+02:00",
+  "task_type": "overdue_sweep",
+  "trigger_type": "event"
+}

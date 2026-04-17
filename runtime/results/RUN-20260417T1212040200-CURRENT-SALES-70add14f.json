@@ -1,0 +1,49 @@
+{
+  "agent_id": "CURRENT-SALES",
+  "changed_context": [
+    "outputs/handoffs/HANDOFF-2026-04-17-ATLAS-RESEARCH-001.md"
+  ],
+  "context_hash": "14566b38a5032fbfb0380762b61f94abe6665d06c3d5df8eec55b67a86a571a9",
+  "created_escalations_count": 0,
+  "created_handoffs_count": 0,
+  "error": "",
+  "finished_at": "2026-04-17T10:12:11+00:00",
+  "model_profile": {
+    "fallback_used": false,
+    "model": "gpt-5.4-mini",
+    "profile_name": "standard",
+    "provider": "codex",
+    "reasoning_effort": "medium"
+  },
+  "notes": [
+    "serial_queue_execution",
+    "real_specialist_execution",
+    "processed_HANDOFF-2026-04-17-ATLAS-RESEARCH-001"
+  ],
+  "origin": "handoff",
+  "output_path": "outputs/CURRENT-SALES/2026-04-17-signal-icp-outreach-alignment-research-001.md",
+  "output_paths": [
+    "outputs/CURRENT-SALES/2026-04-17-signal-icp-outreach-alignment-research-001.md"
+  ],
+  "processed_escalations_count": 0,
+  "processed_handoffs_count": 1,
+  "project": "SIGNAL",
+  "queue_path": "runtime/queue/REQ-20260417T1212040200-CURRENT-SALES-70add14f.json",
+  "reason": "Research findings materially affect the first go-to-market wedge and outreach targeting.",
+  "request_id": "REQ-20260417T1212040200-CURRENT-SALES-70add14f",
+  "request_path": "runtime/requests/REQ-20260417T1212040200-CURRENT-SALES-70add14f.json",
+  "run_id": "RUN-20260417T1212040200-CURRENT-SALES-70add14f",
+  "started_at": "2026-04-17T10:12:11+00:00",
+  "state_updated": false,
+  "status": "success",
+  "task_type": "icp_outreach_alignment",
+  "token_policy": {
+    "daily_token_budget": 15000,
+    "fallback_used": false,
+    "max_input_tokens": 3200,
+    "max_output_tokens": 800,
+    "reasoning_tier": "standard",
+    "skip_if_context_unchanged": true
+  },
+  "trigger_type": "event"
+}

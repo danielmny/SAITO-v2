@@ -1,0 +1,47 @@
+{
+  "agent_id": "ATLAS-RESEARCH",
+  "changed_context": [
+    "outputs/handoffs/HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-003.md"
+  ],
+  "context_hash": "a104d4654bc925159e19e594f8c6fb33929df139582c9c49a7921b1d52840247",
+  "created_escalations_count": 0,
+  "created_handoffs_count": 0,
+  "error": "",
+  "finished_at": "2026-04-17T10:07:07+00:00",
+  "model_profile": {
+    "fallback_used": false,
+    "model": "gpt-5.4-mini",
+    "profile_name": "standard",
+    "provider": "codex",
+    "reasoning_effort": "medium"
+  },
+  "notes": [
+    "serial_queue_execution",
+    "real_specialist_execution",
+    "no_pending_handoffs_for_specialist"
+  ],
+  "origin": "founder_request",
+  "output_path": "",
+  "output_paths": [],
+  "processed_escalations_count": 0,
+  "processed_handoffs_count": 0,
+  "project": "SIGNAL",
+  "queue_path": "runtime/queue/REQ-20260417T1206330200-ATLAS-RESEARCH-e3d0d366.json",
+  "reason": "Founder briefing identified missing market validation and ICP evidence as a critical gap.",
+  "request_id": "REQ-20260417T1206330200-ATLAS-RESEARCH-e3d0d366",
+  "request_path": "runtime/requests/REQ-20260417T1206330200-ATLAS-RESEARCH-e3d0d366.json",
+  "run_id": "RUN-20260417T1206330200-ATLAS-RESEARCH-e3d0d366",
+  "started_at": "2026-04-17T10:07:07+00:00",
+  "state_updated": false,
+  "status": "skipped",
+  "task_type": "research_brief",
+  "token_policy": {
+    "daily_token_budget": 12000,
+    "fallback_used": false,
+    "max_input_tokens": 3500,
+    "max_output_tokens": 900,
+    "reasoning_tier": "standard",
+    "skip_if_context_unchanged": true
+  },
+  "trigger_type": "event"
+}

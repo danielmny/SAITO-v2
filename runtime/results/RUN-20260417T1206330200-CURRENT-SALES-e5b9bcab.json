@@ -1,0 +1,47 @@
+{
+  "agent_id": "CURRENT-SALES",
+  "changed_context": [
+    "outputs/handoffs/HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-002.md"
+  ],
+  "context_hash": "e82b5c82811a3c98999cd29aa67a3bd36d8c0e463e85a7ea41a4b5a04b848ef4",
+  "created_escalations_count": 0,
+  "created_handoffs_count": 0,
+  "error": "",
+  "finished_at": "2026-04-17T10:07:07+00:00",
+  "model_profile": {
+    "fallback_used": false,
+    "model": "gpt-5.4-mini",
+    "profile_name": "standard",
+    "provider": "codex",
+    "reasoning_effort": "medium"
+  },
+  "notes": [
+    "serial_queue_execution",
+    "real_specialist_execution",
+    "no_pending_handoffs_for_specialist"
+  ],
+  "origin": "founder_request",
+  "output_path": "",
+  "output_paths": [],
+  "processed_escalations_count": 0,
+  "processed_handoffs_count": 0,
+  "project": "SIGNAL",
+  "queue_path": "runtime/queue/REQ-20260417T1206330200-CURRENT-SALES-e5b9bcab.json",
+  "reason": "Founder briefing identified early customer proof and LOI generation as a top company priority.",
+  "request_id": "REQ-20260417T1206330200-CURRENT-SALES-e5b9bcab",
+  "request_path": "runtime/requests/REQ-20260417T1206330200-CURRENT-SALES-e5b9bcab.json",
+  "run_id": "RUN-20260417T1206330200-CURRENT-SALES-e5b9bcab",
+  "started_at": "2026-04-17T10:07:07+00:00",
+  "state_updated": false,
+  "status": "skipped",
+  "task_type": "pipeline_plan",
+  "token_policy": {
+    "daily_token_budget": 15000,
+    "fallback_used": false,
+    "max_input_tokens": 3200,
+    "max_output_tokens": 800,
+    "reasoning_tier": "standard",
+    "skip_if_context_unchanged": true
+  },
+  "trigger_type": "event"
+}

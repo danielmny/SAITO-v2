@@ -1,0 +1,10 @@
+{
+  "generated_at": "2026-04-17T10:12:37+00:00",
+  "note": "Shared-state normalization remains MERIDIAN-ORCHESTRATOR-owned; reconcile-state audits repo-native runtime health only.",
+  "open_escalations": 0,
+  "open_handoffs": 7,
+  "queue_depth": 0,
+  "result_count": 13,
+  "state_path": "outputs/state.json",
+  "state_valid_json": true
+}

@@ -1,0 +1,13 @@
+{
+  "agent_id": "MERIDIAN-ORCHESTRATOR",
+  "changed_context": [],
+  "instance_path": "/Users/d3/Codex/startup-ai-team-one",
+  "origin": "manual",
+  "project": "startup_ops",
+  "reason": "manual_progress_check",
+  "request_hash": "198607a247c90e1acb7e9db3c5ded690dcc699d982bb6e7f0d3a3544fcf47590",
+  "request_id": "REQ-20260417T1206330200-MERIDIAN-ORCHESTRATOR-198607a2",
+  "run_timestamp": "2026-04-17T12:06:33+02:00",
+  "task_type": "operating_review",
+  "trigger_type": "heartbeat"
+}

@@ -1,0 +1,50 @@
+{
+  "agent_id": "ATLAS-RESEARCH",
+  "changed_context": [
+    "outputs/handoffs/HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-003.md"
+  ],
+  "context_hash": "93f2c99045fae763b3a34565605b0516bd09a54224560958cbe4b0600e130043",
+  "created_escalations_count": 0,
+  "created_handoffs_count": 1,
+  "error": "",
+  "finished_at": "2026-04-17T10:07:07+00:00",
+  "model_profile": {
+    "fallback_used": false,
+    "model": "gpt-5.4-mini",
+    "profile_name": "standard",
+    "provider": "codex",
+    "reasoning_effort": "medium"
+  },
+  "notes": [
+    "serial_queue_execution",
+    "real_specialist_execution",
+    "processed_HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-003",
+    "created_1_downstream_handoff(s)"
+  ],
+  "origin": "scheduler",
+  "output_path": "outputs/ATLAS-RESEARCH/2026-04-17-signal-research-brief-estrator-003.md",
+  "output_paths": [
+    "outputs/ATLAS-RESEARCH/2026-04-17-signal-research-brief-estrator-003.md"
+  ],
+  "processed_escalations_count": 0,
+  "processed_handoffs_count": 1,
+  "project": "SIGNAL",
+  "queue_path": "runtime/queue/REQ-20260417T1206330200-ATLAS-RESEARCH-a3036a42.json",
+  "reason": "overdue_sweep",
+  "request_id": "REQ-20260417T1206330200-ATLAS-RESEARCH-a3036a42",
+  "request_path": "runtime/requests/REQ-20260417T1206330200-ATLAS-RESEARCH-a3036a42.json",
+  "run_id": "RUN-20260417T1206330200-ATLAS-RESEARCH-a3036a42",
+  "started_at": "2026-04-17T10:07:07+00:00",
+  "state_updated": false,
+  "status": "success",
+  "task_type": "overdue_sweep",
+  "token_policy": {
+    "daily_token_budget": 12000,
+    "fallback_used": false,
+    "max_input_tokens": 3500,
+    "max_output_tokens": 900,
+    "reasoning_tier": "standard",
+    "skip_if_context_unchanged": true
+  },
+  "trigger_type": "event"
+}

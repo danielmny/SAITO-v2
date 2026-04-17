@@ -1,0 +1,15 @@
+{
+  "agent_id": "HERALD-COMMS",
+  "changed_context": [
+    "outputs/handoffs/HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-004.md"
+  ],
+  "instance_path": "/Users/d3/Codex/startup-ai-team-one",
+  "origin": "founder_request",
+  "project": "SIGNAL",
+  "reason": "Founder briefing identified seed-readiness materials as missing versus the current stage-gate.",
+  "request_hash": "82774bab68433e35fe163a3d409af5988a0f9b005955aa783cd9f4744ebaaf74",
+  "request_id": "REQ-20260417T1206330200-HERALD-COMMS-82774bab",
+  "run_timestamp": "2026-04-17T12:06:33+02:00",
+  "task_type": "communications_brief",
+  "trigger_type": "event"
+}
