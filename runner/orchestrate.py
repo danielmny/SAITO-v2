@@ -169,6 +169,16 @@ def project_context_files(instance_path: Path, project: str, state: dict[str, An
     return files
 
 
+def project_output_files(instance_path: Path, project: str, state: dict[str, Any] | None = None) -> list[Path]:
+    root = project_root(instance_path, project, state)
+    if root is None:
+        return []
+    output_root = root / "outputs"
+    if not output_root.exists():
+        return []
+    return sorted(path for path in output_root.rglob("*.md"))
+
+
 def project_output_dir(instance_path: Path, project: str, agent_id: str, state: dict[str, Any] | None = None) -> Path:
     root = project_root(instance_path, project, state)
     if root is None:
@@ -428,6 +438,10 @@ def compute_context_hash(
                 hasher.update(file_path.read_bytes())
     state = load_state(instance_path)
     for file_path in project_context_files(instance_path, request.project, state):
+        relative_file = file_path.relative_to(instance_path).as_posix()
+        hasher.update(relative_file.encode("utf-8"))
+        hasher.update(file_path.read_bytes())
+    for file_path in project_output_files(instance_path, request.project, state):
         relative_file = file_path.relative_to(instance_path).as_posix()
         hasher.update(relative_file.encode("utf-8"))
         hasher.update(file_path.read_bytes())

@@ -175,7 +175,7 @@
         {
           "created_at": "2026-04-13T20:43:44+0200",
           "origin": "founder_request",
-          "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
+          "path": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
           "project": "SIGNAL",
           "task_type": "status_review",
           "type": "founder_briefing"
@@ -183,7 +183,7 @@
         {
           "created_at": "2026-04-14T10:42:00+0200",
           "origin": "founder_request",
-          "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md",
+          "path": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md",
           "project": "startup_ops",
           "task_type": "operating_review",
           "type": "operating_checkpoint"
@@ -191,7 +191,7 @@
         {
           "created_at": "2026-04-17T10:07:07+00:00",
           "origin": "manual",
-          "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
+          "path": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
           "project": "startup_ops",
           "task_type": "operating_review",
           "type": "founder_briefing"
@@ -199,7 +199,7 @@
         {
           "created_at": "2026-04-17T10:23:59+00:00",
           "origin": "scheduler",
-          "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
+          "path": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
           "project": "startup_ops",
           "task_type": "operating_review",
           "type": "founder_briefing"
@@ -207,7 +207,7 @@
         {
           "created_at": "2026-04-17T10:47:01+00:00",
           "origin": "scheduler",
-          "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
+          "path": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
           "project": "startup_ops",
           "task_type": "operating_review",
           "type": "founder_briefing"
@@ -217,12 +217,12 @@
       "cooldown_until": "",
       "dashboard_status": "completed",
       "external_artifacts": [
-        "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
-        "outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md",
-        "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md"
+        "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
+        "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md",
+        "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md"
       ],
       "last_google_sync": "",
-      "last_output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
+      "last_output": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
       "last_run": "2026-04-17T10:47:01+00:00",
       "last_success": "2026-04-17T10:47:01+00:00",
       "last_trigger": "heartbeat",
@@ -282,7 +282,7 @@
       "created_at": "2026-04-13T20:43:44+0200",
       "from": "MERIDIAN-ORCHESTRATOR",
       "origin": "founder_request",
-      "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
+      "path": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
       "project": "SIGNAL",
       "task_type": "status_review",
       "type": "founder_briefing"
@@ -291,7 +291,7 @@
       "created_at": "2026-04-14T10:42:00+0200",
       "from": "MERIDIAN-ORCHESTRATOR",
       "origin": "founder_request",
-      "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md",
+      "path": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md",
       "project": "startup_ops",
       "task_type": "operating_review",
       "type": "operating_checkpoint"
@@ -300,7 +300,7 @@
       "created_at": "2026-04-17T10:07:07+00:00",
       "from": "MERIDIAN-ORCHESTRATOR",
       "origin": "manual",
-      "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
+      "path": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
       "project": "startup_ops",
       "task_type": "operating_review",
       "type": "founder_briefing"
@@ -309,7 +309,7 @@
       "created_at": "2026-04-17T10:23:59+00:00",
       "from": "MERIDIAN-ORCHESTRATOR",
       "origin": "scheduler",
-      "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
+      "path": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
       "project": "startup_ops",
       "task_type": "operating_review",
       "type": "founder_briefing"
@@ -318,7 +318,7 @@
       "created_at": "2026-04-17T10:47:01+00:00",
       "from": "MERIDIAN-ORCHESTRATOR",
       "origin": "scheduler",
-      "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
+      "path": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
       "project": "startup_ops",
       "task_type": "operating_review",
       "type": "founder_briefing"
@@ -377,9 +377,9 @@
     ]
   },
   "external_artifacts": [
-    "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
-    "outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md",
-    "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md"
+    "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
+    "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md",
+    "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md"
   ],
   "founder_requests": [
     {
@@ -396,7 +396,7 @@
       "agent": "MERIDIAN-ORCHESTRATOR",
       "finished_at": "2026-04-14T10:42:00+0200",
       "origin": "founder_request",
-      "output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md",
+      "output": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-14-operating-checkpoint.md",
       "project": "startup_ops",
       "run_id": "RUN-2026-04-14-MERIDIAN-001",
       "started_at": "2026-04-14T10:42:00+0200",
@@ -408,7 +408,7 @@
       "agent": "MERIDIAN-ORCHESTRATOR",
       "finished_at": "2026-04-13T20:43:44+0200",
       "origin": "founder_request",
-      "output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
+      "output": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-13-founder-briefing.md",
       "project": "SIGNAL",
       "run_id": "RUN-2026-04-13-MERIDIAN-001",
       "started_at": "2026-04-13T20:43:44+0200",
@@ -420,7 +420,7 @@
       "agent": "MERIDIAN-ORCHESTRATOR",
       "finished_at": "2026-04-17T10:07:07+00:00",
       "origin": "manual",
-      "output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
+      "output": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
       "project": "startup_ops",
       "run_id": "RUN-20260417T1206330200-MERIDIAN-ORCHESTRATOR-198607a2",
       "started_at": "2026-04-17T10:07:07+00:00",
@@ -432,7 +432,7 @@
       "agent": "MERIDIAN-ORCHESTRATOR",
       "finished_at": "2026-04-17T10:23:59+00:00",
       "origin": "scheduler",
-      "output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
+      "output": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
       "project": "startup_ops",
       "run_id": "RUN-20260417T1223290200-MERIDIAN-ORCHESTRATOR-39d0a6d3",
       "started_at": "2026-04-17T10:23:59+00:00",
@@ -444,7 +444,7 @@
       "agent": "MERIDIAN-ORCHESTRATOR",
       "finished_at": "2026-04-17T10:47:01+00:00",
       "origin": "scheduler",
-      "output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
+      "output": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
       "project": "startup_ops",
       "run_id": "RUN-20260417T1246270200-MERIDIAN-ORCHESTRATOR-e31fe771",
       "started_at": "2026-04-17T10:47:01+00:00",
@@ -506,7 +506,7 @@
       "origin": "founder_request",
       "owner_agent": "FORGE-ENGINEERING",
       "project": "SIGNAL",
-      "result_output": "outputs/FORGE-ENGINEERING/2026-04-17-signal-implementation-plan-estrator-001.md",
+      "result_output": "projects/signal/outputs/FORGE-ENGINEERING/2026-04-17-signal-implementation-plan-estrator-001.md",
       "source_handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-001",
       "status": "completed",
       "task_id": "TASK-SIGNAL-001",
@@ -521,7 +521,7 @@
       "origin": "founder_request",
       "owner_agent": "CURRENT-SALES",
       "project": "SIGNAL",
-      "result_output": "outputs/CURRENT-SALES/2026-04-17-signal-pipeline-plan-estrator-002.md",
+      "result_output": "projects/signal/outputs/CURRENT-SALES/2026-04-17-signal-pipeline-plan-estrator-002.md",
       "source_handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-002",
       "status": "completed",
       "task_id": "TASK-SIGNAL-002",
@@ -536,7 +536,7 @@
       "origin": "founder_request",
       "owner_agent": "ATLAS-RESEARCH",
       "project": "SIGNAL",
-      "result_output": "outputs/ATLAS-RESEARCH/2026-04-17-signal-research-brief-estrator-003.md",
+      "result_output": "projects/signal/outputs/ATLAS-RESEARCH/2026-04-17-signal-research-brief-estrator-003.md",
       "source_handoff_id": "HANDOFF-2026-04-13-MERIDIAN-ORCHESTRATOR-003",
       "status": "completed",
       "task_id": "TASK-SIGNAL-003",
@@ -551,7 +551,7 @@
       "origin": "founder_request",
       "owner_agent": "MERIDIAN-ORCHESTRATOR",
       "project": "startup_ops",
-      "result_output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
+      "result_output": "projects/startup-ops/outputs/MERIDIAN-ORCHESTRATOR/2026-04-17-founder-briefing.md",
       "source_handoff_id": "",
       "status": "in_progress",
       "task_id": "TASK-OPS-001",

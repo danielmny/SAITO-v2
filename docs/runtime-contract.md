@@ -106,6 +106,8 @@ Every task, handoff, founder request, and agent output must belong to either:
 
 Each named project should also have a folder hierarchy under `projects/{startup-slug}/` containing startup-specific files such as `project.md`, `problem.md`, `icp.md`, `solution.md`, `validation.md`, `strategy.md`, `financials.md`, `roadmap.md`, and `decisions.md`.
 
+The repo may also provide a scaffold helper that copies `projects/_template/` into a new `projects/{startup-slug}/` folder and registers the project in `outputs/state.json`.
+
 ## Tasks contract
 
 Task records should support dashboard rendering and routing with:

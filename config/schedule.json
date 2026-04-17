@@ -11,10 +11,10 @@
   "agents": {
     "MERIDIAN-ORCHESTRATOR": {
       "function": "Orchestrator",
-      "enabled": false,
+      "enabled": true,
       "phase": 1,
       "priority": 100,
-      "trigger_mode": ["heartbeat", "event"],
+      "trigger_mode": ["heartbeat", "event", "manual"],
       "heartbeat_minutes": 15,
       "cooldown_minutes": 15,
       "max_runs_per_day": 48,
@@ -35,7 +35,7 @@
     },
     "ATLAS-RESEARCH": {
       "function": "Market Research",
-      "enabled": false,
+      "enabled": true,
       "phase": 1,
       "priority": 70,
       "trigger_mode": ["event"],
@@ -59,7 +59,7 @@
     },
     "CANVAS-PRODUCT": {
       "function": "Product",
-      "enabled": false,
+      "enabled": true,
       "phase": 2,
       "priority": 60,
       "trigger_mode": ["event"],
@@ -84,7 +84,7 @@
     },
     "FORGE-ENGINEERING": {
       "function": "Engineering",
-      "enabled": false,
+      "enabled": true,
       "phase": 1,
       "priority": 80,
       "trigger_mode": ["event"],
@@ -108,7 +108,7 @@
     },
     "MARKETING-BRAND": {
       "function": "Brand & Demand Gen",
-      "enabled": false,
+      "enabled": true,
       "phase": 2,
       "priority": 50,
       "trigger_mode": ["event"],
@@ -133,7 +133,7 @@
     },
     "CURRENT-SALES": {
       "function": "Sales",
-      "enabled": false,
+      "enabled": true,
       "phase": 1,
       "priority": 85,
       "trigger_mode": ["event"],
@@ -158,7 +158,7 @@
     },
     "LEDGER-FINANCE": {
       "function": "Finance & Fundraising",
-      "enabled": false,
+      "enabled": true,
       "phase": 1,
       "priority": 65,
       "trigger_mode": ["event"],
@@ -182,7 +182,7 @@
     },
     "NEXUS-TALENT": {
       "function": "Talent & Hiring",
-      "enabled": false,
+      "enabled": true,
       "phase": 2,
       "priority": 40,
       "trigger_mode": ["event"],
@@ -205,7 +205,7 @@
     },
     "COUNSEL-LEGAL": {
       "function": "Legal",
-      "enabled": false,
+      "enabled": true,
       "phase": 2,
       "priority": 40,
       "trigger_mode": ["manual", "event"],
@@ -228,7 +228,7 @@
     },
     "VECTOR-ANALYTICS": {
       "function": "Analytics & Growth",
-      "enabled": false,
+      "enabled": true,
       "phase": 2,
       "priority": 55,
       "trigger_mode": ["event"],
@@ -253,7 +253,7 @@
     },
     "HERALD-COMMS": {
       "function": "Investor Relations & PR",
-      "enabled": false,
+      "enabled": true,
       "phase": 1,
       "priority": 75,
       "trigger_mode": ["event"],

@@ -57,6 +57,10 @@ Specialist agents remain stateless per run. `MERIDIAN-ORCHESTRATOR` is the only 
 - asks which startup/project to work on, or
 - writes a founder-facing briefing and normalizes shared state once project scope is clear
 
+To scaffold a new startup project from the template:
+
+- `make scaffold-project NAME="New Startup" KEY="NEW-STARTUP" TYPE="product" STAGE="IDEA" SUMMARY="One-line summary"`
+
 ## File Structure
 
 ```text
