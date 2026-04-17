@@ -1,107 +1,77 @@
-# Company Brief — Startup AI Team - One
+# Company Brief — SAITO Framework
 
-> This file is the authoritative company context for all Founders OS agents.
-> Update this file when company facts change. Do not embed company details in agent prompts.
+> This file is the authoritative portfolio-level context for the SAITO runtime.
+> It defines how the harness works. Startup-specific facts belong in `projects/{startup-slug}/`.
 
 ---
 
 ## The Company
 
-**Name:** Startup AI Team - One
-**Type:** AI-operated startup team / venture studio runtime
-**Stage:** PRE-SEED operating system with active project execution
+**Name:** SAITO Framework
+**Type:** Multi-project AI startup operating system
+**Stage:** PRE-SEED runtime with active multi-startup execution
 
-**What it does:** Runs a 24/7 team of specialized AI startup operators across multiple clearly defined projects. The agents are expected to behave like a real startup team: compartmentalize work by project, route tasks to the right functional owners, keep project status visible, and sustain fast, coordinated execution.
+**What it does:** Runs a 24/7 team of specialized AI startup operators across multiple named startups. Each startup is treated as a separate project with its own problem, ICP, solution, validation, strategy, financials, roadmap, and decision history.
 
-**Founder interaction model:** The founder starts with `MERIDIAN-ORCHESTRATOR`. MERIDIAN should ask which project the founder wants to work on, whether the founder wants startup-wide status, project/task status, or new execution, and what the founder wants to do next. MERIDIAN then routes work to the relevant specialists and returns synthesized results.
+**Founder interaction model:** The founder starts with `MERIDIAN-ORCHESTRATOR`. On manual launch, MERIDIAN should ask which startup/project to work on unless the request is clearly startup-wide operating work. Once the project is known, MERIDIAN routes work to the relevant specialists and returns a synthesized response.
 
-**Repo:** `danielmny/startup-ai-team-one` (private)
+## Portfolio Model
 
-## Project Portfolio
+All work must be scoped to one of:
 
-All work must be scoped to one named project or to startup-wide operating work.
+- a named startup project under `projects/{startup-slug}/`
+- the startup-wide operating lane `startup_ops`
+
+Each startup folder should contain, at minimum:
+
+- `project.md`
+- `problem.md`
+- `icp.md`
+- `solution.md`
+- `validation.md`
+- `strategy.md`
+- `financials.md`
+- `roadmap.md`
+- `decisions.md`
+
+Project-specific artifacts should be written under:
+
+- `projects/{startup-slug}/outputs/{AGENT_NAME}/`
+
+Shared runtime artifacts remain global:
+
+- `outputs/state.json`
+- `outputs/handoffs/`
+- `outputs/escalations/`
+- `outputs/communications/`
+- `runtime/`
+
+## Current Portfolio
 
 ### Project 1 — SIGNAL
 
+**Slug:** `signal`
 **Type:** Job market intelligence platform
-**Stage:** PRE-SEED (MVP built, moving toward seed fundraise)
-**What it does:** Matches job seekers to companies based on psychographic and cultural alignment rather than keyword matching.
-**Stack:** FastAPI (Python) · PostgreSQL · React + Vite · LLM API · Playwright scrapers · Railway/Fly.io (planned)
-**Status:** Active product build and GTM preparation
+**Stage:** PRE-SEED
+**Status:** Active startup project
+**Project folder:** `projects/signal/`
 
-### Project 2 — Startup AI Team Runtime
+### Project 2 — Startup Ops
 
-**Type:** Internal operating system / workflow project
-**What it does:** Improves the team runtime itself: orchestration, handoffs, scheduling, founder communication, and project coordination.
-**Status:** Active internal operations project
+**Slug:** `startup-ops`
+**Type:** Internal operating-system project
+**Stage:** Internal build
+**Status:** Active operating project
+**Project folder:** `projects/startup-ops/`
 
 ## Operating Rules
 
-- The team works 24/7 across the active project portfolio.
-- Projects must be clearly compartmentalized. Cross-project work must be explicit.
-- MERIDIAN is responsible for founder intake, project selection, routing, and synthesis.
-- Specialist agents should only act within the scope of their project handoff or clearly defined operating responsibilities.
-- The current repo is the canonical backend model for a future standalone web app.
-- The future web app should be able to support founder control, autonomous execution, and dashboards using the same project/task/run/handoff contracts defined in this repo.
-
-## SIGNAL Project Context
-
-### The 8 Psychographic Dimensions
-
-Both seekers and companies scored on same axes (1–10):
-
-| Seeker | Company |
-|--------|---------|
-| autonomy_need | autonomy_granted |
-| ambiguity_tolerance | ambiguity_level |
-| mission_orientation | mission_strength |
-| growth_urgency | growth_pace |
-| security_need | job_security |
-| stress_resilience | pressure_level |
-| collaboration_preference | collaboration_density |
-| hierarchy_comfort | hierarchy_flatness |
-
-Match score: `Σ( weight_i × (1 - |seeker_i - company_i| / 10) )`
-Weights: autonomy + ambiguity = 1.5×, mission = 1.3×, security + growth = 1.2×
-
-### Seeker Archetypes
-
-| Archetype | Condition |
-|-----------|-----------|
-| Founding Operator | autonomy ≥ 8 AND ambiguity ≥ 7 |
-| Mission Builder | mission ≥ 8 |
-| Steady Architect | security ≥ 7 |
-| Revenue Hunter | stress_resilience ≥ 8 AND growth_urgency ≥ 7 |
-| Deep Craftsman | default |
-
-### Current Build State
-
-Already built: FastAPI backend · PostgreSQL · Google Careers scraper · CV ingestion (PDF/DOCX/TXT) · rule-based CV analysis · seeker layer (/me/ endpoints) · minimal React frontend
-
-Gaps: no psychographic profile storage · no company culture vectors · no auth · not deployed
-
-### Implementation Roadmap
-
-| Step | Task | Status |
-|------|------|--------|
-| 1 | LLM-powered CV Analysis | Planned |
-| 2 | Psychographic Profile Layer (DB + API) | Planned |
-| 3 | Greenhouse + Lever Scrapers | Planned |
-| 4 | Company Intelligence Synthesis | Planned |
-| 5 | Deploy to Railway | Planned |
-| 6 | Wire 3D match map to real API | Planned |
-| 7 | Glassdoor + Reddit signal collection | Planned |
-
-### Current Stage: PRE-SEED
-
-Active priorities:
-1. Complete implementation Steps 1–4 (working psychographic match)
-2. Get 10 paying or LOI-signed early customers
-3. Prepare seed fundraising materials
-4. Define and track North Star Metric
-
-Stage-gate to SEED requires: MVP with real users · 3–5 paying customers · pitch deck · 50+ investor list · data room ready
+- The SAITO harness is reusable across many startup ideas, not tied to a single company thesis.
+- Every specialist agent should work from the selected startup folder plus the shared runtime state.
+- MERIDIAN is responsible for project selection, routing, synthesis, and shared-state normalization.
+- If a founder asks for work on a new startup, the runtime should create or populate a new folder under `projects/` and keep that startup isolated from existing ones.
+- The future app should expose the same portfolio, project, task, run, handoff, and communication model defined in this repo.
 
 ---
 
-*Last updated: April 2026*
+*Last updated: April 17, 2026*

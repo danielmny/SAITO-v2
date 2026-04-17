@@ -52,6 +52,13 @@ def reset_runtime_fixture(repo: Path) -> None:
         for path in pending_escalations.glob("*.md"):
             path.unlink()
 
+    projects_root = repo / "projects"
+    if projects_root.exists():
+        for project_dir in projects_root.iterdir():
+            outputs_dir = project_dir / "outputs"
+            if outputs_dir.exists():
+                shutil.rmtree(outputs_dir, ignore_errors=True)
+
 
 def write_handoff(
     *,
