@@ -13,6 +13,7 @@ Founders OS is a multi-agent operating system for startup work. In the SAITO har
 - Founder communication defaults to repo files in `outputs/communications/outbox/` and `inputs/founder-replies/`
 - Google Drive, Docs, and Gmail stay disabled until real adapters exist
 - Manual founder launches start with project selection unless the request is clearly startup-wide
+- Manual founder launches now ask the full project questionnaire and can populate the startup files from a founder reply in `inputs/founder-replies/`
 - Scheduled MERIDIAN runs continue on the last real project in `MERIDIAN-ORCHESTRATOR.active_project`
 - Enabled specialist agents receive scoped, project-specific work through handoffs, generate real markdown artifacts, and may create justified downstream handoffs that MERIDIAN later synthesizes back to the founder
 - Equivalent downstream handoffs are suppressed so repeated runs do not reopen the same follow-on work without new justification

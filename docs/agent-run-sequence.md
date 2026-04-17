@@ -31,7 +31,8 @@ MERIDIAN should determine:
    - new execution
 3. what work should be delegated next
 
-If the founder manually launches MERIDIAN without naming a project and the request is not obviously startup-wide, MERIDIAN asks which startup/project to work on before routing work.
+If the founder manually launches MERIDIAN without naming a project and the request is not obviously startup-wide, MERIDIAN asks the full startup-intake questionnaire before routing work.
+The founder reply can then be ingested to populate the project files under `projects/{startup-slug}/`.
 Scheduled MERIDIAN runs should continue on the last non-portfolio project recorded in shared state.
 
 ## 4. How the planner decides run order

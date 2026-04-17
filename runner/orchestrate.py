@@ -15,6 +15,7 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from runner.communications import Message, get_default_channel
+from runner.projects import upsert_project_from_intake
 from runner.specialists import ENABLED_SPECIALISTS, execute_specialist
 
 
@@ -617,7 +618,8 @@ def can_enqueue_request(
     last_run = parse_iso8601(agent_state.get("last_run", ""))
     cooldown_minutes = schedule_entry.get("cooldown_minutes", 0)
     now = current_time(schedule)
-    if last_run is not None and cooldown_minutes and now < last_run + timedelta(minutes=cooldown_minutes):
+    cooldown_exempt = request.origin == "founder_reply" or request.task_type == "founder_reply"
+    if not cooldown_exempt and last_run is not None and cooldown_minutes and now < last_run + timedelta(minutes=cooldown_minutes):
         return False, "cooldown_active"
 
     for dependency in schedule_entry.get("depends_on", []):
@@ -1094,27 +1096,139 @@ def build_meridian_project_intake(state: dict[str, Any], instance_path: Path) ->
         [
             "[Acting as: MERIDIAN-ORCHESTRATOR]",
             "",
-            "# Project Selection Required",
+            "# Founder Project Intake Required",
             "",
-            "Manual MERIDIAN runs now begin with project selection so the team stays scoped to one startup at a time.",
+            "Manual MERIDIAN runs now start with a founder intake that can fully set up a startup project.",
             "",
             "## Active Startup Projects",
             *project_lines,
             "",
-            "## Reply With",
-            "- Which startup/project to work on.",
-            "- Whether you want startup-wide status, project status, task status, or new execution.",
-            "- What you want the team to do next.",
+            "## How To Reply",
+            "- Copy the template below into a file under `inputs/founder-replies/`.",
+            "- Fill every section you can. MERIDIAN will use your answers to create or update the project files.",
+            "- If the project already exists, answered sections will overwrite the current project files.",
             "",
             "## Suggested Next Steps",
             *next_step_lines,
             "",
-            "## New Startup Setup",
-            "- Create `projects/{startup-slug}/` from the template hierarchy.",
-            "- Fill in `project.md`, `problem.md`, `icp.md`, `solution.md`, `validation.md`, `strategy.md`, and `financials.md`.",
-            "- MERIDIAN can then route that startup as a first-class project.",
+            "## Reply Template",
+            "Use these exact headings:",
+            "",
+            "## Project Name",
+            "",
+            "## Project Key",
+            "",
+            "## Project Type",
+            "",
+            "## Stage",
+            "",
+            "## Summary",
+            "",
+            "## Objective",
+            "",
+            "## Core Problem",
+            "",
+            "## Who Feels It",
+            "",
+            "## Why Now",
+            "",
+            "## Primary ICP",
+            "",
+            "## Observable Traits",
+            "",
+            "## Early Adopters",
+            "",
+            "## Product Wedge",
+            "",
+            "## Core Workflow",
+            "",
+            "## Why It Wins",
+            "",
+            "## Evidence Collected",
+            "",
+            "## Assumptions To Test",
+            "",
+            "## Next Proof Steps",
+            "",
+            "## Go-To-Market",
+            "",
+            "## Positioning",
+            "",
+            "## Key Risks",
+            "",
+            "## Revenue Model",
+            "",
+            "## Costs And Burn",
+            "",
+            "## Fundraising Notes",
+            "",
+            "## Roadmap Now",
+            "",
+            "## Roadmap Next",
+            "",
+            "## Roadmap Later",
+            "",
+            "## Open Decisions",
+            "",
+            "## Locked Decisions",
+            "",
+            "## Revisit Later",
         ]
     )
+
+
+def extract_markdown_sections(body: str) -> dict[str, str]:
+    sections: dict[str, str] = {}
+    current_heading = ""
+    current_lines: list[str] = []
+    for line in body.splitlines():
+        if line.startswith("## "):
+            if current_heading:
+                sections[current_heading] = "\n".join(current_lines).strip()
+            current_heading = line[3:].strip().lower()
+            current_lines = []
+            continue
+        current_lines.append(line)
+    if current_heading:
+        sections[current_heading] = "\n".join(current_lines).strip()
+    return sections
+
+
+def founder_reply_intake_answers(reply_body: str) -> dict[str, str]:
+    sections = extract_markdown_sections(reply_body)
+    mapping = {
+        "project name": "project_name",
+        "project key": "project_key",
+        "project type": "project_type",
+        "stage": "stage",
+        "summary": "summary",
+        "objective": "objective",
+        "core problem": "core_problem",
+        "who feels it": "who_feels_it",
+        "why now": "why_now",
+        "primary icp": "primary_icp",
+        "observable traits": "observable_traits",
+        "early adopters": "early_adopters",
+        "product wedge": "product_wedge",
+        "core workflow": "core_workflow",
+        "why it wins": "why_it_wins",
+        "evidence collected": "evidence_collected",
+        "assumptions to test": "assumptions_to_test",
+        "next proof steps": "next_proof_steps",
+        "go-to-market": "go_to_market",
+        "positioning": "positioning",
+        "key risks": "key_risks",
+        "revenue model": "revenue_model",
+        "costs and burn": "costs_and_burn",
+        "fundraising notes": "fundraising_notes",
+        "roadmap now": "roadmap_now",
+        "roadmap next": "roadmap_next",
+        "roadmap later": "roadmap_later",
+        "open decisions": "open_decisions",
+        "locked decisions": "locked_decisions",
+        "revisit later": "revisit_later",
+    }
+    return {target: sections.get(source, "") for source, target in mapping.items()}
 
 
 def update_meridian_state(
@@ -1274,8 +1388,90 @@ def execute_meridian_request(
     notes = list(result.notes or [])
     notes.append("meridian_orchestration_pass")
     needs_project_selection = request.origin == "manual" and request.project == PORTFOLIO_PROJECT
+    founder_reply_paths = [instance_path / path for path in request.changed_context if path and (instance_path / path).exists()]
 
-    if needs_project_selection:
+    if request.origin == "founder_reply" and founder_reply_paths:
+        reply_path = founder_reply_paths[0]
+        _front_matter, reply_body = read_front_matter(reply_path)
+        answers = founder_reply_intake_answers(reply_body)
+        if answers.get("project_name", "").strip():
+            project_info = upsert_project_from_intake(instance_path, answers)
+            request.project = project_info["key"]
+            filename = f"{now.date().isoformat()}-{project_info['slug']}-project-setup.md"
+            output_path = project_output_dir(instance_path, project_info["key"], "MERIDIAN-ORCHESTRATOR", load_state(instance_path)) / filename
+            front_matter = {
+                "artifact_type": "project_setup",
+                "audience": "founder",
+                "project": project_info["key"],
+                "task_type": "project_setup",
+                "origin": request.origin,
+                "source_run_id": result.run_id,
+                "status": "completed",
+                "google_drive_id": "",
+                "google_doc_id": "",
+                "communication_thread_id": f"meridian-project-setup-{now.strftime('%Y%m%d')}",
+            }
+            body = "\n".join(
+                [
+                    "[Acting as: MERIDIAN-ORCHESTRATOR]",
+                    "",
+                    f"# Project Setup Completed — {project_info['name']}",
+                    "",
+                    f"- Project key: `{project_info['key']}`",
+                    f"- Project folder: `{project_info['folder_path']}`",
+                    "- Updated files:",
+                    f"  - `{project_info['folder_path']}/project.md`",
+                    f"  - `{project_info['folder_path']}/problem.md`",
+                    f"  - `{project_info['folder_path']}/icp.md`",
+                    f"  - `{project_info['folder_path']}/solution.md`",
+                    f"  - `{project_info['folder_path']}/validation.md`",
+                    f"  - `{project_info['folder_path']}/strategy.md`",
+                    f"  - `{project_info['folder_path']}/financials.md`",
+                    f"  - `{project_info['folder_path']}/roadmap.md`",
+                    f"  - `{project_info['folder_path']}/decisions.md`",
+                    "",
+                    "## Recommended Next Move",
+                    "- Run MERIDIAN again for this project and request product, research, or GTM execution.",
+                ]
+            )
+            write_markdown_with_front_matter(output_path, front_matter, body)
+            output_paths.append(output_path.relative_to(instance_path).as_posix())
+            result.status = "success"
+            notes.append("founder_project_files_populated")
+        else:
+            filename = f"{now.date().isoformat()}-founder-intake-incomplete.md"
+            output_path = instance_path / "outputs" / "MERIDIAN-ORCHESTRATOR" / filename
+            front_matter = {
+                "artifact_type": "founder_intake",
+                "audience": "founder",
+                "project": PORTFOLIO_PROJECT,
+                "task_type": "project_setup_incomplete",
+                "origin": request.origin,
+                "source_run_id": result.run_id,
+                "status": "waiting_on_founder",
+                "google_drive_id": "",
+                "google_doc_id": "",
+                "communication_thread_id": f"meridian-intake-incomplete-{now.strftime('%Y%m%d')}",
+            }
+            body = "\n".join(
+                [
+                    "[Acting as: MERIDIAN-ORCHESTRATOR]",
+                    "",
+                    "# Founder Intake Incomplete",
+                    "",
+                    "The reply did not include `## Project Name`, so MERIDIAN could not populate the project files.",
+                    "",
+                    "Reply again using the full questionnaire template from the latest manual intake.",
+                ]
+            )
+            write_markdown_with_front_matter(output_path, front_matter, body)
+            output_paths.append(output_path.relative_to(instance_path).as_posix())
+            result.status = "waiting_on_founder"
+            notes.append("founder_reply_missing_project_fields")
+
+    if output_paths:
+        pass
+    elif needs_project_selection:
         filename = f"{now.date().isoformat()}-project-intake.md"
         output_path = instance_path / "outputs" / "MERIDIAN-ORCHESTRATOR" / filename
         front_matter = {

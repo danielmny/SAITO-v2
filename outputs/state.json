@@ -462,6 +462,19 @@
   "open_escalations": [],
   "pending_events": [],
   "projects": {
+    "CreditBank": {
+      "folder_path": "projects/creditbank",
+      "last_activity_at": "",
+      "name": "TOV-creditbank-v2",
+      "owner_agent": "MERIDIAN-ORCHESTRATOR",
+      "priority": "medium",
+      "project_id": "creditbank",
+      "slug": "creditbank",
+      "status": "in_progress",
+      "summary": "transaction system between users and agents, and agent to agent",
+      "type": "product",
+      "work_mode": "project"
+    },
     "SIGNAL": {
       "folder_path": "projects/signal",
       "last_activity_at": "2026-04-13T21:04:14+0200",
