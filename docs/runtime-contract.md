@@ -1,6 +1,6 @@
 # Runtime Contract
 
-This repo is the canonical runtime model for the **SAITO Framework**. The current surface is repo-native and serial, and every contract in this file is intended to be portable into a future standalone web application without redesign.
+This repo is the canonical runtime model for **Startup AI Team - One**. The current surface is repo-native and serial, and every contract in this file is intended to be portable into a future standalone web application without redesign.
 
 ## Core design rule
 
@@ -43,7 +43,7 @@ Dispatch fields:
 - `run_timestamp`: ISO-8601 timestamp for the planned invocation
 - `changed_context`: files or folders that made the run eligible
 - `instance_path`: repo root for the current runtime instance
-- `project`: active startup project, `startup_ops`, or `portfolio` during founder intake
+- `project`: active project or `startup_ops`
 - `task_type`: normalized task classification for routing and dashboard use
 - `origin`: source of the work such as `founder_request`, `scheduler`, `handoff`, or `integration`
 
@@ -56,7 +56,7 @@ The runtime is driven in this order:
 3. Eligible agents are selected using schedule rules, project/task state, and changed context.
    Dependency gates may be satisfied either by normalized shared state or by the latest successful runtime result manifest for the upstream agent.
 4. `MERIDIAN-ORCHESTRATOR` handles founder intake, project selection, status synthesis, and delegation.
-5. Enabled specialist agents execute project-scoped work from handoffs or normalized founder requests, produce real markdown outputs under `projects/{startup-slug}/outputs/{AGENT_NAME}/` when a startup is in scope, and may create deterministic downstream handoffs when the input clearly justifies it. The current enabled specialist set is `ATLAS-RESEARCH`, `CANVAS-PRODUCT`, `COUNSEL-LEGAL`, `FORGE-ENGINEERING`, `MARKETING-BRAND`, `CURRENT-SALES`, `LEDGER-FINANCE`, `NEXUS-TALENT`, `VECTOR-ANALYTICS`, and `HERALD-COMMS`.
+5. Enabled specialist agents execute project-scoped work from handoffs or normalized founder requests, produce real markdown outputs under `outputs/{AGENT_NAME}/`, and may create deterministic downstream handoffs when the input clearly justifies it. The current enabled specialist set is `ATLAS-RESEARCH`, `CANVAS-PRODUCT`, `COUNSEL-LEGAL`, `FORGE-ENGINEERING`, `MARKETING-BRAND`, `CURRENT-SALES`, `LEDGER-FINANCE`, `NEXUS-TALENT`, `VECTOR-ANALYTICS`, and `HERALD-COMMS`.
 6. The repo-native planner writes request manifests to `runtime/requests/`, coalesces pending handoffs into a single queued request per agent per cycle when possible, enqueues them in `runtime/queue/`, and drains them serially into `runtime/results/`.
 7. A MERIDIAN run is a real orchestration pass: it may skip cleanly when nothing meaningful changed, or it may write a founder-facing briefing and normalize shared state.
 8. Outputs, handoffs, escalations, communications, and run records are written back to canonical state.
@@ -97,14 +97,11 @@ State must support a first-class project registry with:
 - `summary`
 - `work_mode`
 - `last_activity_at`
-- `folder_path`
 
 Every task, handoff, founder request, and agent output must belong to either:
 
 - a named project, or
 - the startup-wide operating lane `startup_ops`
-
-Each named project should also have a folder hierarchy under `projects/{startup-slug}/` containing startup-specific files such as `project.md`, `problem.md`, `icp.md`, `solution.md`, `validation.md`, `strategy.md`, `financials.md`, `roadmap.md`, and `decisions.md`.
 
 ## Tasks contract
 

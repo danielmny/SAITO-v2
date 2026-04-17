@@ -25,7 +25,6 @@ ROOT_DIRS = (
     "runtime/logs",
     "outputs/communications/outbox",
     "inputs/founder-replies",
-    "projects",
 )
 REQUEST_FIELDS = (
     "agent_id",
@@ -39,8 +38,6 @@ CRITICAL_TASK_TYPES = {"escalation", "founder_reply", "reply_needed", "founder_d
 DEFAULT_DAILY_TOKEN_BUDGET = 10000
 RESULT_RETENTION_LIMIT = 200
 REQUEST_RETENTION_LIMIT = 200
-PORTFOLIO_PROJECT = "portfolio"
-STARTUP_WIDE_PROJECT = "startup_ops"
 
 
 @dataclass
@@ -51,7 +48,7 @@ class DispatchRequest:
     run_timestamp: str
     changed_context: list[str]
     instance_path: str
-    project: str = PORTFOLIO_PROJECT
+    project: str = "startup_ops"
     task_type: str = "status_review"
     origin: str = "scheduler"
     request_id: str = ""
@@ -137,57 +134,6 @@ def normalize_agent_id(agent_id: str) -> str:
 
 def slugify(value: str) -> str:
     return "".join(character if character.isalnum() else "-" for character in value.upper()).strip("-")
-
-
-def project_slug(project: str, state: dict[str, Any] | None = None) -> str:
-    if not project:
-        return ""
-    if state and project in state.get("projects", {}):
-        slug = state["projects"][project].get("slug", "")
-        if slug:
-            return str(slug)
-    return "".join(character.lower() if character.isalnum() else "-" for character in project).strip("-")
-
-
-def project_root(instance_path: Path, project: str, state: dict[str, Any] | None = None) -> Path | None:
-    slug = project_slug(project, state)
-    if not slug:
-        return None
-    path = instance_path / "projects" / slug
-    return path if path.exists() else None
-
-
-def project_context_files(instance_path: Path, project: str, state: dict[str, Any] | None = None) -> list[Path]:
-    root = project_root(instance_path, project, state)
-    if root is None:
-        return []
-    files: list[Path] = []
-    for path in sorted(root.rglob("*.md")):
-        if "outputs" in path.parts:
-            continue
-        files.append(path)
-    return files
-
-
-def project_output_dir(instance_path: Path, project: str, agent_id: str, state: dict[str, Any] | None = None) -> Path:
-    root = project_root(instance_path, project, state)
-    if root is None:
-        return instance_path / "outputs" / agent_id
-    return root / "outputs" / agent_id
-
-
-def list_agent_output_files(instance_path: Path, agent_id: str) -> list[Path]:
-    files: list[Path] = []
-    legacy_dir = instance_path / "outputs" / agent_id
-    if legacy_dir.exists():
-        files.extend(sorted(legacy_dir.glob("*.md")))
-    projects_root = instance_path / "projects"
-    if projects_root.exists():
-        for project_dir in sorted(path for path in projects_root.iterdir() if path.is_dir()):
-            project_dir_outputs = project_dir / "outputs" / agent_id
-            if project_dir_outputs.exists():
-                files.extend(sorted(project_dir_outputs.glob("*.md")))
-    return sorted(files)
 
 
 def parse_iso8601(timestamp: str) -> datetime | None:
@@ -426,11 +372,6 @@ def compute_context_hash(
                 hasher.update(json.dumps(sanitized_state, sort_keys=True).encode("utf-8"))
             else:
                 hasher.update(file_path.read_bytes())
-    state = load_state(instance_path)
-    for file_path in project_context_files(instance_path, request.project, state):
-        relative_file = file_path.relative_to(instance_path).as_posix()
-        hasher.update(relative_file.encode("utf-8"))
-        hasher.update(file_path.read_bytes())
     return hasher.hexdigest()
 
 
@@ -448,36 +389,6 @@ def request_signature(request: DispatchRequest) -> str:
 
 def planner_request_key(request: DispatchRequest) -> tuple[str, str]:
     return (request.agent_id, request.project)
-
-
-def known_startup_projects(instance_path: Path, state: dict[str, Any]) -> list[dict[str, str]]:
-    projects: list[dict[str, str]] = []
-    for key, value in sorted(state.get("projects", {}).items()):
-        if key == STARTUP_WIDE_PROJECT:
-            continue
-        projects.append(
-            {
-                "key": key,
-                "name": value.get("name", key),
-                "slug": value.get("slug", project_slug(key, state)),
-                "summary": value.get("summary", ""),
-            }
-        )
-    known_slugs = {item["slug"] for item in projects}
-    projects_root = instance_path / "projects"
-    if projects_root.exists():
-        for path in sorted(projects_root.iterdir()):
-            if not path.is_dir() or path.name == project_slug(STARTUP_WIDE_PROJECT) or path.name in known_slugs:
-                continue
-            projects.append(
-                {
-                    "key": path.name,
-                    "name": path.name.replace("-", " ").title(),
-                    "slug": path.name,
-                    "summary": "Project folder exists but is not yet registered in outputs/state.json.",
-                }
-            )
-    return projects
 
 
 def build_request(
@@ -532,7 +443,7 @@ def discover_pending_handoffs(instance_path: Path) -> list[dict[str, Any]]:
                 "agent_id": to_agent,
                 "to": to_agent,
                 "from": from_agent,
-                "project": front_matter.get("project", STARTUP_WIDE_PROJECT),
+                "project": front_matter.get("project", "startup_ops"),
                 "task_type": front_matter.get("task_type", "handoff"),
                 "reason": front_matter.get("reason", front_matter.get("handoff_id", handoff_path.stem)),
                 "origin": front_matter.get("origin", "handoff"),
@@ -556,7 +467,7 @@ def discover_open_escalations(instance_path: Path, state: dict[str, Any]) -> lis
             {
                 "escalation_id": escalation.get("escalation_id", Path(relative_path).stem if relative_path else "state-escalation"),
                 "path": relative_path,
-                "project": escalation.get("project", STARTUP_WIDE_PROJECT),
+                "project": escalation.get("project", "startup_ops"),
                 "reason": escalation.get("reason", "open_escalation"),
             }
         )
@@ -572,7 +483,7 @@ def discover_open_escalations(instance_path: Path, state: dict[str, Any]) -> lis
                 {
                     "escalation_id": front_matter.get("escalation_id", escalation_path.stem),
                     "path": relative_path,
-                    "project": front_matter.get("project", STARTUP_WIDE_PROJECT),
+                    "project": front_matter.get("project", "startup_ops"),
                     "reason": front_matter.get("reason", "open_escalation"),
                 }
             )
@@ -657,7 +568,7 @@ def plan_requests(instance_path: Path) -> dict[str, Any]:
             run_timestamp=now.isoformat(timespec="seconds"),
             changed_context=changed_context,
             instance_path=instance_path,
-            project=sorted(projects)[0] if len(projects) == 1 else PORTFOLIO_PROJECT,
+            project=sorted(projects)[0] if len(projects) == 1 else "startup_ops",
             task_type=sorted(task_types)[0] if len(task_types) == 1 else "handoff_batch",
             origin="handoff" if all(item["origin"] == "handoff" for item in agent_handoffs) else "integration",
         )
@@ -680,7 +591,7 @@ def plan_requests(instance_path: Path) -> dict[str, Any]:
             run_timestamp=now.isoformat(timespec="seconds"),
             changed_context=escalation_paths,
             instance_path=instance_path,
-            project=STARTUP_WIDE_PROJECT,
+            project="startup_ops",
             task_type="escalation",
             origin="integration",
         )
@@ -715,7 +626,7 @@ def plan_requests(instance_path: Path) -> dict[str, Any]:
                     run_timestamp=now.isoformat(timespec="seconds"),
                     changed_context=[],
                     instance_path=instance_path,
-                    project=agent_state.get("active_project", STARTUP_WIDE_PROJECT),
+                    project=agent_state.get("active_project", "startup_ops"),
                     task_type="status_review" if agent_id != "MERIDIAN-ORCHESTRATOR" else "operating_review",
                     origin="scheduler",
                 )
@@ -745,7 +656,7 @@ def plan_requests(instance_path: Path) -> dict[str, Any]:
                     run_timestamp=now.isoformat(timespec="seconds"),
                     changed_context=agent_handoff_paths,
                     instance_path=instance_path,
-                    project=state.get("agents", {}).get(agent_id, {}).get("active_project", STARTUP_WIDE_PROJECT),
+                    project=state.get("agents", {}).get(agent_id, {}).get("active_project", "startup_ops"),
                     task_type="overdue_sweep",
                     origin="scheduler",
                 )
@@ -814,7 +725,10 @@ def list_recent_agent_outputs(
     for agent_id, schedule_entry in sorted(schedule.get("agents", {}).items()):
         if agent_id == exclude_agent or not schedule_entry.get("enabled", False):
             continue
-        candidate_files = sorted(list_agent_output_files(instance_path, agent_id), key=lambda item: item.stat().st_mtime, reverse=True)
+        agent_dir = instance_path / "outputs" / agent_id
+        if not agent_dir.exists():
+            continue
+        candidate_files = sorted(agent_dir.glob("*.md"), key=lambda item: item.stat().st_mtime, reverse=True)
         if not candidate_files:
             continue
         latest_path = candidate_files[0]
@@ -927,7 +841,7 @@ def detect_founder_decision_outputs(
         front_matter = {
             "escalation_id": escalation_id,
             "from": output["agent_id"],
-            "project": output["front_matter"].get("project", STARTUP_WIDE_PROJECT),
+            "project": output["front_matter"].get("project", "startup_ops"),
             "status": "pending",
             "created_at": now.isoformat(timespec="seconds"),
             "reason": "founder_decision_required",
@@ -1056,53 +970,6 @@ def build_meridian_briefing(
     )
 
 
-def build_meridian_project_intake(state: dict[str, Any], instance_path: Path) -> str:
-    projects = known_startup_projects(instance_path, state)
-    project_lines = [f"- `{item['name']}` (`{item['slug']}`): {item['summary']}" for item in projects] or [
-        "- No startup projects are registered yet. Add a startup under `projects/{startup-slug}/` and try again."
-    ]
-    next_step_lines: list[str] = []
-    for item in projects:
-        open_tasks = [
-            task for task in state.get("task_board", [])
-            if task.get("project") == item["key"] and task.get("status") not in {"completed", "stale"}
-        ]
-        if open_tasks:
-            top_task = open_tasks[0]
-            next_step_lines.append(
-                f"- `{item['name']}`: continue `{top_task.get('title', top_task.get('task_type', 'next task'))}` with `{top_task.get('owner_agent', 'assigned agent')}`."
-            )
-        else:
-            next_step_lines.append(
-                f"- `{item['name']}`: review current status and choose the next proof, GTM, or product task."
-            )
-    return "\n".join(
-        [
-            "[Acting as: MERIDIAN-ORCHESTRATOR]",
-            "",
-            "# Project Selection Required",
-            "",
-            "Manual MERIDIAN runs now begin with project selection so the team stays scoped to one startup at a time.",
-            "",
-            "## Active Startup Projects",
-            *project_lines,
-            "",
-            "## Reply With",
-            "- Which startup/project to work on.",
-            "- Whether you want startup-wide status, project status, task status, or new execution.",
-            "- What you want the team to do next.",
-            "",
-            "## Suggested Next Steps",
-            *next_step_lines,
-            "",
-            "## New Startup Setup",
-            "- Create `projects/{startup-slug}/` from the template hierarchy.",
-            "- Fill in `project.md`, `problem.md`, `icp.md`, `solution.md`, `validation.md`, `strategy.md`, and `financials.md`.",
-            "- MERIDIAN can then route that startup as a first-class project.",
-        ]
-    )
-
-
 def update_meridian_state(
     *,
     instance_path: Path,
@@ -1130,8 +997,7 @@ def update_meridian_state(
     meridian_state["last_trigger"] = request.trigger_type
     meridian_state["context_hash"] = post_context_hash
     meridian_state["skip_reason"] = "no_meaningful_changed_context" if status == "skipped" else ""
-    if request.project != PORTFOLIO_PROJECT:
-        meridian_state["active_project"] = request.project
+    meridian_state["active_project"] = request.project
     if status in {"success", "skipped"}:
         meridian_state["last_success"] = finished_at
     if output_paths:
@@ -1259,29 +1125,8 @@ def execute_meridian_request(
     output_paths: list[str] = []
     notes = list(result.notes or [])
     notes.append("meridian_orchestration_pass")
-    needs_project_selection = request.origin == "manual" and request.project == PORTFOLIO_PROJECT
 
-    if needs_project_selection:
-        filename = f"{now.date().isoformat()}-project-intake.md"
-        output_path = instance_path / "outputs" / "MERIDIAN-ORCHESTRATOR" / filename
-        front_matter = {
-            "artifact_type": "founder_intake",
-            "audience": "founder",
-            "project": PORTFOLIO_PROJECT,
-            "task_type": "project_selection",
-            "origin": request.origin,
-            "source_run_id": result.run_id,
-            "status": "waiting_on_founder",
-            "google_drive_id": "",
-            "google_doc_id": "",
-            "communication_thread_id": f"meridian-intake-{now.strftime('%Y%m%d')}",
-        }
-        body = build_meridian_project_intake(state, instance_path)
-        write_markdown_with_front_matter(output_path, front_matter, body)
-        output_paths.append(output_path.relative_to(instance_path).as_posix())
-        result.status = "waiting_on_founder"
-        notes.append("project_selection_requested")
-    elif not meaningful_context:
+    if not meaningful_context:
         result.status = "skipped"
         notes.append("no_meaningful_changed_context")
     else:
@@ -1294,7 +1139,7 @@ def execute_meridian_request(
             item for item in pending_handoffs if item["path"] not in set(processed_handoff_paths)
         ]
         filename = f"{now.date().isoformat()}-founder-briefing.md"
-        output_path = project_output_dir(instance_path, request.project, "MERIDIAN-ORCHESTRATOR", state) / filename
+        output_path = instance_path / "outputs/MERIDIAN-ORCHESTRATOR" / filename
         front_matter = {
             "artifact_type": "founder_briefing",
             "audience": "founder",
@@ -1496,7 +1341,7 @@ def ingest_replies(instance_path: Path) -> dict[str, Any]:
             run_timestamp=now,
             changed_context=[reply["source_path"]],
             instance_path=instance_path,
-                    project=reply.get("project", STARTUP_WIDE_PROJECT),
+            project=reply.get("project", "startup_ops"),
             task_type="founder_reply",
             origin="founder_reply",
         )
@@ -1549,7 +1394,7 @@ def build_parser() -> argparse.ArgumentParser:
     run_once_parser.add_argument("--trigger-type", required=True)
     run_once_parser.add_argument("--reason", required=True)
     run_once_parser.add_argument("--instance-path", default=".")
-    run_once_parser.add_argument("--project", default=PORTFOLIO_PROJECT)
+    run_once_parser.add_argument("--project", default="startup_ops")
     run_once_parser.add_argument("--task-type", default="status_review")
     run_once_parser.add_argument("--origin", default="scheduler")
     run_once_parser.add_argument("--changed-context", action="append", default=[])

@@ -68,17 +68,6 @@ def slugify(value: str) -> str:
     return "".join(character.lower() if character.isalnum() else "-" for character in value).strip("-")
 
 
-def project_root(instance_path: Path, project: str) -> Path:
-    return instance_path / "projects" / slugify(project)
-
-
-def project_output_dir(instance_path: Path, project: str, agent_id: str) -> Path:
-    root = project_root(instance_path, project)
-    if root.exists():
-        return root / "outputs" / agent_id
-    return instance_path / "outputs" / agent_id
-
-
 def extract_handoff_sections(body: str) -> dict[str, str]:
     sections: dict[str, str] = {}
     for line in body.splitlines():
@@ -96,10 +85,6 @@ def relevant_context_paths(
 ) -> list[str]:
     paths = set(schedule_entry.get("context_inputs", []))
     paths.update(handoff["path"] for handoff in handoffs)
-    root = project_root(instance_path, handoffs[0]["project"]) if handoffs else None
-    if root.exists():
-        for path in sorted(root.glob("*.md")):
-            paths.add(path.relative_to(instance_path).as_posix())
     existing: list[str] = []
     for relative_path in sorted(paths):
         full_path = instance_path / relative_path
@@ -109,33 +94,25 @@ def relevant_context_paths(
 
 
 def collect_recent_project_outputs(instance_path: Path, project: str, exclude_agent: str) -> list[dict[str, str]]:
+    outputs_root = instance_path / "outputs"
     collected: list[dict[str, str]] = []
-    roots = [instance_path / "outputs"]
-    project_specific_root = project_root(instance_path, project) / "outputs"
-    if project_specific_root.exists():
-        roots.insert(0, project_specific_root)
-    for outputs_root in roots:
-        if not outputs_root.exists():
+    for agent_dir in sorted(path for path in outputs_root.iterdir() if path.is_dir()):
+        if agent_dir.name in {"handoffs", "escalations", "communications"} or agent_dir.name == exclude_agent:
             continue
-        for agent_dir in sorted(path for path in outputs_root.iterdir() if path.is_dir()):
-            if agent_dir.name in {"handoffs", "escalations", "communications"} or agent_dir.name == exclude_agent:
-                continue
-            files = sorted(agent_dir.glob("*.md"), key=lambda item: item.stat().st_mtime, reverse=True)
-            if not files:
-                continue
-            latest_path = files[0]
-            front_matter, body = read_front_matter(latest_path)
-            if front_matter.get("project", project) != project:
-                continue
-            if any(item["agent"] == agent_dir.name for item in collected):
-                continue
-            collected.append(
-                {
-                    "agent": agent_dir.name,
-                    "path": latest_path.relative_to(instance_path).as_posix(),
-                    "summary": next((line.strip("- ").strip() for line in body.splitlines() if line.startswith("- ")), body.splitlines()[0] if body.splitlines() else ""),
-                }
-            )
+        files = sorted(agent_dir.glob("*.md"), key=lambda item: item.stat().st_mtime, reverse=True)
+        if not files:
+            continue
+        latest_path = files[0]
+        front_matter, body = read_front_matter(latest_path)
+        if front_matter.get("project", project) != project:
+            continue
+        collected.append(
+            {
+                "agent": agent_dir.name,
+                "path": latest_path.relative_to(instance_path).as_posix(),
+                "summary": next((line.strip("- ").strip() for line in body.splitlines() if line.startswith("- ")), body.splitlines()[0] if body.splitlines() else ""),
+            }
+        )
     return collected
 
 
@@ -164,14 +141,14 @@ def body_sections_for_agent(
     body = handoff["body"]
     if agent_id == "ATLAS-RESEARCH":
         findings = [
-            f"The most plausible initial ICP for `{project}` is a narrow segment with acute pain, short feedback loops, and willingness to act as a design partner.",
-            "The highest-risk assumptions are whether the buyer feels the problem urgently enough to switch behavior and whether the current solution framing is differentiated enough to earn attention.",
+            f"The most plausible initial ICP for `{project}` is innovation-forward teams willing to test psychographic matching as a hiring wedge.",
+            "The highest-risk assumptions are employer willingness to pay before proof of match quality and whether hiring managers value culture-vector data in early screening.",
         ]
         if recent_outputs:
             findings.append(f"Recent cross-functional context: `{recent_outputs[0]['agent']}` last wrote `{recent_outputs[0]['path']}`.")
         implications = [
-            "Sales outreach should anchor on low-friction pilots, interviews, or LOIs that produce evidence quickly.",
-            "Product and engineering should prioritize the smallest proof-generating loop before breadth expansion.",
+            "Sales outreach should anchor on lower-risk pilot asks and learning-oriented LOIs.",
+            "Engineering should prioritize evidence-generating features before breadth expansion.",
         ]
         return [
             "## Scope",
@@ -195,9 +172,9 @@ def body_sections_for_agent(
         ]
     if agent_id == "FORGE-ENGINEERING":
         plan = [
-            "Sequence work around the project's riskiest proof loop first: capture the minimum core entities, deliver the smallest usable workflow, then add automation and integrations.",
+            "Sequence work as psychographic profile storage -> LLM-powered CV analysis -> company intelligence synthesis -> additional scraper coverage.",
             "Expose each milestone behind stable repo-facing contracts so later app surfaces can reuse the same backend model.",
-            "Treat instrumentation and data-model choices as early dependencies because validation quality depends on them.",
+            "Treat company-vector storage and evaluation instrumentation as the riskiest dependency because both product proof and research depend on them.",
         ]
         return [
             "## Scope",
@@ -211,15 +188,15 @@ def body_sections_for_agent(
             "- Research outputs should keep refining the first customer wedge so implementation sequencing stays tied to buyer evidence.",
             "",
             "## Risks",
-            "- Overbuilding secondary features before the core proof loop is validated would dilute engineering effort.",
+            "- Overbuilding scraper breadth before the psychographic core is proven would dilute engineering effort.",
             "- Missing instrumentation would make later validation and fundraising claims weak.",
             "",
             "## Handoffs Triggered",
         ]
     if agent_id == "CANVAS-PRODUCT":
         roadmap = [
-            "Lock the v1 scope around the smallest feature set that proves the core value proposition.",
-            "Defer non-core growth surfaces until the primary loop has user feedback and measurable proof.",
+            "Lock the v1 scope around psychographic profile storage, company vector capture, match explanation, and evidence instrumentation before expansion work.",
+            "Defer non-core growth surfaces until the core matching loop has user feedback and measurable proof.",
             "Translate engineering tradeoffs into a Now / Next / Later roadmap so execution stays tied to validation milestones.",
         ]
         return [
@@ -230,8 +207,8 @@ def body_sections_for_agent(
             *[f"- {item}" for item in roadmap],
             "",
             "## Backlog Priorities",
-            "- Now: core workflow, critical data capture, and evidence instrumentation.",
-            "- Next: usability and trust-building layers that increase conversion or activation.",
+            "- Now: profile persistence, company-side vector inputs, and match-quality evidence capture.",
+            "- Next: synthesis and recruiter-facing explanation surfaces that improve trust in the match output.",
             "- Later: broader workflow integrations once the initial wedge is commercially validated.",
             "",
             "## Risks",
@@ -246,9 +223,9 @@ def body_sections_for_agent(
         ]
     if agent_id == "CURRENT-SALES":
         pipeline = [
-            "Prioritize early targets that feel the problem today, can decide quickly, and are likely to engage as design partners.",
-            "Lead with a low-friction commercial ask: pilot, LOI, or structured discovery conversation tied to the startup's core pain point.",
-            "Track objections around urgency, implementation friction, budget, and willingness to change current behavior.",
+            "Prioritize 10 early targets among mission-driven startups, hiring leaders at fast-moving small teams, and design-partner friendly recruiting operators.",
+            "Lead with a low-friction commercial ask: pilot, LOI, or structured discovery conversation tied to hiring fit quality.",
+            "Track objections around data quality, implementation friction, and willingness to change current screening habits.",
         ]
         return [
             "## Scope",
@@ -269,7 +246,7 @@ def body_sections_for_agent(
         ]
     if agent_id == "LEDGER-FINANCE":
         readiness = [
-            "Start with a lightweight investor pipeline: target list, status tracker, and a short rationale for why each investor fits the startup story.",
+            "Start with a lightweight investor pipeline: target list, status tracker, and a short rationale for why each investor fits the SIGNAL story.",
             "Treat the first data room as a minimum viable package: company narrative, roadmap, early proof points, and operating metrics already available in-repo.",
             "Keep fundraising readiness explicitly coupled to evidence quality so narrative work does not outrun actual traction.",
         ]
@@ -297,9 +274,9 @@ def body_sections_for_agent(
         ]
     if agent_id == "MARKETING-BRAND":
         messaging = [
-            "Lead with a wedge message around the startup's sharpest differentiated outcome rather than broad category claims.",
-            "Keep the first external story anchored on the core pain, the distinctive mechanism, and a low-friction first adoption path.",
-            "Separate current proof from future promise so outreach and fundraising language stays credible.",
+            "Lead with a wedge message around better candidate-company alignment rather than generic AI recruiting automation.",
+            "Keep the first external story anchored on psychographic fit, faster signal quality, and a pilot-friendly deployment path.",
+            "Separate current proof from future promise so outreach and fundraising language stay credible at pre-seed stage.",
         ]
         return [
             "## Scope",
@@ -321,9 +298,9 @@ def body_sections_for_agent(
         ]
     if agent_id == "VECTOR-ANALYTICS":
         metrics = [
-            "Use a North Star focused on the project's core value event rather than vanity traffic or activity metrics.",
-            "Instrument the minimum activation, usage, conversion, and feedback events needed to prove the core loop.",
-            "Keep the first dashboard lightweight: activation, proof quality, commercial traction, and founder operating cadence.",
+            "Use a North Star focused on qualified psychographic match outcomes rather than raw traffic or scrape volume.",
+            "Instrument the seeker profile completion, company vector completion, match generation, and follow-up conversion path first.",
+            "Keep the first dashboard lightweight: activation, match quality signals, pilot pipeline, and founder operating cadence.",
         ]
         return [
             "## Scope",
@@ -344,7 +321,7 @@ def body_sections_for_agent(
         ]
     if agent_id == "COUNSEL-LEGAL":
         risks = [
-            "Customer, prospect, or user data handling should be governed by explicit privacy disclosures, retention limits, and internal access boundaries before broader deployment.",
+            "Candidate and employer data handling should be governed by explicit privacy disclosures, retention limits, and internal access boundaries before broader deployment.",
             "Pre-seed fundraising preparation should include a lightweight diligence checklist so company records, IP ownership, and core policies are not assembled ad hoc under investor pressure.",
             "Terms of service, privacy policy, and contractor or assignment paperwork should be treated as launch-blocking housekeeping rather than deferred cleanup.",
         ]
@@ -357,12 +334,12 @@ def body_sections_for_agent(
             "- [REVIEW WITH QUALIFIED COUNSEL BEFORE ACTING]",
             "",
             "## Required Actions",
-            "- Create a minimum policy set covering privacy, terms, and internal data handling expectations for the assigned project.",
+            "- Create a minimum policy set covering privacy, terms, and internal data handling expectations for SIGNAL.",
             "- Confirm IP assignment and contribution ownership across any contractors, founders, and collaborators touching the code or fundraising materials.",
             "- Prepare a diligence-ready legal checklist covering entity docs, cap table hygiene, material agreements, and customer-data handling assumptions.",
             "",
             "## Open Questions",
-            "- What customer, prospect, or user data is retained, for how long, and under what deletion or access process?",
+            "- What candidate data is retained, for how long, and under what deletion or access process?",
             "- Which jurisdictions are most likely to matter first for privacy and employment-related compliance?",
             "- Are there any unsigned contributor, contractor, or advisor agreements that could create IP ambiguity later?",
             "",
@@ -371,7 +348,7 @@ def body_sections_for_agent(
     if agent_id == "NEXUS-TALENT":
         recommendations = [
             "Do not scale headcount ahead of customer proof; the next hires should be framed as capability gaps to watch rather than immediate recruiting actions.",
-            "The first likely non-founder additions should map to the project's most visible execution bottlenecks rather than abstract org-chart completeness.",
+            "The first likely non-founder additions are a product-minded engineer with strong data-modeling instincts and a GTM operator once outreach converts into repeatable demand.",
             "Any hiring sequence should stay coupled to runway, customer evidence, and whether founders can still absorb execution load without slowing validation.",
         ]
         return [
@@ -382,16 +359,16 @@ def body_sections_for_agent(
             *[f"- {item}" for item in recommendations],
             "",
             "## Risks Or Dependencies",
-            "- Hiring too early would increase burn before the core wedge and sales motion are validated.",
+            "- Hiring too early would increase burn before the SIGNAL wedge and sales motion are validated.",
             "- Waiting too long to identify capability gaps can leave engineering or GTM load concentrated on founders at the wrong moment.",
             "- Budget and fundraising timing should shape any hiring sequence rather than abstract org-chart ambition.",
             "",
             "## Handoffs Triggered",
         ]
     draft = [
-        "The core story arc should be: painful status quo -> distinctive product wedge -> measurable improvement -> stronger proof as pilots land.",
-        "Current proof gaps are customer evidence, measurable outcomes, and a disciplined roadmap narrative.",
-        "The minimum next materials are a pitch outline, evidence tracker, and a clean explanation of why this startup wins against current alternatives.",
+        "The core story arc is: broken hiring signal -> psychographic matching wedge -> better candidate-company alignment -> stronger early proof once pilots land.",
+        "Current proof gaps are customer evidence, measurable match outcomes, and a disciplined roadmap narrative.",
+        "The minimum next materials are a pitch outline, evidence tracker, and a clean explanation of why SIGNAL wins before full workflow replacement.",
     ]
     return [
         "## Scope",
@@ -664,7 +641,7 @@ def execute_specialist(
         downstream_specs = downstream_handoff_specs(agent_id=agent_id, project=project, handoff=handoff)
 
         slug = f"{slugify(project)}-{slugify(handoff['task_type'])}-{slugify(handoff['handoff_id'])[-12:]}"
-        output_path = project_output_dir(instance_path, project, agent_id) / f"{now.date().isoformat()}-{slug}.md"
+        output_path = instance_path / "outputs" / agent_id / f"{now.date().isoformat()}-{slug}.md"
         front_matter = {
             "artifact_type": artifact_type_for_agent(agent_id),
             "audience": "internal",

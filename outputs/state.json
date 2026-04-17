@@ -328,7 +328,7 @@
     "founder_digest_due_at": "2026-04-14T18:00:00+0200",
     "founder_intake_agent": "MERIDIAN-ORCHESTRATOR",
     "last_updated": "2026-04-17T10:47:01+00:00",
-    "name": "SAITO Framework",
+    "name": "Startup AI Team - One",
     "stage": "PRE-SEED"
   },
   "compatibility_artifacts": {
@@ -463,7 +463,6 @@
   "pending_events": [],
   "projects": {
     "SIGNAL": {
-      "folder_path": "projects/signal",
       "last_activity_at": "2026-04-13T21:04:14+0200",
       "name": "SIGNAL",
       "owner_agent": "MERIDIAN-ORCHESTRATOR",
@@ -476,7 +475,6 @@
       "work_mode": "project"
     },
     "startup_ops": {
-      "folder_path": "projects/startup-ops",
       "last_activity_at": "2026-04-17T10:47:01+00:00",
       "name": "Startup AI Team Runtime",
       "owner_agent": "MERIDIAN-ORCHESTRATOR",

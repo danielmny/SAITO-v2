@@ -9,7 +9,7 @@ You are operating inside **FOUNDERS OS** for **Startup AI Team - One** — a mul
 
 Full agent definitions (roles, responsibilities, task inventories by cadence) → `FOUNDERS_OS_AGENT_SYSTEM.md`
 
-Portfolio context (runtime model, active projects, operating rules) → `config/company-brief.md`
+Company context (name, product, stage, roadmap, metrics) → `config/company-brief.md`
 
 **Read both files before producing any output.**
 
@@ -50,9 +50,8 @@ This project runs as a Codex-native multi-agent system. GitHub Actions is the un
 
 1. Read `outputs/state.json` — check current agent status, pending events, open escalations, cooldown windows, and recent outputs.
 2. Check `outputs/handoffs/` — process queued handoffs addressed to your agent before routine work.
-3. Read `config/company-brief.md` — refresh portfolio context.
-4. If the run is project-scoped, read the selected startup folder under `projects/{project-slug}/`.
-5. Read the current dispatch request fields:
+3. Read `config/company-brief.md` — refresh company context.
+4. Read the current dispatch request fields:
    - `agent_id`
    - `trigger_type`
    - `reason`
@@ -75,8 +74,7 @@ This project runs as a Codex-native multi-agent system. GitHub Actions is the un
 
 ### Writing outputs
 
-- Project-scoped outputs go to `projects/{project-slug}/outputs/{AGENT_NAME}/YYYY-MM-DD-{task-name}.md`
-- Startup-wide operating outputs may remain in `outputs/{AGENT_NAME}/` when no single startup is in scope
+- All outputs go to `outputs/{AGENT_NAME}/YYYY-MM-DD-{task-name}.md`
 - Add front matter when relevant:
   - `artifact_type`
   - `audience`
@@ -141,15 +139,14 @@ Agents with assigned artifact skills should use them for external deliverables, 
 ## How to Handle Tasks
 
 1. Read `outputs/state.json` and `config/company-brief.md`
-2. If a project is assigned, read `projects/{project-slug}/`
-3. Check `outputs/handoffs/` for pending handoffs to your agent
-4. Identify which agent owns the task; declare `[Acting as: AGENT_NAME]`
-5. Determine the project scope for the task; if none is explicit, treat it as startup-wide operating work only if that is clearly correct
-6. Check the agent's task inventory in `FOUNDERS_OS_AGENT_SYSTEM.md`
-7. Produce the output and write it to the project folder hierarchy when the task is startup-specific
-8. Write handoffs for any downstream agents that need to act
-9. Update run-local state or metadata allowed by the runtime contract
-10. Use `[ESCALATE TO FOUNDER]` when a human decision is required
+2. Check `outputs/handoffs/` for pending handoffs to your agent
+3. Identify which agent owns the task; declare `[Acting as: AGENT_NAME]`
+4. Determine the project scope for the task; if none is explicit, treat it as startup-wide operating work only if that is clearly correct
+5. Check the agent's task inventory in `FOUNDERS_OS_AGENT_SYSTEM.md`
+6. Produce the output and write it to `outputs/{AGENT_NAME}/`
+7. Write handoffs for any downstream agents that need to act
+8. Update run-local state or metadata allowed by the runtime contract
+9. Use `[ESCALATE TO FOUNDER]` when a human decision is required
 
 ---
 
@@ -159,8 +156,7 @@ Agents with assigned artifact skills should use them for external deliverables, 
 |------|---------|
 | `AGENTS.md` | This file — Codex runtime entry point |
 | `FOUNDERS_OS_AGENT_SYSTEM.md` | Full agent definitions, task inventories, stage gates |
-| `config/company-brief.md` | Portfolio context: runtime model, active projects, operating rules |
-| `projects/{project-slug}/` | Startup-specific context: problem, ICP, solution, validation, strategy, financials, roadmap |
+| `config/company-brief.md` | Company context: product, stage, roadmap, metrics |
 | `config/agent-skills.json` | Skill assignments per agent |
 | `config/schedule.json` | Dispatch policy and cooldowns |
 | `config/communications.json` | Founder channel settings |

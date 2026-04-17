@@ -15,7 +15,6 @@ Before any run is planned, the runtime reads:
 - `config/schedule.json`
 - `outputs/state.json`
 - recent outputs and handoffs relevant to the active project or startup-wide lane
-- the selected startup folder under `projects/{startup-slug}/` when a project is in scope
 
 ## 3. Founder-first routing
 
@@ -31,8 +30,7 @@ MERIDIAN should determine:
    - new execution
 3. what work should be delegated next
 
-If the founder manually launches MERIDIAN without naming a project and the request is not obviously startup-wide, MERIDIAN asks which startup/project to work on before routing work.
-Scheduled MERIDIAN runs should continue on the last non-portfolio project recorded in shared state.
+If project scope is unclear and the request is not obviously startup-wide, MERIDIAN asks for project clarification before routing work.
 
 ## 4. How the planner decides run order
 
@@ -72,7 +70,6 @@ Every run should generate:
 
 - one project-scoped or startup-wide output
 - zero or more project-scoped handoffs
-- project-scoped artifacts inside the selected startup folder when a single startup is in scope
 - enough metadata for a future dashboard to show:
   - project
   - task type
