@@ -4,7 +4,7 @@ audience: founder
 project: portfolio
 task_type: project_selection
 origin: manual
-source_run_id: RUN-20260418T0104080200-MERIDIAN-ORCHESTRATOR-1d3445cd
+source_run_id: RUN-20260418T0915360200-MERIDIAN-ORCHESTRATOR-76ffac6c
 status: waiting_on_founder
 google_drive_id: 
 google_doc_id: 

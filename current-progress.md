@@ -1,11 +1,13 @@
 # Current Progress
 
+> Historical progress memo. This file captures an earlier runtime phase and is not the canonical source of current repo state.
+> For current behavior, use `README.md`, `AGENTS.md`, `config/company-brief.md`, and `docs/runtime-contract.md`.
+
 ## Repository Context
 
-- Active repo: `danielmny/startup-ai-team-one`
-- Local workspace: `/Users/d3/Codex/startup-ai-team-one`
-- Active branch at time of export: `main`
-- Latest commit from this chat: `546c280` — `Harden the repo-native Founders OS runtime`
+- Historical repo context at time of note: `danielmny/startup-ai-team-one`
+- Historical workspace path at time of note: `/Users/d3/Codex/startup-ai-team-one`
+- This file is retained as an archive, not as a live status report.
 
 ## What Was Done In This Chat
 

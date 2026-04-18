@@ -18,6 +18,11 @@
       "thread_replies": true
     }
   },
+  "founder_reply_auth": {
+    "required": true,
+    "secret_env_var": "SAITO_FOUNDER_REPLY_SECRET",
+    "reply_ttl_hours": 24
+  },
   "message_types": {
     "digest": {
       "requires_reply": false

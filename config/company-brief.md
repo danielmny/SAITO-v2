@@ -13,7 +13,12 @@
 
 **What it does:** Runs a 24/7 team of specialized AI startup operators across multiple named startups. Each startup is treated as a separate project with its own problem, ICP, solution, validation, strategy, financials, roadmap, and decision history.
 
-**Founder interaction model:** The founder starts with `MERIDIAN-ORCHESTRATOR`. On manual launch, MERIDIAN should ask which startup/project to work on unless the request is clearly startup-wide operating work. Once the project is known, MERIDIAN routes work to the relevant specialists and returns a synthesized response.
+**Founder interaction model:** The founder starts with `MERIDIAN-ORCHESTRATOR`. On manual launch, MERIDIAN should begin with a concise founder standup for the last open project, ask whether to continue that project or start a new one, then either resume project work or begin a stateful startup-intake session. Once the project is known, MERIDIAN routes work to the relevant specialists, can offer inline recommended actions, and returns synthesized responses.
+
+**Runtime execution model:** SAITO now runs in a hybrid mode:
+
+- hot-path event execution for founder replies, handoffs, escalations, and founder-priority bundle work
+- cooldown-governed background execution for heartbeat reviews and overdue maintenance
 
 ## Portfolio Model
 
@@ -64,14 +69,23 @@ Shared runtime artifacts remain global:
 **Status:** Active operating project
 **Project folder:** `projects/startup-ops/`
 
+### Project 3 — CreditBank
+
+**Slug:** `creditbank`
+**Type:** Transaction infrastructure / credits platform
+**Stage:** IDEA
+**Status:** Active startup project
+**Project folder:** `projects/creditbank/`
+
 ## Operating Rules
 
 - The SAITO harness is reusable across many startup ideas, not tied to a single company thesis.
 - Every specialist agent should work from the selected startup folder plus the shared runtime state.
 - MERIDIAN is responsible for project selection, routing, synthesis, and shared-state normalization.
+- MERIDIAN may create founder-priority kickoff bundles and project checkpoints when the founder accepts recommended actions.
 - If a founder asks for work on a new startup, the runtime should create or populate a new folder under `projects/` and keep that startup isolated from existing ones.
 - The future app should expose the same portfolio, project, task, run, handoff, and communication model defined in this repo.
 
 ---
 
-*Last updated: April 17, 2026*
+*Last updated: April 18, 2026*

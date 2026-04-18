@@ -1,6 +1,9 @@
 # MERIDIAN — Session Progress
 *Founders OS v1.0 · April 2026*
 
+> Historical architecture note from an earlier phase of the project.
+> It is retained for context, but the current canonical runtime lives under `runner/`, `config/`, `README.md`, and `docs/`.
+
 ---
 
 ## Session summary

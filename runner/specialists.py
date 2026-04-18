@@ -55,11 +55,16 @@ def read_front_matter(path: Path) -> tuple[dict[str, str], str]:
     return front_matter, body
 
 
+def sanitize_front_matter_value(value: Any) -> str:
+    text = str(value)
+    return " ".join(text.replace("\r", "\n").splitlines()).strip()
+
+
 def write_front_matter(path: Path, front_matter: dict[str, str], body: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     lines = ["---"]
     for key, value in front_matter.items():
-        lines.append(f"{key}: {value}")
+        lines.append(f"{key}: {sanitize_front_matter_value(value)}")
     lines.append("---")
     path.write_text("\n".join(lines) + "\n" + body.lstrip("\n"), encoding="utf-8")
 

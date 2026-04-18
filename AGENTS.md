@@ -37,7 +37,10 @@ Identify which agent owns the current task and declare: `[Acting as: AGENT_NAME]
 
 ## Codex Runtime
 
-This project runs as a Codex-native multi-agent system. GitHub Actions is the unattended scheduler of record, and the runtime dispatcher evaluates work every 15 minutes using a mix of event triggers and heartbeat rules.
+This project runs as a Codex-native multi-agent system. GitHub Actions is the unattended scheduler of record, and the runtime dispatcher evaluates work every 15 minutes using a hybrid model:
+
+- hot-path event work for founder replies, handoffs, escalations, and founder-priority execution
+- cooldown-governed background heartbeat and overdue maintenance
 
 ### Operating posture
 
@@ -64,7 +67,8 @@ This project runs as a Codex-native multi-agent system. GitHub Actions is the un
 
 - Only act on changed inputs, pending handoffs, unresolved escalations, and the most recent relevant outputs.
 - If effective context is unchanged, record a skip instead of re-running full work.
-- Respect `cooldown_minutes`, `max_runs_per_day`, and dependency blocks from `config/schedule.json`.
+- Respect `max_runs_per_day` and dependency blocks from `config/schedule.json`.
+- In hybrid mode, founder-priority and hot-path event work may bypass normal cooldown behavior, while background heartbeat and overdue work remain throttled.
 - `MERIDIAN-ORCHESTRATOR` is the only agent that normalizes shared state. Specialist agents remain stateless per run.
 - Founder requests arriving through `MERIDIAN-ORCHESTRATOR` should first be classified as one of:
   - project selection / clarification
@@ -72,6 +76,8 @@ This project runs as a Codex-native multi-agent system. GitHub Actions is the un
   - project status report
   - task delegation / execution request
 - If a founder request does not name a project and the work is not clearly startup-wide, `MERIDIAN-ORCHESTRATOR` should ask which project the founder wants to work on before delegating.
+- Manual MERIDIAN launch should begin with a concise founder standup for the last open project, then ask whether to continue that project or start a new one.
+- MERIDIAN may present recommended actions that the founder can accept inline, such as kickoff bundles or a project checkpoint.
 
 ### Writing outputs
 
@@ -124,6 +130,7 @@ Write `[ESCALATE TO FOUNDER]` anywhere in your output to flag a decision that re
 Current default:
 
 - founder channel: file-based communication via `outputs/communications/outbox/` and `inputs/founder-replies/`
+- founder replies are session-bound and signed before ingestion
 - future channel: Slack adapter using the same communication contract
 
 ### Google Workspace policy
@@ -162,7 +169,7 @@ Agents with assigned artifact skills should use them for external deliverables, 
 | `config/company-brief.md` | Portfolio context: runtime model, active projects, operating rules |
 | `projects/{project-slug}/` | Startup-specific context: problem, ICP, solution, validation, strategy, financials, roadmap |
 | `config/agent-skills.json` | Skill assignments per agent |
-| `config/schedule.json` | Dispatch policy and cooldowns |
+| `config/schedule.json` | Hybrid dispatch policy, cooldowns, and planner execution mode |
 | `config/communications.json` | Founder channel settings |
 | `config/google-workspace.json` | Workspace integration settings |
 | `outputs/state.json` | Live system state: statuses, events, communications, artifacts |

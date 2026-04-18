@@ -3,7 +3,9 @@
   "timezone": "Europe/Madrid",
   "dispatcher": {
     "scheduler_of_record": "github_actions",
+    "execution_mode": "hybrid",
     "heartbeat_minutes": 15,
+    "max_event_loop_iterations": 4,
     "digest_hour_local": 18,
     "digest_minute_local": 0,
     "overdue_sweep_hours": 6

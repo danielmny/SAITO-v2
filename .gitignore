@@ -32,3 +32,12 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Runtime debris
+runtime/requests/*.json
+runtime/queue/*.json
+runtime/results/*.json
+runtime/logs/*.json
+inputs/founder-replies/processed/*.md
+inputs/founder-replies/rejected/*.md
+outputs/communications/outbox/*.md

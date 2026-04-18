@@ -7,10 +7,12 @@ Founders OS is a multi-agent operating system for startup work. In the SAITO har
 - Codex-compatible runner executes agents as stateless jobs, with a full MERIDIAN orchestration pass on top of the serial harness
 - GitHub Actions remains the scheduler of record
 - A 15-minute dispatcher heartbeat scans for new events, changed context, and overdue work
+- The dispatcher now runs in a hybrid mode: founder replies, handoffs, escalations, and founder-priority requests propagate as an in-cycle event loop, while heartbeats and overdue sweeps remain cooldown-governed background maintenance
 - The planner coalesces pending handoffs into one queued request per agent per cycle to avoid duplicate serial work
 - Handoffs and state stay in-repo for auditability
 - File-backed runtime manifests are the default execution path
 - Founder communication defaults to repo files in `outputs/communications/outbox/` and `inputs/founder-replies/`
+- File-backed founder replies are now session-bound and signed via `SAITO_FOUNDER_REPLY_SECRET`
 - Google Drive, Docs, and Gmail stay disabled until real adapters exist
 - Manual founder launches start with project selection unless the request is clearly startup-wide
 - Manual founder launches now run as a stateful conversational intake session and can populate the startup files from partial or complete founder replies in `inputs/founder-replies/`
@@ -64,6 +66,12 @@ Specialist agents remain stateless per run. `MERIDIAN-ORCHESTRATOR` is the only 
 To atomically plan and drain the wider runtime:
 
 - `make run-cycle`
+
+To sign a file-backed founder reply before ingestion:
+
+- `python3 runner/orchestrate.py sign-founder-reply --instance-path . --reply-file inputs/founder-replies/<reply>.md`
+
+In hybrid mode, `make run-cycle` may iterate through several event-driven planning rounds in one invocation until no hot-path work remains queued, while still leaving heartbeat and overdue maintenance work under normal cooldown rules.
 
 To scaffold a new startup project from the template:
 
@@ -120,7 +128,7 @@ To scaffold a new startup project from the template:
 ## Core Principles
 
 1. Repo state is canonical. Google Workspace is a collaboration and delivery layer, not the source of truth.
-2. 24/7 means responsive dispatch, not constant re-running. No-work cycles should skip cleanly.
+2. 24/7 means responsive dispatch, not constant re-running. Hot-path event work should move immediately; no-work cycles should still skip cleanly.
 3. Founder communication is file-first in v1, but every outbound and inbound flow still goes through a pluggable communication interface.
 4. Token efficiency is a product requirement. Only changed inputs, pending handoffs, unresolved escalations, and the most recent relevant outputs should be injected into prompts.
 5. `MERIDIAN-ORCHESTRATOR` owns founder intake, project selection, system normalization, triage, and founder digests. Specialist agents should stay narrow, project-scoped, and cheap.

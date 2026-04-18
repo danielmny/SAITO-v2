@@ -69,6 +69,11 @@ def read_front_matter(path: Path) -> tuple[dict[str, str], str]:
     return front_matter, body
 
 
+def sanitize_front_matter_value(value: Any) -> str:
+    text = str(value)
+    return " ".join(text.replace("\r", "\n").splitlines()).strip()
+
+
 class FileChannel(CommunicationChannel):
     def __init__(self, instance_path: Path) -> None:
         self.instance_path = instance_path
@@ -86,14 +91,14 @@ class FileChannel(CommunicationChannel):
         path = self.outbox_dir / filename
         front_matter = [
             "---",
-            f"message_type: {message.message_type}",
-            f"subject: {message.subject}",
-            f"project: {message.project}",
-            f"task_type: {message.task_type}",
-            f"origin: {message.origin}",
-            f"thread_key: {message.thread_key}",
+            f"message_type: {sanitize_front_matter_value(message.message_type)}",
+            f"subject: {sanitize_front_matter_value(message.subject)}",
+            f"project: {sanitize_front_matter_value(message.project)}",
+            f"task_type: {sanitize_front_matter_value(message.task_type)}",
+            f"origin: {sanitize_front_matter_value(message.origin)}",
+            f"thread_key: {sanitize_front_matter_value(message.thread_key)}",
             f"requires_reply: {'true' if message.requires_reply else 'false'}",
-            f"reply_deadline: {message.reply_deadline}",
+            f"reply_deadline: {sanitize_front_matter_value(message.reply_deadline)}",
             f"sent_at: {sent_at}",
             "---",
             "",

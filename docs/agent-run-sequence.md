@@ -49,12 +49,22 @@ The planner evaluates agents using:
 8. `priority`
 
 This means sequencing is dependency-first, then phase-aware, then priority-driven.
-Founder-priority kickoff bundles may use soft dependencies and quiet-hours overrides for the first execution wave.
+In hybrid mode, hot-path event work is treated differently from background maintenance:
+
+- founder replies
+- handoff-driven work
+- escalations
+- founder-priority bundle work
+
+These can bypass normal cooldowns and may propagate through multiple `run-cycle` iterations in one invocation.
+Heartbeat and overdue maintenance work remain cooldown-governed and are suppressed when the same agent already has live hot-path work.
+Founder-priority kickoff bundles may use soft or threshold dependencies and quiet-hours overrides for the first execution wave.
 
 ## 5. Practical runtime order
 
 - `MERIDIAN-ORCHESTRATOR` runs first for founder intake, project routing, and status synthesis.
 - During project setup, MERIDIAN may create a kickoff bundle of parallel-safe first-wave handoffs for research, product, engineering, and finance.
+- In hybrid mode, the same `run-cycle` may then continue immediately into downstream event work instead of waiting for the next scheduler heartbeat.
 - Launch-core specialists execute the highest-priority project work:
   - `CURRENT-SALES`
   - `FORGE-ENGINEERING`

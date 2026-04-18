@@ -1,6 +1,6 @@
 # Runtime Contract
 
-This repo is the canonical runtime model for the **SAITO Framework**. The current surface is repo-native and serial, and every contract in this file is intended to be portable into a future standalone web application without redesign.
+This repo is the canonical runtime model for the **SAITO Framework**. The current surface is repo-native and uses a hybrid execution model: hot-path event work can propagate through multiple in-cycle planning rounds, while background cadence remains scheduled and throttled. Every contract in this file is intended to be portable into a future standalone web application without redesign.
 
 ## Core design rule
 
@@ -57,12 +57,13 @@ The runtime is driven in this order:
    Dependency gates may be satisfied either by normalized shared state or by the latest successful runtime result manifest for the upstream agent.
 4. `MERIDIAN-ORCHESTRATOR` handles founder intake, project selection, status synthesis, and delegation.
 5. Enabled specialist agents execute project-scoped work from handoffs or normalized founder requests, produce real markdown outputs under `projects/{startup-slug}/outputs/{AGENT_NAME}/` when a startup is in scope, and may create deterministic downstream handoffs when the input clearly justifies it. The current enabled specialist set is `ATLAS-RESEARCH`, `CANVAS-PRODUCT`, `COUNSEL-LEGAL`, `FORGE-ENGINEERING`, `MARKETING-BRAND`, `CURRENT-SALES`, `LEDGER-FINANCE`, `NEXUS-TALENT`, `VECTOR-ANALYTICS`, and `HERALD-COMMS`.
-6. The repo-native planner writes request manifests to `runtime/requests/`, coalesces pending handoffs into a single queued request per agent per cycle when possible, enqueues them in `runtime/queue/`, and drains them serially into `runtime/results/`.
+6. The repo-native planner writes request manifests to `runtime/requests/`, coalesces pending handoffs into a single queued request per agent per cycle when possible, enqueues them in `runtime/queue/`, and drains them into `runtime/results/`.
+   In hybrid mode, `run-cycle` may execute multiple event-driven plan/drain rounds in one invocation so newly created handoffs or founder-priority work do not wait for the next scheduler heartbeat.
    The runtime also supports atomic `run-cycle`, `manual-meridian`, and `ingest-and-drain-replies` commands to avoid planner/drain races during founder sessions.
 7. A MERIDIAN run is a real orchestration pass: it may skip cleanly when nothing meaningful changed, or it may write a founder-facing briefing and normalize shared state.
 8. Outputs, handoffs, escalations, communications, and run records are written back to canonical state.
 
-`config/schedule.json` remains the sequencing authority. The future web app may replace the scheduler surface, but not the core runtime concepts.
+`config/schedule.json` remains the sequencing authority. It now defines both the dispatcher cadence and whether the runtime should behave in hybrid mode. The future web app may replace the scheduler surface, but not the core runtime concepts.
 
 ## State ownership
 
@@ -181,6 +182,11 @@ Kickoff or parallel-safe handoffs may additionally include:
 
 - `founder_priority: true`
 - `dependency_mode: soft`
+- `dependency_mode: any`
+- `dependency_mode: all`
+- `depends_on_any`
+- `depends_on_all`
+- `minimum_dependencies_satisfied`
 - `kickoff_bundle`
 - `parallel_group`
 - `wave`
@@ -218,6 +224,15 @@ Outbound communication is channel-agnostic and file-first by default:
 - `thread_key`
 - `requires_reply`
 - `reply_deadline`
+
+For file-backed founder replies, the runtime now expects an authenticated reply envelope containing:
+
+- `thread_key`
+- `session_id`
+- `reply_token`
+- `reply_signature`
+
+Reply signatures are generated using the secret named by `config/communications.json` and enforced during reply ingestion.
 - `project`
 - `task_type`
 - `origin`

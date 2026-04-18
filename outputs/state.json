@@ -259,9 +259,17 @@
           "project": "portfolio",
           "task_type": "project_selection",
           "type": "founder_briefing"
+        },
+        {
+          "created_at": "2026-04-18T07:15:36+00:00",
+          "origin": "manual",
+          "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-project-intake.md",
+          "project": "portfolio",
+          "task_type": "project_selection",
+          "type": "founder_briefing"
         }
       ],
-      "context_hash": "7534d4e5231dde77147d6ce3608ae20e67274686c88d5e7ca4e0a4aed4c2b4c6",
+      "context_hash": "9d6806152d9b82b7e383deb2daff2a6145222c5af91b26a16ea19176e52a1e40",
       "cooldown_until": "",
       "dashboard_status": "waiting_on_founder",
       "external_artifacts": [
@@ -275,12 +283,12 @@
       ],
       "last_google_sync": "",
       "last_output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-project-intake.md",
-      "last_run": "2026-04-17T23:04:08+00:00",
+      "last_run": "2026-04-18T07:15:36+00:00",
       "last_success": "2026-04-17T22:50:21+00:00",
       "last_trigger": "manual",
       "run_budget": {
         "daily_token_budget": 25000,
-        "runs_today": 11,
+        "runs_today": 12,
         "tokens_used_today": 0
       },
       "skip_reason": "",
@@ -428,12 +436,21 @@
       "project": "portfolio",
       "task_type": "project_selection",
       "type": "founder_briefing"
+    },
+    {
+      "created_at": "2026-04-18T07:15:36+00:00",
+      "from": "MERIDIAN-ORCHESTRATOR",
+      "origin": "manual",
+      "path": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-project-intake.md",
+      "project": "portfolio",
+      "task_type": "project_selection",
+      "type": "founder_briefing"
     }
   ],
   "company": {
     "founder_digest_due_at": "2026-04-14T18:00:00+0200",
     "founder_intake_agent": "MERIDIAN-ORCHESTRATOR",
-    "last_updated": "2026-04-17T23:04:08+00:00",
+    "last_updated": "2026-04-18T07:15:36+00:00",
     "name": "SAITO Framework",
     "stage": "PRE-SEED"
   },
@@ -492,7 +509,7 @@
     "projects/creditbank/outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-creditbank-project-setup.md"
   ],
   "founder_intake": {
-    "active_session_id": "intake-20260418T010408",
+    "active_session_id": "",
     "sessions": {
       "intake-20260418T010408": {
         "answers": {},
@@ -536,8 +553,8 @@
         ],
         "session_id": "intake-20260418T010408",
         "started_at": "2026-04-18T01:04:08+02:00",
-        "status": "in_progress",
-        "updated_at": "2026-04-18T01:04:08+02:00"
+        "status": "stale",
+        "updated_at": "2026-04-18T09:18:00+02:00"
       }
     }
   },
@@ -556,8 +573,8 @@
       "project": "portfolio",
       "session_id": "intake-20260418T010408",
       "started_at": "2026-04-18T01:04:08+02:00",
-      "status": "in_progress",
-      "updated_at": "2026-04-18T01:04:08+02:00"
+      "status": "stale",
+      "updated_at": "2026-04-18T09:18:00+02:00"
     }
   ],
   "last_runs": [
@@ -692,6 +709,18 @@
       "status": "waiting_on_founder",
       "task_type": "project_selection",
       "trigger_type": "manual"
+    },
+    {
+      "agent": "MERIDIAN-ORCHESTRATOR",
+      "finished_at": "2026-04-18T07:15:36+00:00",
+      "origin": "manual",
+      "output": "outputs/MERIDIAN-ORCHESTRATOR/2026-04-18-project-intake.md",
+      "project": "portfolio",
+      "run_id": "RUN-20260418T0915360200-MERIDIAN-ORCHESTRATOR-76ffac6c",
+      "started_at": "2026-04-18T07:15:36+00:00",
+      "status": "waiting_on_founder",
+      "task_type": "project_selection",
+      "trigger_type": "manual"
     }
   ],
   "metrics": {
@@ -744,7 +773,7 @@
     }
   },
   "run_queue": [
-    "runtime/queue/REQ-20260418T0104080200-MERIDIAN-ORCHESTRATOR-1d3445cd.json"
+    "runtime/queue/REQ-20260418T0915360200-MERIDIAN-ORCHESTRATOR-76ffac6c.json"
   ],
   "runtime_mode": "document_driven_app_ready_backend",
   "system_version": "2.2",
@@ -762,7 +791,7 @@
       "task_id": "TASK-SIGNAL-001",
       "task_type": "implementation_plan",
       "title": "Implementation gap-closure plan",
-      "updated_at": "2026-04-17T23:04:08+00:00"
+      "updated_at": "2026-04-18T07:15:36+00:00"
     },
     {
       "blocked_by": [],
@@ -777,7 +806,7 @@
       "task_id": "TASK-SIGNAL-002",
       "task_type": "pipeline_plan",
       "title": "Early customer pipeline",
-      "updated_at": "2026-04-17T23:04:08+00:00"
+      "updated_at": "2026-04-18T07:15:36+00:00"
     },
     {
       "blocked_by": [],
@@ -792,7 +821,7 @@
       "task_id": "TASK-SIGNAL-003",
       "task_type": "research_brief",
       "title": "ICP and assumption validation",
-      "updated_at": "2026-04-17T23:04:08+00:00"
+      "updated_at": "2026-04-18T07:15:36+00:00"
     },
     {
       "blocked_by": [],

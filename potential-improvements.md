@@ -1,489 +1,409 @@
 # Potential Improvements For SAITO-v2
 
-This file captures improvements identified from the `CreditBank` workflow that happened on April 17-18, 2026.
+This file started as a backlog created from the `CreditBank` workflow on April 17-18, 2026.
+It now serves as a live status memo:
 
-## Summary
+- what the `CreditBank` workflow exposed
+- what has already been implemented
+- what is still incomplete
+- what should likely be improved next
 
-The `CreditBank` run proved that the multi-project model works, but it also exposed friction in the founder experience, runtime orchestration, and downstream execution. SAITO-v2 can already:
+## Current Summary
 
-- scaffold a project
-- run manual Meridian intake
-- populate project files from founder replies
-- queue specialist work
+The `CreditBank` workflow forced SAITO-v2 to behave more like a real multi-project founder operating system instead of a static agent harness. That led to substantial runtime improvements:
 
-But the actual workflow was still more manual and fragmented than it should be.
+- manual MERIDIAN is now conversational and stateful
+- project files can be populated directly from founder intake
+- project kickoff work can fan out across multiple specialists
+- founder-priority work can bypass some background throttling
+- the runtime now supports a hybrid execution model:
+  - event-loop behavior for hot-path founder and handoff work
+  - cooldown-governed behavior for background heartbeat and overdue maintenance
 
-## 1. Make Manual Meridian Fully Conversational End-To-End
+The remaining gaps are now less about basic workflow plumbing and more about polish, deeper automation, and clearer founder ergonomics.
 
-### Problem
+## Implemented
 
-Meridian can ask intake questions conversationally in chat, but the runtime still fundamentally expects file-based replies under `inputs/founder-replies/`. In the `CreditBank` workflow, the founder answered in conversation, and that context then had to be translated back into a markdown reply artifact so the runtime could actually populate the files.
+### 1. Manual Meridian Is Stateful And Conversational
 
-### Improvement
+Implemented:
 
-Add a first-class conversational intake mode for manual launches where:
+- intake sessions are persisted in `outputs/state.json`
+- MERIDIAN can ask one question at a time
+- session progress is resumable
+- manual launch now starts with a founder standup plus project-choice flow
+- MERIDIAN can continue the last open project or start a new one
 
-- Meridian asks one question at a time in chat
-- each answer is persisted automatically
-- Meridian tracks progress across the intake sequence
-- completion automatically triggers project-file population without requiring a separate reply file
+Impact:
 
-### Why It Matters
+- the founder flow is no longer a stateless prompt chain
+- interrupted intake can resume instead of restarting from scratch
 
-This removes the current split between "chat interaction" and "runtime ingestion." Right now the system can do both, but they are not the same flow.
+### 2. Project Files Populate Directly From Intake
 
-## 2. Add Intake Session State And Resume Logic
+Implemented:
 
-### Problem
+- completed intake writes:
+  - `project.md`
+  - `problem.md`
+  - `icp.md`
+  - `solution.md`
+  - `validation.md`
+  - `strategy.md`
+  - `financials.md`
+  - `roadmap.md`
+  - `decisions.md`
+- project setup artifacts are generated automatically
+- `outputs/state.json` is updated during the same flow
 
-The conversational intake that happened for `CreditBank` was not backed by durable structured session state. If interrupted, Meridian would not naturally know which question was already answered and which one comes next.
+Impact:
 
-### Improvement
+- there is no longer a separate manual “translate founder answers into project files” step
 
-Add an intake-session object to state, for example:
+### 3. Manual Launch UX Is Much More Unified
 
-- current project being defined
-- current question index
-- answers collected so far
-- completion status
-- source conversation or thread key
+Implemented:
 
-### Why It Matters
+- `manual-meridian`
+- `run-cycle`
+- `ingest-and-drain-replies`
 
-This would let Meridian resume a partially completed founder intake instead of restarting or relying on manual reconstruction.
+Manual founder behavior is now much clearer:
 
-## 3. Auto-Trigger Project Population After Conversational Intake
+1. launch MERIDIAN
+2. see current project standup
+3. continue or start new
+4. answer questions if needed
+5. populate project state
+6. accept recommended next actions
 
-### Problem
+Impact:
 
-After the founder answered the questions conversationally, project-file population still required a separate runtime ingestion step.
+- the founder experience is much closer to one coherent product
 
-### Improvement
+### 4. Planner/Drain Atomicity Exists
 
-When Meridian reaches the last intake question, it should:
+Implemented:
 
-- synthesize the collected answers into canonical structured fields
-- write the project files immediately
-- produce the setup artifact
-- update `outputs/state.json`
+- atomic `run-cycle`
+- atomic `manual-meridian`
+- atomic `ingest-and-drain-replies`
 
-### Why It Matters
+Impact:
 
-The system should not require a second internal translation step after the founder already finished the intake.
+- the original planner/drain race from the `CreditBank` workflow is largely removed
 
-## 4. Unify Manual Launch UX
+### 5. Founder-Priority Execution Exists
 
-### Problem
+Implemented:
 
-There are currently several manual launch behaviors mixed together:
+- founder-priority handoffs can bypass normal quiet-hours suppression
+- founder-priority work can bypass normal cooldown behavior
+- kickoff and checkpoint work are treated as hot-path event traffic
 
-- `make run-meridian`
-- `make drain`
-- manual conversational questioning in chat
-- file-based founder intake artifacts
+Impact:
 
-This creates ambiguity about what "run Meridian" actually means.
+- a founder session no longer stalls just because it happens during suppressed hours or inside a cooldown window
 
-### Improvement
+### 6. Project Kickoff Fan-Out Exists
 
-Define one clear manual-launch contract:
+Implemented:
 
-1. launch Meridian
-2. Meridian asks questions conversationally
-3. Meridian persists answers automatically
-4. Meridian writes project files
-5. Meridian proposes and optionally queues next specialist work
+- automatic first-wave kickoff handoffs after project setup
+- research, engineering, product, and finance kickoff work are created automatically
+- second-wave work now exists for:
+  - sales motion
+  - positioning brief
+  - MERIDIAN project checkpoint synthesis
 
-### Why It Matters
+Impact:
 
-Founder-facing behavior should feel like a single product, not a combination of runtime internals.
+- a newly defined startup can move from intake into coordinated execution without manual orchestration
 
-## 5. Make Planner/Drain Execution Atomic
+### 7. Structured Uncertainty Tracking Exists
 
-### Problem
+Implemented:
 
-During the `CreditBank` workflow, `ingest-replies` and `drain-queue` raced each other, and `drain-queue` initially processed zero items even though a request had just been queued. The same thing happened again after planning specialist handoffs.
+- project fields now store structured metadata in state:
+  - `status`
+  - `confidence`
+  - `owner_agent`
+  - `next_validation_action`
+- stage-aware templates now frame early projects as hypothesis-driven rather than incomplete
 
-### Improvement
+Impact:
 
-Introduce either:
+- uncertainty is now explicit and routable instead of hidden in free text
 
-- a single command that performs `plan + drain` atomically, or
-- queue locking / deterministic sequencing so a newly queued request is always visible to the following drain operation
+### 8. Project Identity Handling Improved
 
-### Why It Matters
+Implemented:
 
-The current behavior is subtle and easy to misread as failure, especially during manual founder interaction.
+- canonical project `name`, `key`, and `slug` separation
+- duplicate normalization logic during project upsert
 
-## 6. Add Founder-Priority Override To Quiet Hours
+Impact:
 
-### Problem
+- accidental project duplication is less likely
 
-After Meridian queued specialist work for `CreditBank`, only `FORGE-ENGINEERING` ran. `ATLAS-RESEARCH`, `CANVAS-PRODUCT`, and `LEDGER-FINANCE` were blocked by quiet-hours suppression even though the founder had just completed intake and expected momentum.
+### 9. Recommended Founder Actions Can Be Accepted Inline
 
-### Improvement
+Implemented:
 
-Add scheduling logic such that founder-triggered project work can bypass quiet hours for an initial execution burst, for example:
+- MERIDIAN now proposes action phrases such as:
+  - `run kickoff bundle`
+  - `run research pass`
+  - `run architecture pass`
+  - `run product framing pass`
+  - `run economics pass`
+  - `run project checkpoint`
+- founder acceptance creates deterministic handoffs
 
-- allow one immediate founder-priority run per queued specialist
-- or let Meridian mark certain handoffs as `critical_founder_flow`
+Impact:
 
-### Why It Matters
+- MERIDIAN now behaves more like an operator and less like a document generator
 
-A manual founder session should not stall just because it happens during suppressed hours.
+### 10. Parallel Kickoff Bundles And Threshold Dependencies Exist
 
-## 7. Let Meridian Fan Out The First Specialist Pass Automatically
+Implemented:
 
-### Problem
+- kickoff bundle metadata
+- parallel group metadata
+- first-wave / second-wave / synthesis-wave structure
+- dependency modes:
+  - `soft`
+  - `any`
+  - `all`
+- `minimum_dependencies_satisfied`
 
-After project setup, the next obvious work items had to be inferred and then queued manually. SAITO-v2 did not automatically turn the newly populated project into a coordinated first-pass execution plan.
+Impact:
 
-### Improvement
+- downstream work no longer has to wait for every upstream agent when partial information is enough
 
-After project setup, Meridian should automatically decide whether to create an initial set of handoffs such as:
+### 11. Founder-Facing Parallel Status Exists
 
-- research
-- product framing
-- engineering architecture
-- economics / financial model
+Implemented:
 
-This should be driven by project stage and missing fields in the project files.
+- standup and briefing outputs can now show:
+  - queued
+  - queued for next window
+  - blocked by dependency
+  - skipped as unnecessary
+  - completed
 
-### Why It Matters
+Impact:
 
-A fresh idea-stage project should immediately move from "defined" to "actively investigated."
+- the founder can see the team fan out instead of inferring run state indirectly
 
-## 8. Add Missing-Field And Confidence Tracking
+### 12. Hybrid Event-Loop Runtime Exists
 
-### Problem
+Implemented:
 
-The `CreditBank` files now contain many intentional unknowns such as:
+- `config/schedule.json` now declares `execution_mode: "hybrid"`
+- hot-path founder and handoff work can propagate through multiple plan/drain rounds in one `run-cycle`
+- heartbeat and overdue maintenance remain cooldown-governed
+- background work is suppressed when the same agent already has live hot-path work
 
-- undetermined ICP traits
-- undetermined wedge
-- unknown GTM
-- unknown economics
-- no locked decisions
+Impact:
 
-Those are valid at idea stage, but SAITO-v2 currently stores them as plain text rather than as structured uncertainty.
+- SAITO is more responsive without becoming a fully unbounded event storm
 
-### Improvement
+## Partially Implemented
 
-Track field quality explicitly, for example:
+### 13. Multi-Agent Synthesis Exists, But It Is Still Lightweight
 
-- `status: known | hypothesis | unknown`
-- `confidence: low | medium | high`
-- `owner_agent`
-- `next_validation_action`
+Implemented so far:
 
-### Why It Matters
+- MERIDIAN can create and process a `project_checkpoint`
+- checkpoint synthesis can run as part of the kickoff flow
 
-This would let Meridian route specialist work based on actual uncertainty, not just free-text interpretation.
+Still weak:
 
-## 9. Improve Project Key And Naming Normalization
+- synthesis is still mostly file-and-handoff summarization
+- conflict resolution between agent outputs is not deep enough
+- project-file mutation from synthesis is still conservative
 
-### Problem
+### 14. Runtime And Product Artifacts Are Cleaner, But Not Fully Separated
 
-During intake, the founder answered `CrediBank` once and `CreditBank` elsewhere. The runtime eventually updated the existing `CreditBank` project, but the system currently relies on loose normalization and human judgment rather than a clear duplicate-resolution flow.
+Implemented so far:
 
-### Improvement
+- project knowledge files live under `projects/{slug}/`
+- project outputs live under `projects/{slug}/outputs/{AGENT}/`
 
-Add explicit project identity handling:
+Still weak:
 
-- detect probable duplicate keys or names
-- ask Meridian to confirm merge vs new project
-- maintain canonical display name, key, and slug separately
+- runtime manifests still accumulate heavily under `runtime/`
+- founder-facing repo surfaces still mix operational and debugging artifacts
+- cleanup/archival policy is not strong enough
 
-### Why It Matters
+### 15. Output Naming Is Better, But Not Fully Normalized
 
-This avoids accidental project duplication as the startup portfolio grows.
+Implemented so far:
 
-## 10. Distinguish Runtime Artifacts From Product Artifacts More Cleanly
+- project/task artifact naming is more stable than before
 
-### Problem
+Still weak:
 
-The `CreditBank` workflow created many runtime files:
+- some older or edge-case output filenames are still low-quality
+- naming consistency across legacy artifacts and new artifacts is not complete
 
-- queue manifests
-- result manifests
-- intake artifacts
-- project setup artifacts
-- handoffs
+## Still Open
 
-These are useful, but they can obscure the actual founder-facing project state.
+### 16. True Chat-Native Persistence Is Not Complete
 
-### Improvement
+Current state:
 
-Separate the layers more clearly:
+- the runtime supports conversational flows well
+- this Codex conversation can simulate the intended founder experience
 
-- project knowledge files
-- founder-facing summaries
-- runtime logs
-- scheduling/queue manifests
+Still missing:
 
-Potentially move runtime-heavy files further under `runtime/` and keep project folders cleaner.
+- a first-class runtime bridge where this conversation itself is the canonical founder reply transport
+- full elimination of file-backed founder reply machinery under the hood
 
-### Why It Matters
+Why it matters:
 
-The project folder should read like the startup's operating memory, not a mixed debug surface.
+- this is still the biggest gap between the intended product experience and the repo-native runtime implementation
 
-## 11. Fix Output Naming Consistency
+### 17. Automatic “Skip Already Answered Questions” Is Not Fully Generalized
 
-### Problem
+Current state:
 
-The generated FORGE output filename for `CreditBank` includes a clipped suffix: `estrator-002`. This works technically, but it is low-quality output naming and reduces trust in the system.
+- MERIDIAN can resume stateful intake
+- some project-choice and continue flows already avoid restarting the whole intake
 
-### Improvement
+Still missing:
 
-Tighten slug generation and filename construction so:
+- universal field-by-field skip logic derived from existing project files and structured state
+- fully reliable resume behavior for partially refined existing projects
 
-- agent/task identifiers are stable
-- truncation is deliberate
-- filenames remain readable
+Why it matters:
 
-### Why It Matters
+- refining an existing startup should feel like editing live memory, not re-running an intake form
 
-Artifact names are part of the product surface. They should look intentional.
+### 18. Bundle-Level Execution Policy Is Still Basic
 
-## 12. Add Meridian "Recommended Next Actions" That Can Be Accepted Inline
+Current state:
 
-### Problem
+- founder-priority bundle work can propagate quickly
+- threshold dependencies exist
 
-Meridian can state recommended next moves, but there is no clear action layer where the founder can simply say "yes, do that" and have the recommended handoffs executed deterministically.
+Still missing:
 
-### Improvement
+- stronger bundle-level policies such as:
+  - run the whole bundle now
+  - defer the whole bundle together
+  - partially run only if the bundle explicitly allows it
 
-When Meridian finishes setup, it should present actions like:
+Why it matters:
 
-- run research pass
-- run architecture pass
-- run product framing pass
-- run economics pass
+- coordinated startup work should feel intentional, not opportunistic
 
-And the founder should be able to approve them inline.
+### 19. State Reconciliation And Session Auditability Can Improve Further
 
-### Why It Matters
+Current state:
 
-This makes Meridian feel like an actual operator rather than just a document generator.
+- founder session summaries exist
+- state tracks more session and project metadata than before
 
-## 13. Add Better Stage-Aware Templates
+Still missing:
 
-### Problem
+- cleaner audit views for:
+  - what changed in project files
+  - which runs completed in a founder session
+  - which work remains blocked
+  - what the net effect of a session was
 
-The current project files are generic and work, but they do not adapt much to the fact that `CreditBank` is still at `IDEA` stage. Many sections would benefit from an idea-stage framing rather than looking like incomplete seed-stage planning docs.
+Why it matters:
 
-### Improvement
+- founder sessions should be easy to continue, inspect, and trust later
 
-Render project files differently by stage:
+### 20. Background Scheduling Still Needs Product Tuning
 
-- IDEA: hypotheses, unknowns, validation questions, early architecture options
-- PRE-SEED: chosen wedge, MVP scope, first GTM motion
-- SEED: execution metrics, team, financial plan, investor narrative
+Current state:
 
-### Why It Matters
+- the hybrid model is now in place
 
-This reduces the feeling that early projects are "missing content" when they are actually "appropriately uncertain."
+Still missing:
 
-## 14. Add A Cross-Agent "Project Kickoff" Workflow
+- tuning of:
+  - heartbeat frequency
+  - overdue sweep policy
+  - max event-loop iterations
+  - when background work should be resumed after hot-path bursts
 
-### Problem
+Why it matters:
 
-The first post-intake coordination had to be improvised. There is no explicit kickoff mode that says: "new project created, now establish the first work package across key agents."
+- hybrid mode is directionally correct, but its operating parameters still need experience-based tuning
 
-### Improvement
+## Suggested Future Improvements
 
-Create a `project_kickoff` workflow where Meridian:
+### A. Build A True Chat-Native Founder Adapter
 
-- reads all newly populated project files
-- identifies the top unknowns
-- generates the first coordinated handoffs
-- synthesizes returned outputs into a first founder briefing
+Highest-value product improvement still open.
 
-### Why It Matters
+Goal:
 
-This would make startup creation feel complete, not partial.
+- make the live founder conversation the canonical intake/status/action channel
+- remove the conceptual need for reply files during normal founder use
 
-## 15. Improve State Reconciliation For Founder Sessions
+### B. Let MERIDIAN Update Project Files During Synthesis
 
-### Problem
+Goal:
 
-The founder session updated project files and created new outputs, but there is still a lot of implicit state spread across:
+- use project checkpoints not just to summarize outputs
+- also propose or apply structured updates back into project knowledge files when confidence is high enough
 
-- `outputs/state.json`
-- project files
-- handoffs
-- runtime result manifests
-- chat context
+### C. Add Stronger Bundle Lifecycle Controls
 
-### Improvement
+Goal:
 
-Add a founder-session summary record that captures:
+- bundle states like:
+  - planned
+  - launched
+  - partially complete
+  - waiting for enough inputs
+  - synthesized
+  - archived
 
-- what changed
-- what project was updated
-- what handoffs were created
-- which runs completed
-- what remains blocked
+### D. Add Automatic Project Refinement Mode
 
-### Why It Matters
+Goal:
 
-This would make each manual founder session auditable and easy to continue later.
+- detect what is already known in a project
+- ask only delta questions
+- refine the project memory rather than re-running intake logic
 
-## 16. Parallelize Independent Specialist Work By Default
+### E. Add Runtime Artifact Retention And Cleanup Policy
 
-### Problem
+Goal:
 
-The `CreditBank` workflow showed that SAITO-v2 still behaves too serially in situations where several agents could work at the same time. After project setup, research, product framing, engineering architecture, and economics assessment were all independently useful, but the system only moved one of them forward immediately.
+- archive or compact old `runtime/results` and `runtime/requests`
+- preserve auditability without drowning the repo in execution debris
 
-### Improvement
+### F. Improve Founder-Facing Synthesis Quality
 
-Add a parallel execution model for handoffs that are independent enough to proceed together, especially during early project kickoff. Meridian should explicitly classify downstream work as:
+Goal:
 
-- parallel-safe
-- blocked on another agent
-- optional follow-on work
+- better conflict detection
+- clearer “what changed / what still disagrees / what needs decision”
+- stronger executive-summary style outputs
 
-Then the planner should enqueue all parallel-safe handoffs in the same cycle.
+### G. Add Real Event Source Integration Later
 
-### Why It Matters
+Goal:
 
-Idea-stage projects move faster when the first investigation wave runs concurrently instead of waiting for one agent at a time unless there is a true dependency.
-
-## 17. Add Dependency-Aware Handoff Grouping
-
-### Problem
-
-Right now the runtime has dependencies in `config/schedule.json`, but it does not appear to reason deeply about which specific handoffs are actually dependent versus merely associated with the same project.
-
-### Improvement
-
-Model handoffs as dependency groups. For example:
-
-- `ATLAS-RESEARCH`, `FORGE-ENGINEERING`, and `LEDGER-FINANCE` can often run in parallel immediately after founder intake
-- `CANVAS-PRODUCT` can start in parallel too, but may optionally consume the first research and engineering outputs for a refinement pass
-- `MARKETING-BRAND` and `CURRENT-SALES` may wait until ICP and wedge are clearer
-
-The planner should support a first-wave / second-wave structure instead of one undifferentiated queue.
-
-### Why It Matters
-
-This would preserve rigor without forcing unnecessary serialization.
-
-## 18. Add Parallel "Project Kickoff Bundles"
-
-### Problem
-
-After a new project is defined, Meridian currently has to infer and queue handoffs manually. Even when it does so, they are not treated as one coordinated multi-agent bundle.
-
-### Improvement
-
-Create a kickoff bundle concept where Meridian can say:
-
-- kickoff bundle: validation
-- kickoff bundle: product-definition
-- kickoff bundle: architecture-and-economics
-
-Each bundle would expand into a set of agent runs designed to execute together.
-
-For an idea-stage startup like `CreditBank`, a sensible default kickoff bundle would be:
-
-- `ATLAS-RESEARCH`: market, alternatives, ICP, urgency
-- `FORGE-ENGINEERING`: architecture options and trust model
-- `LEDGER-FINANCE`: revenue mechanics and unit-economics risks
-- `CANVAS-PRODUCT`: wedge, first proof loop, and validation roadmap
-
-### Why It Matters
-
-This would make new-project startup work feel like a coordinated team effort instead of a sequence of isolated dispatches.
-
-## 19. Add Multi-Agent Synthesis After Parallel Runs
-
-### Problem
-
-If more agents run in parallel, Meridian also needs a structured way to merge those outputs back into one founder-facing answer. Otherwise faster execution just creates more fragmented artifacts.
-
-### Improvement
-
-After a parallel run group completes, Meridian should automatically synthesize:
-
-- what each agent found
-- where findings agree or conflict
-- what changed in the project files
-- what the top next decisions are
-
-This should be emitted as a single founder briefing or project checkpoint.
-
-### Why It Matters
-
-Parallelism only improves founder experience if the outputs converge cleanly.
-
-## 20. Add "Wait For Enough Inputs" Thresholds Instead Of Hard Sequential Dependencies
-
-### Problem
-
-Some work should not wait for every upstream agent. For example, product framing might improve with research, but it does not always need to be completely blocked on research before starting.
-
-### Improvement
-
-Introduce softer gating rules such as:
-
-- run immediately
-- run after any one of these upstream outputs exists
-- run after all of these upstream outputs exist
-- run twice: initial draft now, refinement after inputs land
-
-This is especially useful for `CANVAS-PRODUCT`, `CURRENT-SALES`, and `MARKETING-BRAND`.
-
-### Why It Matters
-
-This allows SAITO-v2 to use partial information productively instead of waiting too long for perfect sequencing.
-
-## 21. Add Parallelism-Aware Quiet-Hours Handling
-
-### Problem
-
-Quiet-hours policy currently prevented most of the `CreditBank` follow-on work from running, which effectively collapsed a multi-agent kickoff into a single-agent pass.
-
-### Improvement
-
-If founder-triggered work opens a parallel-safe kickoff bundle, the scheduler should either:
-
-- run the whole bundle immediately once, or
-- defer the whole bundle consistently until the next eligible window
-
-It should avoid the current middle state where one agent runs and the rest are silently delayed.
-
-### Why It Matters
-
-Partial execution creates uneven momentum and makes the system feel unreliable.
-
-## 22. Make Parallel Work Visible In Founder-Facing Status
-
-### Problem
-
-The founder currently has to infer which agents ran, which were queued, and which were blocked.
-
-### Improvement
-
-Whenever Meridian launches parallel work, it should present a compact status such as:
-
-- running now
-- queued for next eligible window
-- blocked by dependency
-- skipped as unnecessary
-
-### Why It Matters
-
-If SAITO is going to behave like a startup team, the founder should be able to see the team fan out and understand the state of that work.
+- keep the same repo contracts
+- eventually let a web app, Slack adapter, or other realtime surface drive the hybrid runtime directly
 
 ## Highest-Value Next Improvements
 
-If SAITO-v2 is improved incrementally, the highest-value next changes are:
+If SAITO-v2 is improved incrementally from here, the most valuable next steps are:
 
-1. Make manual Meridian intake fully conversational and stateful.
-2. Auto-populate project files directly from that conversation.
-3. Auto-fan-out the first specialist pass after project setup, with parallel-safe kickoff bundles.
-4. Allow founder-triggered runs to bypass quiet-hour suppression in a coordinated way.
-5. Make planner/drain execution atomic.
+1. Build a true chat-native founder adapter.
+2. Add project refinement mode that skips already answered fields automatically.
+3. Strengthen MERIDIAN checkpoint synthesis so it can update project memory more intelligently.
+4. Add lifecycle management and retention for runtime artifacts.
+5. Tune hybrid runtime thresholds using real usage rather than static defaults.
 
-These five changes would remove most of the friction exposed by the `CreditBank` workflow.
+Those five changes are the most likely to improve founder experience now that the core workflow plumbing is largely in place.

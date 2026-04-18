@@ -1,6 +1,9 @@
 # MERIDIAN-ORCHESTRATOR — Next Steps & Build Roadmap
 *Founders OS v2.1 · Codex Runtime · April 2026*
 
+> Historical roadmap snapshot. Some items in this file have already been completed by the current SAITO-v2 runtime.
+> Use `potential-improvements.md` for the current improvement backlog.
+
 ## Immediate next steps
 
 ### Step 1 — Runtime docs and contracts

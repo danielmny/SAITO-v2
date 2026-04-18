@@ -7,6 +7,50 @@ from pathlib import Path
 from typing import Any
 
 
+FIELD_OWNERS = {
+    "project_name": "MERIDIAN-ORCHESTRATOR",
+    "project_key": "MERIDIAN-ORCHESTRATOR",
+    "project_type": "MERIDIAN-ORCHESTRATOR",
+    "stage": "MERIDIAN-ORCHESTRATOR",
+    "summary": "MERIDIAN-ORCHESTRATOR",
+    "objective": "MERIDIAN-ORCHESTRATOR",
+    "core_problem": "ATLAS-RESEARCH",
+    "who_feels_it": "ATLAS-RESEARCH",
+    "why_now": "ATLAS-RESEARCH",
+    "primary_icp": "ATLAS-RESEARCH",
+    "observable_traits": "ATLAS-RESEARCH",
+    "early_adopters": "ATLAS-RESEARCH",
+    "product_wedge": "CANVAS-PRODUCT",
+    "core_workflow": "CANVAS-PRODUCT",
+    "why_it_wins": "CANVAS-PRODUCT",
+    "evidence_collected": "ATLAS-RESEARCH",
+    "assumptions_to_test": "ATLAS-RESEARCH",
+    "next_proof_steps": "MERIDIAN-ORCHESTRATOR",
+    "go_to_market": "MARKETING-BRAND",
+    "positioning": "MARKETING-BRAND",
+    "key_risks": "MERIDIAN-ORCHESTRATOR",
+    "revenue_model": "LEDGER-FINANCE",
+    "costs_and_burn": "LEDGER-FINANCE",
+    "fundraising_notes": "LEDGER-FINANCE",
+    "roadmap_now": "CANVAS-PRODUCT",
+    "roadmap_next": "CANVAS-PRODUCT",
+    "roadmap_later": "CANVAS-PRODUCT",
+    "open_decisions": "MERIDIAN-ORCHESTRATOR",
+    "locked_decisions": "MERIDIAN-ORCHESTRATOR",
+    "revisit_later": "MERIDIAN-ORCHESTRATOR",
+}
+
+FIELD_NEXT_ACTIONS = {
+    "observable_traits": "Run ICP clarification and interview targeting work.",
+    "product_wedge": "Define the narrowest proof-generating product wedge.",
+    "evidence_collected": "Collect founder, market, or interview evidence.",
+    "next_proof_steps": "Define the next concrete validation experiments.",
+    "go_to_market": "Draft the first go-to-market motion and target segment.",
+    "revenue_model": "Test monetization and unit-economics assumptions.",
+    "costs_and_burn": "Estimate the first cost drivers and operating burn.",
+}
+
+
 def slugify(value: str) -> str:
     return "".join(character.lower() if character.isalnum() else "-" for character in value).strip("-")
 
@@ -63,12 +107,60 @@ def field_status(value: str) -> str:
     return "known"
 
 
+def field_confidence(value: str) -> str:
+    status = field_status(value)
+    if status == "known":
+        return "medium"
+    if status == "hypothesis":
+        return "low"
+    return "low"
+
+
+def field_metadata(field: str, value: str) -> dict[str, str]:
+    status = field_status(value)
+    confidence = field_confidence(value)
+    return {
+        "status": status,
+        "confidence": confidence,
+        "owner_agent": FIELD_OWNERS.get(field, "MERIDIAN-ORCHESTRATOR"),
+        "next_validation_action": FIELD_NEXT_ACTIONS.get(field, "Resolve this field through the next specialist pass.") if status != "known" else "Maintain and refine with new evidence.",
+    }
+
+
 def knowledge_block(items: list[tuple[str, str]]) -> list[str]:
     lines = ["## Knowledge Status", ""]
     for label, value in items:
         lines.append(f"- {label}: `{field_status(value)}`")
     lines.append("")
     return lines
+
+
+def stage_guidance(stage: str) -> list[str]:
+    normalized = stage.strip().upper()
+    if normalized == "SEED":
+        return [
+            "- Focus: execution, traction, investor readiness, and operating metrics.",
+            "- Expectation: most major product, ICP, and GTM questions should be narrowed significantly.",
+        ]
+    if normalized == "PRE-SEED":
+        return [
+            "- Focus: MVP scope, first GTM motion, and proof of real customer demand.",
+            "- Expectation: core hypotheses should be explicit and tied to validation work.",
+        ]
+    return [
+        "- Focus: hypotheses, customer pain, wedge definition, and architecture options.",
+        "- Expectation: many sections may still be `unknown` or `hypothesis` and should drive research rather than fake certainty.",
+    ]
+
+
+def build_project_field_registry(answers: dict[str, str]) -> dict[str, dict[str, str]]:
+    registry: dict[str, dict[str, str]] = {}
+    for field, owner in FIELD_OWNERS.items():
+        value = answers.get(field, "")
+        metadata = field_metadata(field, value)
+        metadata["owner_agent"] = owner
+        registry[field] = metadata
+    return registry
 
 
 def scaffold_project(instance_path: Path, *, name: str, project_key: str | None, project_type: str, stage: str, summary: str) -> dict[str, str]:
@@ -105,7 +197,7 @@ def scaffold_project(instance_path: Path, *, name: str, project_key: str | None,
             "",
             "## Operating Posture",
             "",
-            "- Stage template: idea-stage startup unless future evidence moves it forward.",
+            *stage_guidance(stage),
             "- Unknowns are expected and should be treated as explicit hypotheses rather than missing work.",
             "",
             "## Objective",
@@ -119,12 +211,14 @@ def scaffold_project(instance_path: Path, *, name: str, project_key: str | None,
 
     state.setdefault("projects", {})[key] = {
         "folder_path": f"projects/{slug}",
+        "field_status": build_project_field_registry({}),
         "last_activity_at": "",
         "name": name,
         "owner_agent": "MERIDIAN-ORCHESTRATOR",
         "priority": "medium",
         "project_id": slug,
         "slug": slug,
+        "stage": stage,
         "status": "in_progress",
         "summary": summary,
         "type": project_type,
@@ -189,6 +283,7 @@ def upsert_project_from_intake(instance_path: Path, answers: dict[str, str]) -> 
             "",
             "## Operating Posture",
             "",
+            *stage_guidance(stage),
             f"- Stage template: `{stage}`",
             "- Treat unknowns as explicit hypotheses to validate, not as missing documentation.",
             "- Use specialist work to convert `unknown` and `hypothesis` sections into evidence-backed decisions.",
@@ -299,12 +394,14 @@ def upsert_project_from_intake(instance_path: Path, answers: dict[str, str]) -> 
         "last_activity_at": state.get("projects", {}).get(project_key, {}).get("last_activity_at", ""),
         "canonical_name": name,
         "canonical_key": project_key,
+        "field_status": build_project_field_registry(answers),
         "name": name,
         "owner_agent": "MERIDIAN-ORCHESTRATOR",
         "priority": state.get("projects", {}).get(project_key, {}).get("priority", "medium"),
         "project_id": slug,
         "slug": slug,
         "status": "in_progress",
+        "stage": stage,
         "summary": summary,
         "type": project_type,
         "work_mode": "project",
